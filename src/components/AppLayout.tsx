@@ -78,14 +78,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         location={{ pathname }}
         splitMenus={false}
         menuItemRender={(item, dom) => (
-          <Link href={item.path ?? '/'} style={{ display: 'block', width: '100%' }}>
-            {dom}
-          </Link>
+          <Link href={item.path ?? '/'}>{dom}</Link>
         )}
         subMenuItemRender={(item, dom) => (
-          <Link href={item.path ?? '/'} style={{ display: 'block', width: '100%' }}>
-            {dom}
-          </Link>
+          <Link href={item.path ?? '/'}>{dom}</Link>
         )}
         /* En layout="mix", actionsRender va dans le GlobalHeader (top bar) */
         actionsRender={() => [
