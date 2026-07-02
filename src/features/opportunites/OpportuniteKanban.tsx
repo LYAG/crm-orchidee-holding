@@ -1,0 +1,375 @@
+'use client';
+
+import {
+  ArrowRightOutlined,
+  DragOutlined,
+  EuroOutlined,
+  TrophyFilled,
+} from '@ant-design/icons';
+import { Progress, Typography } from 'antd';
+import { useState } from 'react';
+import { OpportuniteEtape } from '@/types';
+import type { Opportunite, Prospect, Utilisateur } from '@/types';
+import { ETAPES_CONFIG } from './constants';
+
+const { Text } = Typography;
+
+interface Props {
+  opportunites: Opportunite[];
+  prospectMap: Record<string, Prospect>;
+  utilisateurMap: Record<string, Utilisateur>;
+  onSelect: (opp: Opportunite) => void;
+  onEtapeChange: (oppId: string, etape: OpportuniteEtape) => void;
+}
+
+/* ── Carte opportunité ───────────────────────────────────────────────────── */
+
+function OppCard({
+  opp,
+  prospect,
+  color,
+  isDragging,
+  onDragStart,
+  onDragEnd,
+  onClick,
+}: {
+  opp: Opportunite;
+  prospect?: Prospect;
+  color: string;
+  isDragging: boolean;
+  onDragStart: (e: React.DragEvent) => void;
+  onDragEnd: () => void;
+  onClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: '#fff',
+        borderRadius: 10,
+        border: `1px solid ${hovered ? color + '60' : '#EEF4EE'}`,
+        borderLeft: `3px solid ${color}`,
+        padding: '12px 12px 10px',
+        cursor: isDragging ? 'grabbing' : 'grab',
+        opacity: isDragging ? 0.45 : 1,
+        userSelect: 'none',
+        boxShadow: hovered
+          ? `0 4px 14px rgba(0,0,0,0.10), 0 0 0 1px ${color}20`
+          : '0 1px 3px rgba(0,0,0,0.06)',
+        transform: hovered && !isDragging ? 'translateY(-1px)' : 'translateY(0)',
+        transition: 'all 0.15s ease',
+        position: 'relative',
+      }}
+    >
+      {/* Drag handle hint */}
+      {hovered && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            color: '#C8D8C8',
+            fontSize: 12,
+          }}
+        >
+          <DragOutlined />
+        </div>
+      )}
+
+      {/* Titre */}
+      <Text
+        strong
+        style={{
+          display: 'block',
+          fontSize: 13,
+          color: '#1C3A1C',
+          lineHeight: 1.35,
+          marginBottom: 3,
+          paddingRight: 16,
+        }}
+      >
+        {opp.titre.length > 42 ? `${opp.titre.slice(0, 39)}…` : opp.titre}
+      </Text>
+
+      {/* Entreprise */}
+      {prospect && (
+        <Text
+          type="secondary"
+          style={{ fontSize: 11, display: 'block', marginBottom: 8 }}
+        >
+          {prospect.entreprise}
+        </Text>
+      )}
+
+      {/* Montant + probabilité */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 3,
+            background: `${color}12`,
+            color: color,
+            borderRadius: 5,
+            padding: '2px 7px',
+            fontSize: 11,
+            fontWeight: 700,
+            flexShrink: 0,
+          }}
+        >
+          <EuroOutlined style={{ fontSize: 9 }} />
+          {opp.montantEstime.toLocaleString('fr-FR')}
+        </div>
+
+        <Progress
+          percent={opp.probabilite}
+          size="small"
+          showInfo={false}
+          strokeColor={color}
+          trailColor={`${color}20`}
+          style={{ flex: 1, marginBottom: 0 }}
+        />
+
+        <Text style={{ fontSize: 11, color, fontWeight: 700, flexShrink: 0 }}>
+          {opp.probabilite}%
+        </Text>
+      </div>
+
+      {/* Badge gagné */}
+      {opp.etape === OpportuniteEtape.GAGNEE && (
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            background: '#E8F5E9',
+            color: '#2E7D32',
+            borderRadius: 5,
+            padding: '2px 8px',
+            fontSize: 10,
+            fontWeight: 700,
+          }}
+        >
+          <TrophyFilled style={{ fontSize: 10 }} />
+          Affaire gagnée
+        </div>
+      )}
+
+      {/* Voir le détail hint */}
+      {hovered && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 3,
+            color: color,
+            fontSize: 10,
+            fontWeight: 600,
+            marginTop: 6,
+          }}
+        >
+          <span>Voir le détail</span>
+          <ArrowRightOutlined style={{ fontSize: 9 }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Kanban principal ────────────────────────────────────────────────────── */
+
+export function OpportuniteKanban({
+  opportunites,
+  prospectMap,
+  onSelect,
+  onEtapeChange,
+}: Props) {
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverEtape, setDragOverEtape] = useState<OpportuniteEtape | null>(null);
+
+  function handleDragStart(e: React.DragEvent, oppId: string) {
+    setDraggingId(oppId);
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function handleDragEnd() {
+    setDraggingId(null);
+    setDragOverEtape(null);
+  }
+
+  function handleDragOver(e: React.DragEvent, etape: OpportuniteEtape) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverEtape(etape);
+  }
+
+  function handleDrop(e: React.DragEvent, etape: OpportuniteEtape) {
+    e.preventDefault();
+    if (draggingId) {
+      const opp = opportunites.find((o) => o.id === draggingId);
+      if (opp && opp.etape !== etape) onEtapeChange(draggingId, etape);
+    }
+    setDraggingId(null);
+    setDragOverEtape(null);
+  }
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: 12,
+        overflowX: 'auto',
+        paddingBottom: 12,
+        alignItems: 'flex-start',
+      }}
+    >
+      {ETAPES_CONFIG.map(({ key, label, color, bgColor }) => {
+        const colOpps = opportunites.filter((o) => o.etape === key);
+        const isOver = dragOverEtape === key;
+        const colTotal = colOpps.reduce((s, o) => s + o.montantEstime, 0);
+
+        return (
+          <div
+            key={key}
+            onDragOver={(e) => handleDragOver(e, key)}
+            onDrop={(e) => handleDrop(e, key)}
+            onDragLeave={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                setDragOverEtape(null);
+              }
+            }}
+            style={{
+              flex: '0 0 230px',
+              borderRadius: 12,
+              border: isOver ? `2px dashed ${color}` : '2px solid transparent',
+              background: isOver ? bgColor : '#F2F5F2',
+              transition: 'all 0.15s ease',
+              minHeight: 240,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Header de colonne */}
+            <div
+              style={{
+                padding: '12px 14px 10px',
+                background: isOver ? bgColor : '#EAEEEA',
+                borderBottom: `2px solid ${isOver ? color + '40' : 'transparent'}`,
+                transition: 'all 0.15s',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: colTotal > 0 ? 6 : 0 }}>
+                {/* Badge count */}
+                <div
+                  style={{
+                    minWidth: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    background: color,
+                    color: '#fff',
+                    fontSize: 12,
+                    fontWeight: 800,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 6px',
+                    boxShadow: `0 2px 6px ${color}50`,
+                  }}
+                >
+                  {colOpps.length}
+                </div>
+                <Text
+                  strong
+                  style={{
+                    fontSize: 13,
+                    color: isOver ? color : '#3D5C3D',
+                    letterSpacing: '-0.1px',
+                  }}
+                >
+                  {label}
+                </Text>
+              </div>
+
+              {/* Montant total */}
+              {colTotal > 0 && (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    background: `${color}14`,
+                    color: color,
+                    borderRadius: 5,
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}
+                >
+                  <EuroOutlined style={{ fontSize: 9 }} />
+                  {colTotal.toLocaleString('fr-FR')} €
+                </div>
+              )}
+            </div>
+
+            {/* Corps de la colonne */}
+            <div style={{ padding: '10px 10px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {colOpps.map((opp) => (
+                <OppCard
+                  key={opp.id}
+                  opp={opp}
+                  prospect={prospectMap[opp.prospectId]}
+                  color={color}
+                  isDragging={draggingId === opp.id}
+                  onDragStart={(e) => handleDragStart(e, opp.id)}
+                  onDragEnd={handleDragEnd}
+                  onClick={() => onSelect(opp)}
+                />
+              ))}
+
+              {colOpps.length === 0 && (
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '24px 0',
+                    opacity: isOver ? 0.8 : 0.45,
+                    transition: 'opacity 0.15s',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 8,
+                      border: `2px dashed ${color}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 8,
+                    }}
+                  >
+                    <DragOutlined style={{ color, fontSize: 14 }} />
+                  </div>
+                  <Text style={{ fontSize: 12, color, fontWeight: 500 }}>
+                    Déposer ici
+                  </Text>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

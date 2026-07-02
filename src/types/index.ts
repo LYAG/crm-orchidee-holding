@@ -1,0 +1,300 @@
+import type { UserRole } from '@/lib/constants';
+
+export type { UserRole };
+
+// ─── Zone ────────────────────────────────────────────────────────────────────
+
+export interface Zone {
+  id: string;
+  nom: string;
+  region: string;
+}
+
+// ─── Utilisateur / Auth ───────────────────────────────────────────────────────
+
+export interface Utilisateur {
+  id: string;
+  email: string;
+  nom: string;
+  prenom: string;
+  role: UserRole;
+  /** DELEGUE uniquement */
+  zoneIds?: string[];
+  managerId?: string;
+  /** MANAGER uniquement */
+  delegueIds?: string[];
+}
+
+// ─── Prospect ────────────────────────────────────────────────────────────────
+
+export enum ProspectStatut {
+  PNA = 'PNA',
+  AFFECTE = 'AFFECTE',
+  CLIENT = 'CLIENT',
+}
+
+export interface Prospect {
+  id: string;
+  nom: string;
+  prenom?: string;
+  entreprise: string;
+  email?: string;
+  telephone?: string;
+  adresse?: string;
+  zoneId: string;
+  statut: ProspectStatut;
+  delegueId?: string;
+  dateCreation: string;
+  dernierContact?: string;
+  aEuRdv: boolean;
+  notes?: string;
+}
+
+// ─── Import Excel ─────────────────────────────────────────────────────────────
+
+export enum DoublonAction {
+  EN_ATTENTE = 'EN_ATTENTE',
+  FUSIONNE = 'FUSIONNE',
+  IGNORE = 'IGNORE',
+  INTEGRE = 'INTEGRE',
+}
+
+export interface DoublonDetecte {
+  id: string;
+  prospectExistant: Prospect;
+  nouvelleEntree: Partial<Prospect>;
+  statut: DoublonAction;
+}
+
+export interface ErreurImport {
+  ligne: number;
+  message: string;
+}
+
+export interface ImportResult {
+  totalLignes: number;
+  lignesValides: number;
+  doublons: DoublonDetecte[];
+  erreurs: ErreurImport[];
+}
+
+// ─── Support commercial ───────────────────────────────────────────────────────
+
+export enum SupportType {
+  PPT = 'PPT',
+  PDF = 'PDF',
+}
+
+export interface SupportCommercial {
+  id: string;
+  titre: string;
+  type: SupportType;
+  nombreSlides: number;
+  dateVersion: string;
+  apercu?: string;
+  actif: boolean;
+}
+
+export interface SlideMetrique {
+  slideIndex: number;
+  titreSlide: string;
+  tempsPasse: number; // secondes
+}
+
+export interface MetriquePresentation {
+  id: string;
+  supportId: string;
+  rdvId?: string;
+  datePresentation: string;
+  dureeTotal: number; // secondes
+  slides: SlideMetrique[];
+  conforme: boolean;
+  dureeMinimaleAttendue: number; // secondes
+}
+
+// ─── Paramètres globaux ───────────────────────────────────────────────────────
+
+export interface ParametresApp {
+  tempsMoyenParSlide: number; // secondes
+}
+
+// ─── Rendez-vous ─────────────────────────────────────────────────────────────
+
+export enum RdvStatut {
+  PLANIFIE = 'PLANIFIE',
+  EN_COURS = 'EN_COURS',
+  REALISE = 'REALISE',
+  ANNULE = 'ANNULE',
+}
+
+export interface RendezVous {
+  id: string;
+  prospectId: string;
+  delegueId: string;
+  supportId: string;
+  dateHeure: string;
+  dureeMinutes: number;
+  statut: RdvStatut;
+  motifAnnulation?: string;
+  qualifie: boolean;
+  metriqueId?: string;
+  notes?: string;
+  dateCreation: string;
+}
+
+// ─── Qualification RDV ────────────────────────────────────────────────────────
+
+export enum QualificationProductif {
+  PRODUCTIF = 'PRODUCTIF',
+  NON_PRODUCTIF = 'NON_PRODUCTIF',
+}
+
+export enum MotifNonProductif {
+  CLIENT_ABSENT = 'CLIENT_ABSENT',
+  REPORTE = 'REPORTE',
+  PAS_INTERESSE = 'PAS_INTERESSE',
+  AUTRE = 'AUTRE',
+}
+
+export enum QualificationOpportunite {
+  OPPORTUNITE_IDENTIFIEE = 'OPPORTUNITE_IDENTIFIEE',
+  DEVIS_DEMANDE = 'DEVIS_DEMANDE',
+  AUCUNE = 'AUCUNE',
+}
+
+export enum QualificationTransformation {
+  TRANSFORME_CLIENT = 'TRANSFORME_CLIENT',
+  RELANCE_NECESSAIRE = 'RELANCE_NECESSAIRE',
+}
+
+export enum CanalRelance {
+  TELEPHONE = 'TELEPHONE',
+  EMAIL = 'EMAIL',
+  VISITE = 'VISITE',
+}
+
+export interface QualificationRDV {
+  id: string;
+  rdvId: string;
+  productif: QualificationProductif;
+  motifNonProductif?: MotifNonProductif;
+  motifNonProductifAutre?: string;
+  opportunite: QualificationOpportunite;
+  montantEstimeDevis?: number;
+  descriptionDevis?: string;
+  transformation: QualificationTransformation;
+  dateRelance?: string;
+  canalRelance?: CanalRelance;
+  dateQualification: string;
+  qualifiePar: string;
+  modifiePar?: string;
+  dateModification?: string;
+  logModification?: string;
+}
+
+// ─── Opportunité & Devis ──────────────────────────────────────────────────────
+
+export enum OpportuniteEtape {
+  IDENTIFIEE = 'IDENTIFIEE',
+  DEVIS_ENVOYE = 'DEVIS_ENVOYE',
+  NEGOCIATION = 'NEGOCIATION',
+  GAGNEE = 'GAGNEE',
+  PERDUE = 'PERDUE',
+}
+
+export enum DevisStatut {
+  EN_ATTENTE = 'EN_ATTENTE',
+  ACCEPTE = 'ACCEPTE',
+  REFUSE = 'REFUSE',
+}
+
+export interface Devis {
+  id: string;
+  opportuniteId: string;
+  montant: number;
+  dateEnvoi: string;
+  statut: DevisStatut;
+  description?: string;
+}
+
+export interface NoteOpportunite {
+  id: string;
+  contenu: string;
+  auteurId: string;
+  date: string;
+}
+
+export interface Opportunite {
+  id: string;
+  prospectId: string;
+  delegueId: string;
+  titre: string;
+  montantEstime: number;
+  probabilite: number; // 0–100
+  etape: OpportuniteEtape;
+  rdvIds: string[];
+  devis: Devis[];
+  notes: NoteOpportunite[];
+  dateDerniereMaj: string;
+  dateCreation: string;
+  motifPerte?: string;
+}
+
+// ─── Reporting ────────────────────────────────────────────────────────────────
+
+export interface KpiDelegue {
+  delegueId: string;
+  rdvSemaine: number;
+  tauxTransformation: number; // 0–1
+  montantPipelineEnCours: number;
+  relancesAVenir: number;
+  activiteParSemaine: { semaine: string; nbRdv: number }[];
+}
+
+export interface KpiManager {
+  managerId: string;
+  delegues: {
+    delegueId: string;
+    nom: string;
+    nbRdv: number;
+    tauxTransformation: number;
+    montantPipeline: number;
+  }[];
+  pipelineGlobal: number;
+  tauxTransformationGlobal: number;
+}
+
+export interface KpiAdmin {
+  doublonsEnAttente: number;
+  prospectsNonAttribuesSup30j: number;
+  pipelineTotal: number;
+  tauxTransformationGlobal: number;
+}
+
+// ─── Filtres génériques ───────────────────────────────────────────────────────
+
+export interface FiltresProspect {
+  zoneId?: string;
+  statut?: ProspectStatut;
+  delegueId?: string;
+  recherche?: string;
+}
+
+export interface FiltresRdv {
+  delegueId?: string;
+  prospectId?: string;
+  statut?: RdvStatut;
+  dateDebut?: string;
+  dateFin?: string;
+}
+
+export interface FiltresOpportunite {
+  etape?: OpportuniteEtape;
+  delegueId?: string;
+  zoneId?: string;
+}
+
+export interface PeriodeRapport {
+  debut: string;
+  fin: string;
+}
