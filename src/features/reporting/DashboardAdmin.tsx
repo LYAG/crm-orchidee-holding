@@ -276,14 +276,14 @@ export function DashboardAdmin({ user }: Props) {
 
       {/* ── Alertes ── */}
       {kpi && (
-        <Space direction="vertical" style={{ width: '100%', marginBottom: 20 }} size={8}>
+        <Space orientation="vertical" style={{ width: '100%', marginBottom: 20 }} size={8}>
           {kpi.doublonsEnAttente > 0 && (
             <Alert
               type="warning"
               icon={<WarningOutlined />}
               showIcon
               style={{ borderRadius: 10 }}
-              message={
+              title={
                 <Space>
                   <span>
                     <strong>{kpi.doublonsEnAttente}</strong> doublon
@@ -304,7 +304,7 @@ export function DashboardAdmin({ user }: Props) {
               icon={<AlertOutlined />}
               showIcon
               style={{ borderRadius: 10 }}
-              message={
+              title={
                 <Space>
                   <span>
                     <strong>{kpi.prospectsNonAttribuesSup30j}</strong> prospect
@@ -326,7 +326,7 @@ export function DashboardAdmin({ user }: Props) {
               icon={<CheckCircleOutlined />}
               showIcon
               style={{ borderRadius: 10 }}
-              message="Aucune action urgente — tous les indicateurs sont au vert."
+              title="Aucune action urgente — tous les indicateurs sont au vert."
             />
           )}
         </Space>

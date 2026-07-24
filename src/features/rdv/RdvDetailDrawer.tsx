@@ -1,7 +1,6 @@
 'use client';
 
-import { ProDescriptions } from '@ant-design/pro-components';
-import { Button, Drawer, Space, Tag, Typography } from 'antd';
+import { Button, Descriptions, Drawer, Space, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { prospectService, supportService } from '@/services';
@@ -58,7 +57,7 @@ export function RdvDetailDrawer({ open, onClose, rdv, onEdit, onAnnuler }: Props
       title="Détail du rendez-vous"
       open={open}
       onClose={onClose}
-      width={480}
+      size={480}
       extra={
         <Space>
           {isEditable && (
@@ -70,37 +69,37 @@ export function RdvDetailDrawer({ open, onClose, rdv, onEdit, onAnnuler }: Props
         </Space>
       }
     >
-      <Space direction="vertical" style={{ width: '100%' }} size="large">
-        <ProDescriptions column={1} size="small">
-          <ProDescriptions.Item label="Statut">
+      <Space orientation="vertical" style={{ width: '100%' }} size="large">
+        <Descriptions column={1} size="small">
+          <Descriptions.Item label="Statut">
             <Tag color={STATUT_COLORS[rdv.statut]}>{STATUT_LABELS[rdv.statut]}</Tag>
-          </ProDescriptions.Item>
-          <ProDescriptions.Item label="Date & heure">
+          </Descriptions.Item>
+          <Descriptions.Item label="Date & heure">
             {new Date(rdv.dateHeure).toLocaleString('fr-FR', {
               dateStyle: 'long',
               timeStyle: 'short',
             })}
-          </ProDescriptions.Item>
-          <ProDescriptions.Item label="Durée">
+          </Descriptions.Item>
+          <Descriptions.Item label="Durée">
             {rdv.dureeMinutes} min
-          </ProDescriptions.Item>
-          <ProDescriptions.Item label="Prospect">
+          </Descriptions.Item>
+          <Descriptions.Item label="Prospect">
             {prospect ? `${prospect.nom} ${prospect.prenom ?? ''} — ${prospect.entreprise}` : '—'}
-          </ProDescriptions.Item>
-          <ProDescriptions.Item label="Support">
+          </Descriptions.Item>
+          <Descriptions.Item label="Support">
             {support ? `${support.titre} (${support.nombreSlides} slides)` : '—'}
-          </ProDescriptions.Item>
+          </Descriptions.Item>
           {rdv.motifAnnulation && (
-            <ProDescriptions.Item label="Motif annulation">
+            <Descriptions.Item label="Motif annulation">
               {rdv.motifAnnulation}
-            </ProDescriptions.Item>
+            </Descriptions.Item>
           )}
           {rdv.notes && (
-            <ProDescriptions.Item label="Notes">
+            <Descriptions.Item label="Notes">
               {rdv.notes}
-            </ProDescriptions.Item>
+            </Descriptions.Item>
           )}
-        </ProDescriptions>
+        </Descriptions>
 
         {!isPasse && rdv.statut === RdvStatut.PLANIFIE && support && (
           <Button

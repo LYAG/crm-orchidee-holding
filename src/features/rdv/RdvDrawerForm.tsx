@@ -18,9 +18,10 @@ interface Props {
   rdv?: RendezVous | null;
   delegueId: string;
   onSuccess: () => void;
+  prefill?: { prospectId?: string; dateHeure?: string };
 }
 
-export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess }: Props) {
+export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, prefill }: Props) {
   const isEdit = !!rdv;
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [supports, setSupports] = useState<SupportCommercial[]>([]);
@@ -79,7 +80,7 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess }:
               supportId: rdv.supportId,
               notes: rdv.notes,
             }
-          : { dureeMinutes: 60 }
+          : { dureeMinutes: 60, ...prefill }
       }
       submitter={{ searchConfig: { submitText: isEdit ? 'Enregistrer' : 'Créer' } }}
       width={480}

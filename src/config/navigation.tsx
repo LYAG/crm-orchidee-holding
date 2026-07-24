@@ -4,6 +4,8 @@ import {
   DashboardOutlined,
   FileTextOutlined,
   MergeCellsOutlined,
+  PlayCircleOutlined,
+  SafetyCertificateOutlined,
   SettingOutlined,
   TeamOutlined,
   TrophyOutlined,
@@ -70,6 +72,20 @@ const allRoutes: MenuRoute[] = [
     name: 'Paramètres',
     icon: <SettingOutlined />,
     roles: ['ADMIN'],
+    routes: [
+      {
+        path: '/parametres/presentation',
+        name: 'Présentation commerciale',
+        icon: <PlayCircleOutlined />,
+        roles: ['ADMIN'],
+      },
+      {
+        path: '/parametres/roles',
+        name: 'Rôles & permissions',
+        icon: <SafetyCertificateOutlined />,
+        roles: ['ADMIN'],
+      },
+    ],
   },
 ];
 
@@ -93,4 +109,6 @@ export const PAGE_TITLES: Record<string, string> = {
   '/doublons': 'Gestion des doublons',
   '/utilisateurs': 'Utilisateurs & Zones',
   '/parametres': 'Paramètres',
+  '/parametres/presentation': 'Présentation commerciale',
+  '/parametres/roles': 'Rôles & permissions',
 };

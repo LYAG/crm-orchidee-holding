@@ -100,7 +100,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <HeaderNotifications key="notifs" user={user} />,
           <Divider
             key="sep"
-            type="vertical"
+            vertical
             style={{ height: 20, margin: '0 4px', borderColor: '#DDE7DD' }}
           />,
         ]}

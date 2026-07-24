@@ -192,14 +192,14 @@ export function ProspectsPage() {
               />
             </Tooltip>
           ),
-          // Édition — DELEGUE uniquement si pas de RDV
-          role === UserRole.DELEGUE && (
-            <Tooltip key="edit" title={editTooltip}>
+          // Édition
+          (role === UserRole.DELEGUE || role === UserRole.MANAGER || role === UserRole.ADMIN) && (
+            <Tooltip key="edit" title={role === UserRole.DELEGUE ? editTooltip : 'Modifier'}>
               <Button
                 type="link"
                 size="small"
                 icon={<EditOutlined />}
-                disabled={!canEdit}
+                disabled={role === UserRole.DELEGUE && !canEdit}
                 onClick={() => {
                   setEditingProspect(prospect);
                   setFormOpen(true);
@@ -207,15 +207,15 @@ export function ProspectsPage() {
               />
             </Tooltip>
           ),
-          // Suppression — DELEGUE uniquement si pas de RDV
-          role === UserRole.DELEGUE && (
-            <Tooltip key="del" title={editTooltip || 'Supprimer'}>
+          // Suppression
+          (role === UserRole.DELEGUE || role === UserRole.MANAGER || role === UserRole.ADMIN) && (
+            <Tooltip key="del" title={role === UserRole.DELEGUE ? (editTooltip || 'Supprimer') : 'Supprimer'}>
               <Button
                 type="link"
                 size="small"
                 danger
                 icon={<DeleteOutlined />}
-                disabled={!canEdit}
+                disabled={role === UserRole.DELEGUE && !canEdit}
                 onClick={() => {
                   Modal.confirm({
                     title: 'Supprimer ce prospect ?',
@@ -276,19 +276,17 @@ export function ProspectsPage() {
         search={{ labelWidth: 'auto', defaultCollapsed: false }}
         pagination={{ pageSize: 10 }}
         toolBarRender={() => [
-          role === UserRole.DELEGUE && (
-            <Button
-              key="create"
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                setEditingProspect(null);
-                setFormOpen(true);
-              }}
-            >
-              Nouveau prospect
-            </Button>
-          ),
+          <Button
+            key="create"
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setEditingProspect(null);
+              setFormOpen(true);
+            }}
+          >
+            Nouveau prospect
+          </Button>,
           (role === UserRole.DELEGUE || role === UserRole.ADMIN) && (
             <Button
               key="import"

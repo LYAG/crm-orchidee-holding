@@ -1,7 +1,7 @@
 'use client';
 
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
-import { ConfigProvider } from 'antd';
+import { App, ConfigProvider } from 'antd';
 import frFR from 'antd/locale/fr_FR';
 import { useServerInsertedHTML } from 'next/navigation';
 import React from 'react';
@@ -107,7 +107,9 @@ export default function AntdProvider({ children }: { children: React.ReactNode }
           },
         }}
       >
-        {children}
+        <App>
+          {children}
+        </App>
       </ConfigProvider>
     </StyleProvider>
   );

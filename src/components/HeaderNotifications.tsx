@@ -322,13 +322,15 @@ export function HeaderNotifications({ user }: Props) {
       placement="bottomRight"
       open={open}
       onOpenChange={setOpen}
-      overlayStyle={{ padding: 0 }}
-      overlayInnerStyle={{
-        padding: 0,
-        borderRadius: 12,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-        overflow: 'hidden',
-        border: '1px solid #EEF4EE',
+      styles={{
+        root: { padding: 0 },
+        container: {
+          padding: 0,
+          borderRadius: 12,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+          overflow: 'hidden',
+          border: '1px solid #EEF4EE',
+        },
       }}
     >
       <Button

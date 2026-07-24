@@ -25,7 +25,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           justifyContent: 'center',
         }}
       >
-        <Spin size="large" tip="Chargement…" />
+        <Spin size="large" description="Chargement…" />
       </div>
     );
   }

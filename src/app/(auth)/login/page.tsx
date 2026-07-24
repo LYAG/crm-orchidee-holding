@@ -181,9 +181,9 @@ export default function LoginPage() {
             Comptes de test
           </Text>
           {[
-            { role: 'Délégué', email: 'thomas.bernard@orchidee-holding.fr', pwd: 'delegue2026' },
-            { role: 'Manager', email: 'marie.dupont@orchidee-holding.fr', pwd: 'manager2026' },
-            { role: 'Admin', email: 'admin@orchidee-holding.fr', pwd: 'admin2026' },
+            { role: 'Délégué', email: 'k.nguessan@orchidee-holding.ci', pwd: 'delegue2026' },
+            { role: 'Manager', email: 'f.kone@orchidee-holding.ci', pwd: 'manager2026' },
+            { role: 'Admin', email: 'admin@orchidee-holding.ci', pwd: 'admin2026' },
           ].map((acc) => (
             <button
               key={acc.role}
@@ -238,7 +238,7 @@ export default function LoginPage() {
 
           {error && (
             <Alert
-              message={error}
+              title={error}
               type="error"
               showIcon
               style={{ marginBottom: 20, borderRadius: 8 }}
@@ -257,7 +257,7 @@ export default function LoginPage() {
                   autoComplete: 'email',
                   size: 'large',
                   style: { borderRadius: 8 },
-                  placeholder: 'nom@orchidee-holding.fr',
+                  placeholder: 'nom@orchidee-holding.ci',
                 }}
                 noStyle
               />

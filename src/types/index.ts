@@ -33,6 +33,12 @@ export enum ProspectStatut {
   CLIENT = 'CLIENT',
 }
 
+export enum ProspectCategorie {
+  MEDECIN = 'MEDECIN',
+  INFIRMIER = 'INFIRMIER',
+  PHARMACIE = 'PHARMACIE',
+}
+
 export interface Prospect {
   id: string;
   nom: string;
@@ -43,6 +49,7 @@ export interface Prospect {
   adresse?: string;
   zoneId: string;
   statut: ProspectStatut;
+  categorie?: ProspectCategorie;
   delegueId?: string;
   dateCreation: string;
   dernierContact?: string;

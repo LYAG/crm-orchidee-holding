@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="fr-FR" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
         <AntdProvider>
           <AuthProvider>{children}</AuthProvider>

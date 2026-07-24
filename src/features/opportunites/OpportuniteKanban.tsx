@@ -54,7 +54,9 @@ function OppCard({
       style={{
         background: '#fff',
         borderRadius: 10,
-        border: `1px solid ${hovered ? color + '60' : '#EEF4EE'}`,
+        borderTop: `1px solid ${hovered ? color + '60' : '#EEF4EE'}`,
+        borderRight: `1px solid ${hovered ? color + '60' : '#EEF4EE'}`,
+        borderBottom: `1px solid ${hovered ? color + '60' : '#EEF4EE'}`,
         borderLeft: `3px solid ${color}`,
         padding: '12px 12px 10px',
         cursor: isDragging ? 'grabbing' : 'grab',
@@ -195,8 +197,10 @@ export function OpportuniteKanban({
   const [dragOverEtape, setDragOverEtape] = useState<OpportuniteEtape | null>(null);
 
   function handleDragStart(e: React.DragEvent, oppId: string) {
-    setDraggingId(oppId);
+    // Store in dataTransfer — React state updates are async and can be stale in drop handler
+    e.dataTransfer.setData('text/plain', oppId);
     e.dataTransfer.effectAllowed = 'move';
+    setDraggingId(oppId);
   }
 
   function handleDragEnd() {
@@ -207,14 +211,30 @@ export function OpportuniteKanban({
   function handleDragOver(e: React.DragEvent, etape: OpportuniteEtape) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    if (dragOverEtape !== etape) setDragOverEtape(etape);
+  }
+
+  function handleDragEnter(e: React.DragEvent, etape: OpportuniteEtape) {
+    e.preventDefault();
     setDragOverEtape(etape);
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    // Only clear when truly leaving the column (not moving between children)
+    const related = e.relatedTarget as Node | null;
+    if (!related || !e.currentTarget.contains(related)) {
+      setDragOverEtape(null);
+    }
   }
 
   function handleDrop(e: React.DragEvent, etape: OpportuniteEtape) {
     e.preventDefault();
-    if (draggingId) {
-      const opp = opportunites.find((o) => o.id === draggingId);
-      if (opp && opp.etape !== etape) onEtapeChange(draggingId, etape);
+    e.stopPropagation();
+    // Read from dataTransfer — always reliable, unlike React state closures
+    const oppId = e.dataTransfer.getData('text/plain');
+    if (oppId) {
+      const opp = opportunites.find((o) => o.id === oppId);
+      if (opp && opp.etape !== etape) onEtapeChange(oppId, etape);
     }
     setDraggingId(null);
     setDragOverEtape(null);
@@ -238,13 +258,10 @@ export function OpportuniteKanban({
         return (
           <div
             key={key}
+            onDragEnter={(e) => handleDragEnter(e, key)}
             onDragOver={(e) => handleDragOver(e, key)}
+            onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, key)}
-            onDragLeave={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                setDragOverEtape(null);
-              }
-            }}
             style={{
               flex: '0 0 230px',
               borderRadius: 12,

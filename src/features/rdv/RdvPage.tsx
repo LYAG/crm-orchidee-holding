@@ -1,15 +1,20 @@
 'use client';
 
-import { PlusOutlined } from '@ant-design/icons';
+import {
+  MedicineBoxOutlined,
+  PlusOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Select, Space } from 'antd';
+import { Button, Empty, Tag, Typography } from 'antd';
 import dayjs, { type Dayjs } from 'dayjs';
 import 'dayjs/locale/fr';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
-import { rdvService, utilisateurService } from '@/services';
-import type { RendezVous, Utilisateur } from '@/types';
+import { prospectService, rdvService, utilisateurService } from '@/services';
+import type { Prospect, RendezVous, Utilisateur } from '@/types';
+import { ProspectCategorie } from '@/types';
 import { AnnulationModal } from './AnnulationModal';
 import { RdvCalendar } from './RdvCalendar';
 import { RdvDetailDrawer } from './RdvDetailDrawer';
@@ -17,25 +22,284 @@ import { RdvDrawerForm } from './RdvDrawerForm';
 
 dayjs.locale('fr');
 
+const { Text } = Typography;
+
+/* ── Config catégorie prospect ───────────────────────────────────────────── */
+
+const CAT_CONFIG: Record<ProspectCategorie, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
+  [ProspectCategorie.MEDECIN]: {
+    label: 'Médecins',
+    color: '#1565C0',
+    bg: '#E3F2FD',
+    icon: <MedicineBoxOutlined />,
+  },
+  [ProspectCategorie.INFIRMIER]: {
+    label: 'Infirmiers',
+    color: '#6A1B9A',
+    bg: '#F3E5F5',
+    icon: <MedicineBoxOutlined />,
+  },
+  [ProspectCategorie.PHARMACIE]: {
+    label: 'Pharmacies',
+    color: '#2E7D32',
+    bg: '#E8F5E9',
+    icon: <MedicineBoxOutlined />,
+  },
+};
+
+const CAT_ORDER: ProspectCategorie[] = [
+  ProspectCategorie.MEDECIN,
+  ProspectCategorie.INFIRMIER,
+  ProspectCategorie.PHARMACIE,
+];
+
+/* ── Panel délégués ──────────────────────────────────────────────────────── */
+
+function DeleguePanel({
+  delegues,
+  selectedId,
+  onSelect,
+}: {
+  delegues: Utilisateur[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <div
+      style={{
+        width: 190,
+        flexShrink: 0,
+        borderRadius: 12,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: '#EEF4EE',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+        background: '#fff',
+        alignSelf: 'flex-start',
+        position: 'sticky',
+        top: 72,
+      }}
+    >
+      {/* Header */}
+      <div style={{ padding: '12px 14px', background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <TeamOutlined style={{ color: '#fff', fontSize: 13 }} />
+          </div>
+          <Text style={{ color: '#fff', fontWeight: 700, fontSize: 13 }}>Délégués</Text>
+        </div>
+      </div>
+
+      {/* Liste */}
+      <div style={{ padding: '6px 6px 8px' }}>
+        {delegues.length === 0 ? (
+          <Text style={{ fontSize: 11, color: '#C8D8C8', display: 'block', textAlign: 'center', padding: '12px 0' }}>
+            Aucun délégué
+          </Text>
+        ) : (
+          delegues.map((d) => {
+            const isSelected = selectedId === d.id;
+            return (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => onSelect(d.id)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  width: '100%',
+                  background: isSelected ? '#EEF4EE' : 'transparent',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '8px 10px',
+                  cursor: 'pointer',
+                  transition: 'background 0.12s',
+                  marginBottom: 2,
+                  textAlign: 'left',
+                }}
+                onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#F5FAF5'; }}
+                onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+              >
+                <Text style={{ fontWeight: isSelected ? 700 : 600, color: isSelected ? '#1C3A1C' : '#3D5C3D', fontSize: 12, lineHeight: 1.3 }}>
+                  {d.prenom} {d.nom}
+                </Text>
+                {isSelected && (
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#5B8C5A', marginTop: 3 }} />
+                )}
+              </button>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Panel contacts ──────────────────────────────────────────────────────── */
+
+function ContactsPanel({
+  prospects,
+  selectedDelegue,
+  loading,
+}: {
+  prospects: Prospect[];
+  selectedDelegue: Utilisateur | null;
+  loading: boolean;
+}) {
+  const grouped = CAT_ORDER.reduce<Record<string, Prospect[]>>((acc, cat) => {
+    acc[cat] = prospects.filter((p) => p.categorie === cat);
+    return acc;
+  }, {});
+
+  const hasAny = prospects.length > 0;
+
+  return (
+    <div
+      style={{
+        width: 210,
+        flexShrink: 0,
+        borderRadius: 12,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: '#EEF4EE',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+        background: '#fff',
+        alignSelf: 'flex-start',
+        position: 'sticky',
+        top: 72,
+      }}
+    >
+      {/* Header */}
+      <div style={{ padding: '12px 14px', background: 'linear-gradient(135deg, #1565C0 0%, #1976D2 100%)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <MedicineBoxOutlined style={{ color: '#fff', fontSize: 13 }} />
+          </div>
+          <div>
+            <Text style={{ color: '#fff', fontWeight: 700, fontSize: 13, display: 'block', lineHeight: 1.2 }}>
+              {selectedDelegue ? `${selectedDelegue.prenom} ${selectedDelegue.nom}` : 'Contacts'}
+            </Text>
+            <Text style={{ color: 'rgba(255,255,255,0.65)', fontSize: 10 }}>
+              Glisser sur le calendrier
+            </Text>
+          </div>
+        </div>
+      </div>
+
+      {/* Contenu */}
+      <div style={{ padding: '6px 6px 8px', maxHeight: 'calc(100vh - 220px)', overflowY: 'auto' }}>
+        {loading ? (
+          <Text style={{ fontSize: 11, color: '#C8D8C8', display: 'block', textAlign: 'center', padding: '16px 0' }}>
+            Chargement…
+          </Text>
+        ) : !selectedDelegue && prospects.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={<Text style={{ fontSize: 11, color: '#C8D8C8' }}>Sélectionnez un délégué</Text>}
+            style={{ margin: '14px 0' }}
+          />
+        ) : !hasAny ? (
+          <Text style={{ fontSize: 11, color: '#C8D8C8', display: 'block', textAlign: 'center', padding: '12px 0' }}>
+            Aucun contact affecté
+          </Text>
+        ) : (
+          CAT_ORDER.map((cat) => {
+            const list = grouped[cat];
+            if (!list || list.length === 0) return null;
+            const cfg = CAT_CONFIG[cat];
+            return (
+              <div key={cat} style={{ marginBottom: 6 }}>
+                {/* Label catégorie */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 8px 4px' }}>
+                  <div style={{ width: 18, height: 18, borderRadius: 4, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: cfg.color, fontSize: 10 }}>
+                    {cfg.icon}
+                  </div>
+                  <Text style={{ fontSize: 10, fontWeight: 700, color: cfg.color, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    {cfg.label}
+                  </Text>
+                </div>
+
+                {/* Items draggables */}
+                {list.map((p) => (
+                  <div
+                    key={p.id}
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData('text/plain', p.id);
+                      e.dataTransfer.effectAllowed = 'copy';
+                    }}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      padding: '7px 10px',
+                      borderRadius: 7,
+                      cursor: 'grab',
+                      background: '#FAFCFA',
+                      marginBottom: 3,
+                      borderLeftWidth: 3,
+                      borderLeftStyle: 'solid',
+                      borderLeftColor: cfg.color,
+                      transition: 'box-shadow 0.12s',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.08)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
+                  >
+                    <Text style={{ fontWeight: 600, fontSize: 11, color: '#1C3A1C', lineHeight: 1.3 }}>
+                      {p.prenom} {p.nom}
+                    </Text>
+                    <Text style={{ fontSize: 10, color: '#9DB89D', lineHeight: 1.3, marginTop: 1 }}>
+                      {p.entreprise}
+                    </Text>
+                  </div>
+                ))}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Footer hint */}
+      {hasAny && (
+        <div style={{ padding: '8px 12px', borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: '#EEF4EE', background: '#FAFCFA' }}>
+          <Text style={{ fontSize: 10, color: '#B0C8B0' }}>
+            ↕ Glissez un contact sur une date
+          </Text>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Page principale ─────────────────────────────────────────────────────── */
+
 export function RdvPage() {
   const { user } = useAuth();
   const [rdvList, setRdvList] = useState<RendezVous[]>([]);
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
-  const [filterDelegueId, setFilterDelegueId] = useState<string | undefined>();
+  const [selectedDelegueId, setSelectedDelegueId] = useState<string | null>(null);
+  const [contacts, setContacts] = useState<Prospect[]>([]);
+  const [contactsLoading, setContactsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedRdv, setSelectedRdv] = useState<RendezVous | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [formKey, setFormKey] = useState(0);
   const [editingRdv, setEditingRdv] = useState<RendezVous | null>(null);
+  const [formPrefill, setFormPrefill] = useState<{ prospectId?: string; dateHeure?: string } | undefined>();
   const [detailOpen, setDetailOpen] = useState(false);
   const [annulationOpen, setAnnulationOpen] = useState(false);
 
   if (!user) return null;
 
   const role = user.role as UserRole;
+  const isDelegue = role === UserRole.DELEGUE;
 
-  const effectiveDelegueId =
-    role === UserRole.DELEGUE ? user.id : filterDelegueId;
+  // Pour le délégué connecté, son ID est fixe
+  const effectiveDelegueId = isDelegue ? user.id : (selectedDelegueId ?? undefined);
 
+  // Chargement des RDV
   const load = useCallback(() => {
     const filtres = effectiveDelegueId ? { delegueId: effectiveDelegueId } : undefined;
     rdvService.getAll(filtres).then(setRdvList).catch(() => {});
@@ -43,58 +307,116 @@ export function RdvPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  // Chargement des délégués (admin/manager uniquement)
   useEffect(() => {
-    if (role !== UserRole.DELEGUE) {
-      const fn = role === UserRole.MANAGER
-        ? utilisateurService.getDeleguesByManager(user.id)
-        : utilisateurService.getByRole(UserRole.DELEGUE);
-      fn.then(setDelegues).catch(() => {});
-    }
-  }, [role, user.id]);
+    if (isDelegue) return;
+    const fn = role === UserRole.MANAGER
+      ? utilisateurService.getDeleguesByManager(user.id)
+      : utilisateurService.getByRole(UserRole.DELEGUE);
+    fn.then(setDelegues).catch(() => {});
+  }, [role, user.id, isDelegue]);
 
-  const activeDelegueId = role === UserRole.DELEGUE ? user.id : (filterDelegueId ?? user.id);
+  // Chargement des contacts pour le délégué sélectionné (ou le délégué lui-même)
+  useEffect(() => {
+    const delegueId = isDelegue ? user.id : selectedDelegueId;
+    if (!delegueId) {
+      setContacts([]);
+      return;
+    }
+    setContactsLoading(true);
+    prospectService
+      .getAll({ delegueId })
+      .then(setContacts)
+      .catch(() => {})
+      .finally(() => setContactsLoading(false));
+  }, [isDelegue, user.id, selectedDelegueId]);
+
+  const activeDelegueId = isDelegue ? user.id : (selectedDelegueId ?? user.id);
+  const selectedDelegue = delegues.find((d) => d.id === selectedDelegueId) ?? null;
+
+  function openNewForm(pf?: { prospectId?: string; dateHeure?: string }) {
+    setEditingRdv(null);
+    setFormPrefill(pf);
+    setFormKey((k) => k + 1);
+    setFormOpen(true);
+  }
+
+  function handleDropProspect(prospectId: string, dateTime: Dayjs) {
+    // Vue semaine : dateTime a déjà l'heure du créneau. Vue mois : heure = 0:00 → défaut 9h.
+    const final = (dateTime.hour() === 0 && dateTime.minute() === 0)
+      ? dateTime.hour(9).minute(0)
+      : dateTime;
+    openNewForm({ prospectId, dateHeure: final.second(0).millisecond(0).toISOString() });
+  }
 
   return (
     <PageContainer
       title="Rendez-vous"
+      tags={
+        <Tag
+          style={{
+            background: '#EEF4EE',
+            color: '#5B8C5A',
+            border: 'none',
+            fontWeight: 600,
+            borderRadius: 6,
+          }}
+        >
+          Calendrier
+        </Tag>
+      }
       extra={[
-        (role === UserRole.MANAGER || role === UserRole.ADMIN) && delegues.length > 0 && (
-          <Select
-            key="delegue-filter"
-            placeholder="Tous les délégués"
-            allowClear
-            style={{ width: 200 }}
-            value={filterDelegueId}
-            onChange={setFilterDelegueId}
-            options={delegues.map((d) => ({
-              value: d.id,
-              label: `${d.prenom} ${d.nom}`,
-            }))}
-          />
-        ),
         <Button
           key="create"
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => { setEditingRdv(null); setFormOpen(true); }}
+          onClick={() => openNewForm()}
         >
           Nouveau RDV
         </Button>,
-      ].filter(Boolean)}
+      ]}
     >
-      <RdvCalendar
-        rdvList={rdvList}
-        selectedDate={selectedDate}
-        onSelectDate={setSelectedDate}
-        onSelectRdv={(rdv) => { setSelectedRdv(rdv); setDetailOpen(true); }}
-      />
+      <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+
+        {/* ── Panel 1 : liste des délégués (Admin / Manager uniquement) ── */}
+        {!isDelegue && delegues.length > 0 && (
+          <DeleguePanel
+            delegues={delegues}
+            selectedId={selectedDelegueId}
+            onSelect={(id) => setSelectedDelegueId((prev) => prev === id ? null : id)}
+          />
+        )}
+
+        {/* ── Panel 2 : contacts du délégué sélectionné ── */}
+        <ContactsPanel
+          prospects={contacts}
+          selectedDelegue={isDelegue ? (user as unknown as Utilisateur) : selectedDelegue}
+          loading={contactsLoading}
+        />
+
+        {/* ── Calendrier + panneau agenda ── */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <RdvCalendar
+            rdvList={rdvList}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+            onSelectRdv={(rdv) => { setSelectedRdv(rdv); setDetailOpen(true); }}
+            onDropProspect={handleDropProspect}
+          />
+        </div>
+      </div>
 
       <RdvDrawerForm
+        key={formKey}
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setFormPrefill(undefined);
+        }}
         rdv={editingRdv}
         delegueId={activeDelegueId}
-        onSuccess={() => { load(); setFormOpen(false); }}
+        onSuccess={() => { load(); setFormOpen(false); setFormPrefill(undefined); }}
+        prefill={formPrefill}
       />
 
       <RdvDetailDrawer
@@ -104,6 +426,8 @@ export function RdvPage() {
         onEdit={() => {
           setDetailOpen(false);
           setEditingRdv(selectedRdv);
+          setFormPrefill(undefined);
+          setFormKey((k) => k + 1);
           setFormOpen(true);
         }}
         onAnnuler={() => {
