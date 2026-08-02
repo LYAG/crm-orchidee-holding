@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   ArrowLeftOutlined,
@@ -247,7 +247,7 @@ export function QualificationPage() {
         <div
           style={{
             padding: '14px 20px',
-            background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)',
+            background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
             display: 'flex',
             alignItems: 'center',
             gap: 10,
@@ -265,17 +265,17 @@ export function QualificationPage() {
             <div
               style={{
                 padding: '16px 20px',
-                borderRight: '1px solid #EEF4EE',
-                borderBottom: '1px solid #EEF4EE',
+                borderRight: '1px solid #E7F3F0',
+                borderBottom: '1px solid #E7F3F0',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <CalendarOutlined style={{ color: '#9DB89D', fontSize: 12 }} />
+                <CalendarOutlined style={{ color: '#8FB0A8', fontSize: 12 }} />
                 <Text
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: '#9DB89D',
+                    color: '#8FB0A8',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                   }}
@@ -283,7 +283,7 @@ export function QualificationPage() {
                   Date & Heure
                 </Text>
               </div>
-              <Text strong style={{ color: '#1C3A1C', fontSize: 14 }}>
+              <Text strong style={{ color: '#123832', fontSize: 14 }}>
                 {dateRdv}
               </Text>
             </div>
@@ -292,17 +292,17 @@ export function QualificationPage() {
             <div
               style={{
                 padding: '16px 20px',
-                borderRight: '1px solid #EEF4EE',
-                borderBottom: '1px solid #EEF4EE',
+                borderRight: '1px solid #E7F3F0',
+                borderBottom: '1px solid #E7F3F0',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <BuildOutlined style={{ color: '#9DB89D', fontSize: 12 }} />
+                <BuildOutlined style={{ color: '#8FB0A8', fontSize: 12 }} />
                 <Text
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: '#9DB89D',
+                    color: '#8FB0A8',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                   }}
@@ -310,7 +310,7 @@ export function QualificationPage() {
                   Prospect / Entreprise
                 </Text>
               </div>
-              <Text strong style={{ color: '#1C3A1C', fontSize: 14 }}>
+              <Text strong style={{ color: '#123832', fontSize: 14 }}>
                 {prospect
                   ? `${prospect.nom} ${prospect.prenom ?? ''} — ${prospect.entreprise}`
                   : '—'}
@@ -318,14 +318,14 @@ export function QualificationPage() {
             </div>
           </Col>
           <Col xs={24} sm={8}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #EEF4EE' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #E7F3F0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <ClockCircleOutlined style={{ color: '#9DB89D', fontSize: 12 }} />
+                <ClockCircleOutlined style={{ color: '#8FB0A8', fontSize: 12 }} />
                 <Text
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: '#9DB89D',
+                    color: '#8FB0A8',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                   }}
@@ -333,7 +333,7 @@ export function QualificationPage() {
                   Durée du RDV
                 </Text>
               </div>
-              <Text strong style={{ color: '#1C3A1C', fontSize: 14 }}>
+              <Text strong style={{ color: '#123832', fontSize: 14 }}>
                 {rdv.dureeMinutes} min
               </Text>
             </div>
@@ -344,7 +344,7 @@ export function QualificationPage() {
       {/* ── Read-only view ── */}
       {showReadOnly && existingQual && (
         <ProCard bordered style={{ borderRadius: 12 }}>
-          <Text strong style={{ fontSize: 15, color: '#1C3A1C', display: 'block', marginBottom: 16 }}>
+          <Text strong style={{ fontSize: 15, color: '#123832', display: 'block', marginBottom: 16 }}>
             Qualification enregistrée
           </Text>
           <QualificationReadOnly

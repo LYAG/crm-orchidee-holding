@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   AlertOutlined,
@@ -57,7 +57,7 @@ function KpiCard({
       style={{
         background: '#fff',
         borderRadius: 12,
-        border: `1px solid ${alert && value > 0 ? accent + '40' : '#EEF4EE'}`,
+        border: `1px solid ${alert && value > 0 ? accent + '40' : '#E7F3F0'}`,
         padding: '20px 24px',
         height: '100%',
         boxShadow: alert && value > 0
@@ -99,10 +99,10 @@ function KpiCard({
               />
             )}
           </div>
-          <div style={{ fontSize: 30, fontWeight: 800, color: '#1C3A1C', lineHeight: 1, letterSpacing: '-1px' }}>
+          <div style={{ fontSize: 30, fontWeight: 800, color: '#123832', lineHeight: 1, letterSpacing: '-1px' }}>
             {displayed}
             {suffix && (
-              <span style={{ fontSize: 16, fontWeight: 500, color: '#6B8C6B', marginLeft: 4 }}>
+              <span style={{ fontSize: 16, fontWeight: 500, color: '#5C8079', marginLeft: 4 }}>
                 {suffix}
               </span>
             )}
@@ -141,7 +141,7 @@ function QuickLinkCard({
         style={{
           background: '#fff',
           borderRadius: 12,
-          border: '1px solid #EEF4EE',
+          border: '1px solid #E7F3F0',
           padding: '20px 22px',
           height: '100%',
           cursor: 'pointer',
@@ -162,7 +162,7 @@ function QuickLinkCard({
         onMouseLeave={(e) => {
           const el = e.currentTarget;
           el.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)';
-          el.style.borderColor = '#EEF4EE';
+          el.style.borderColor = '#E7F3F0';
           el.style.transform = 'translateY(0)';
         }}
       >
@@ -217,7 +217,7 @@ function QuickLinkCard({
         </div>
 
         <div style={{ flex: 1 }}>
-          <Text strong style={{ fontSize: 14, color: '#1C3A1C', display: 'block', marginBottom: 4 }}>
+          <Text strong style={{ fontSize: 14, color: '#123832', display: 'block', marginBottom: 4 }}>
             {title}
           </Text>
           <Text type="secondary" style={{ fontSize: 12, lineHeight: 1.5 }}>
@@ -364,7 +364,7 @@ export function DashboardAdmin({ user }: Props) {
             value={kpi?.pipelineTotal ?? 0}
             suffix="€"
             formatter={(v) => v.toLocaleString('fr-FR')}
-            accent="#5B8C5A"
+            accent="#0F6E52"
             bg="#E8F5E9"
           />
         </Col>
@@ -383,7 +383,7 @@ export function DashboardAdmin({ user }: Props) {
 
       {/* ── Raccourcis ── */}
       <div style={{ marginBottom: 8 }}>
-        <Title level={5} style={{ color: '#3D5C3D', margin: '0 0 14px' }}>
+        <Title level={5} style={{ color: '#1F4E45', margin: '0 0 14px' }}>
           Accès rapide
         </Title>
       </div>
@@ -415,7 +415,7 @@ export function DashboardAdmin({ user }: Props) {
             icon={<BarChartOutlined />}
             title="Reporting détaillé"
             description="Analyser les performances par zone, délégué et période."
-            accent="#5B8C5A"
+            accent="#0F6E52"
             bg="#E8F5E9"
           />
         </Col>

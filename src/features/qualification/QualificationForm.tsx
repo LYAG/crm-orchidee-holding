@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   CheckCircleOutlined,
@@ -217,7 +217,7 @@ export function QualificationFormFields({ initialValues, watched, onValuesChange
             <Space direction="vertical">
               <Radio value={QualificationTransformation.TRANSFORME_CLIENT}>
                 <Space>
-                  <CheckCircleOutlined style={{ color: '#5B8C5A' }} />
+                  <CheckCircleOutlined style={{ color: '#0F6E52' }} />
                   <Text strong>Transformé en client</Text>
                   <Text type="secondary">— Le prospect devient client</Text>
                 </Space>
@@ -278,7 +278,7 @@ const stepBadge: React.CSSProperties = {
   width: 24,
   height: 24,
   borderRadius: '50%',
-  background: '#5B8C5A',
+  background: '#0F6E52',
   color: '#fff',
   fontSize: 13,
   fontWeight: 'bold',

@@ -16,7 +16,7 @@ import { HeaderNotifications } from './HeaderNotifications';
 const { Text } = Typography;
 
 const ROLE_TAG_COLOR: Record<UserRole, string> = {
-  DELEGUE: '#4A7A4A',
+  DELEGUE: '#2E6B5B',
   MANAGER: '#1565C0',
   ADMIN: '#6A1B9A',
 };
@@ -49,7 +49,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               width: 30,
               height: 30,
               borderRadius: 8,
-              background: '#5B8C5A',
+              background: '#0F6E52',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -101,7 +101,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <Divider
             key="sep"
             vertical
-            style={{ height: 20, margin: '0 4px', borderColor: '#DDE7DD' }}
+            style={{ height: 20, margin: '0 4px', borderColor: '#DCE8E4' }}
           />,
         ]}
         /* avatarProps rend le user dans le GlobalHeader à droite de actionsRender */
@@ -118,10 +118,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     disabled: true,
                     label: (
                       <div style={{ padding: '4px 0' }}>
-                        <div style={{ fontWeight: 600, color: '#1C3A1C' }}>
+                        <div style={{ fontWeight: 600, color: '#123832' }}>
                           {user.prenom} {user.nom}
                         </div>
-                        <div style={{ fontSize: 12, color: '#9DB89D' }}>{user.email}</div>
+                        <div style={{ fontSize: 12, color: '#8FB0A8' }}>{user.email}</div>
                       </div>
                     ),
                   },
@@ -152,7 +152,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   {avatarLetter}
                 </Avatar>
                 <div style={{ lineHeight: 1.3 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1C3A1C', lineHeight: 1.2 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#123832', lineHeight: 1.2 }}>
                     {user.prenom} {user.nom}
                   </div>
                   <Tag
@@ -178,26 +178,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           ),
         }}
         token={{
-          colorPrimary: '#5B8C5A',
+          colorPrimary: '#0F6E52',
           header: {
             colorBgHeader: '#ffffff',
-            colorTextMenu: '#3D5C3D',
-            colorTextMenuSecondary: '#6B8C6B',
-            colorTextMenuSelected: '#5B8C5A',
-            colorBgMenuItemSelected: '#EEF6EE',
+            colorTextMenu: '#1F4E45',
+            colorTextMenuSecondary: '#5C8079',
+            colorTextMenuSelected: '#0F6E52',
+            colorBgMenuItemSelected: '#E1F1EC',
             heightLayoutHeader: 56,
           },
           sider: {
-            colorMenuBackground: '#1C3A1C',
+            colorMenuBackground: '#171717',
             colorMenuItemDivider: 'rgba(255,255,255,0.08)',
             colorTextMenu: 'rgba(255,255,255,0.65)',
             colorTextMenuSecondary: 'rgba(255,255,255,0.45)',
             colorTextMenuSelected: '#ffffff',
             colorTextMenuItemHover: '#ffffff',
             colorTextMenuActive: '#ffffff',
-            colorBgMenuItemHover: 'rgba(91,140,90,0.25)',
-            colorBgMenuItemSelected: '#5B8C5A',
-            colorBgMenuItemCollapsedElevated: '#2D5A2D',
+            colorBgMenuItemHover: 'rgba(15,110,82,0.35)',
+            colorBgMenuItemSelected: '#0F6E52',
+            colorBgMenuItemCollapsedElevated: '#212121',
             colorTextSubMenuSelected: '#ffffff',
           },
           pageContainer: {
@@ -221,7 +221,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               style={{
                 fontWeight: 700,
                 fontSize: 16,
-                color: '#1C3A1C',
+                color: '#123832',
                 letterSpacing: '-0.2px',
               }}
             >

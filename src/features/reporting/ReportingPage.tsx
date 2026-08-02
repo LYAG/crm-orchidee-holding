@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   CalendarOutlined,
@@ -76,7 +76,7 @@ function MiniKpi({
       style={{
         background: '#fff',
         borderRadius: 10,
-        border: '1px solid #EEF4EE',
+        border: '1px solid #E7F3F0',
         padding: '16px 20px',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
       }}
@@ -102,10 +102,10 @@ function MiniKpi({
             {icon}
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#1C3A1C', lineHeight: 1 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#123832', lineHeight: 1 }}>
               {value}
               {suffix && (
-                <span style={{ fontSize: 14, fontWeight: 500, color: '#6B8C6B', marginLeft: 3 }}>
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#5C8079', marginLeft: 3 }}>
                   {suffix}
                 </span>
               )}
@@ -248,7 +248,7 @@ export function ReportingPage() {
       key: 'nom',
       render: (_: unknown, row: ProspectRow) => (
         <div>
-          <Text strong style={{ color: '#1C3A1C' }}>
+          <Text strong style={{ color: '#123832' }}>
             {row.prospect.nom} {row.prospect.prenom ?? ''}
           </Text>
           <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
@@ -353,14 +353,14 @@ export function ReportingPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#5B8C5A',
+              color: '#0F6E52',
               fontSize: 14,
               flexShrink: 0,
             }}
           >
             <FilterOutlined />
           </div>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: '#3D5C3D', marginRight: 4 }}>
+          <Text style={{ fontSize: 13, fontWeight: 600, color: '#1F4E45', marginRight: 4 }}>
             Filtres :
           </Text>
           <RangePicker
@@ -398,7 +398,7 @@ export function ReportingPage() {
             icon={<UserOutlined />}
             label="Prospects filtrés"
             value={summaryStats.totalProspects}
-            accent="#5B8C5A"
+            accent="#0F6E52"
             bg="#E8F5E9"
           />
         </Col>

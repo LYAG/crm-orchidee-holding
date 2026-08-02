@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   ClockCircleOutlined,
@@ -62,7 +62,7 @@ function SupportCard({
       style={{
         background: '#fff',
         borderRadius: 12,
-        border: '1px solid #EEF4EE',
+        border: '1px solid #E7F3F0',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
         overflow: 'hidden',
         display: 'flex',
@@ -78,7 +78,7 @@ function SupportCard({
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)';
         e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.borderColor = '#EEF4EE';
+        e.currentTarget.style.borderColor = '#E7F3F0';
       }}
     >
       {/* Accent bar */}
@@ -109,7 +109,7 @@ function SupportCard({
               strong
               style={{
                 fontSize: 15,
-                color: '#1C3A1C',
+                color: '#123832',
                 display: 'block',
                 lineHeight: 1.3,
                 marginBottom: 6,
@@ -144,8 +144,8 @@ function SupportCard({
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              background: '#F2F5F2',
-              color: '#5B8C5A',
+              background: '#EFF6F4',
+              color: '#0F6E52',
               borderRadius: 5,
               padding: '4px 10px',
               fontSize: 12,
@@ -183,8 +183,8 @@ function SupportCard({
       <div
         style={{
           padding: '12px 18px',
-          borderTop: '1px solid #EEF4EE',
-          background: '#FAFCFA',
+          borderTop: '1px solid #E7F3F0',
+          background: '#F7FAF9',
         }}
       >
         <Row gutter={8} style={{ alignItems: 'center' }}>
@@ -289,7 +289,7 @@ export function SupportsPage() {
                 style={{
                   background: '#fff',
                   borderRadius: 12,
-                  border: '1px solid #EEF4EE',
+                  border: '1px solid #E7F3F0',
                   padding: 20,
                 }}
               >
@@ -303,7 +303,7 @@ export function SupportsPage() {
           style={{
             background: '#fff',
             borderRadius: 12,
-            border: '1px solid #EEF4EE',
+            border: '1px solid #E7F3F0',
             padding: '60px 24px',
             textAlign: 'center',
           }}

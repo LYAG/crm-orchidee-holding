@@ -40,7 +40,7 @@ export default function LoginPage() {
       {/* ── Left brand panel ────────────────────────────────────── */}
       <div
         style={{
-          background: 'linear-gradient(160deg, #0F2210 0%, #1C3A1C 40%, #2D5A2D 75%, #4A7A4A 100%)',
+          background: 'linear-gradient(160deg, #0F2210 0%, #123832 40%, #1B4A40 75%, #2E6B5B 100%)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -58,7 +58,7 @@ export default function LoginPage() {
             width: 280,
             height: 280,
             borderRadius: '50%',
-            background: 'rgba(91,140,90,0.18)',
+            background: 'rgba(15,110,82,0.18)',
             pointerEvents: 'none',
           }}
         />
@@ -70,7 +70,7 @@ export default function LoginPage() {
             width: 220,
             height: 220,
             borderRadius: '50%',
-            background: 'rgba(91,140,90,0.12)',
+            background: 'rgba(15,110,82,0.12)',
             pointerEvents: 'none',
           }}
         />
@@ -229,7 +229,7 @@ export default function LoginPage() {
         }}
       >
         <div style={{ width: '100%', maxWidth: 380 }}>
-          <Title level={3} style={{ margin: 0, marginBottom: 8, fontWeight: 700, color: '#1C3A1C' }}>
+          <Title level={3} style={{ margin: 0, marginBottom: 8, fontWeight: 700, color: '#123832' }}>
             Connexion
           </Title>
           <Text type="secondary" style={{ display: 'block', marginBottom: 32 }}>
@@ -248,12 +248,12 @@ export default function LoginPage() {
           <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
             <Form.Item
               name="email"
-              label={<span style={{ fontWeight: 600, color: '#3D5C3D' }}>Adresse e-mail</span>}
+              label={<span style={{ fontWeight: 600, color: '#1F4E45' }}>Adresse e-mail</span>}
               rules={[{ required: true, message: 'Veuillez saisir votre e-mail.' }]}
             >
               <ProFormText
                 fieldProps={{
-                  prefix: <UserOutlined style={{ color: '#9DB89D' }} />,
+                  prefix: <UserOutlined style={{ color: '#8FB0A8' }} />,
                   autoComplete: 'email',
                   size: 'large',
                   style: { borderRadius: 8 },
@@ -265,12 +265,12 @@ export default function LoginPage() {
 
             <Form.Item
               name="password"
-              label={<span style={{ fontWeight: 600, color: '#3D5C3D' }}>Mot de passe</span>}
+              label={<span style={{ fontWeight: 600, color: '#1F4E45' }}>Mot de passe</span>}
               rules={[{ required: true, message: 'Veuillez saisir votre mot de passe.' }]}
             >
               <ProFormText.Password
                 fieldProps={{
-                  prefix: <LockOutlined style={{ color: '#9DB89D' }} />,
+                  prefix: <LockOutlined style={{ color: '#8FB0A8' }} />,
                   autoComplete: 'current-password',
                   size: 'large',
                   style: { borderRadius: 8 },
@@ -292,9 +292,9 @@ export default function LoginPage() {
                 height: 46,
                 fontWeight: 600,
                 fontSize: 15,
-                background: 'linear-gradient(135deg, #5B8C5A 0%, #4A7A4A 100%)',
+                background: 'linear-gradient(135deg, #0F6E52 0%, #2E6B5B 100%)',
                 border: 'none',
-                boxShadow: '0 4px 12px rgba(91,140,90,0.35)',
+                boxShadow: '0 4px 12px rgba(15,110,82,0.35)',
               }}
             >
               Se connecter
@@ -305,7 +305,7 @@ export default function LoginPage() {
             style={{
               marginTop: 40,
               paddingTop: 24,
-              borderTop: '1px solid #EEF4EE',
+              borderTop: '1px solid #E7F3F0',
               textAlign: 'center',
             }}
           >

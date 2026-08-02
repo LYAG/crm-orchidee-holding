@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   ArrowRightOutlined,
@@ -50,7 +50,7 @@ function KpiCard({
       style={{
         background: '#fff',
         borderRadius: 12,
-        border: '1px solid #EEF4EE',
+        border: '1px solid #E7F3F0',
         padding: '20px 24px',
         height: '100%',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
@@ -80,14 +80,14 @@ function KpiCard({
             style={{
               fontSize: 30,
               fontWeight: 800,
-              color: '#1C3A1C',
+              color: '#123832',
               lineHeight: 1,
               letterSpacing: '-1px',
             }}
           >
             {displayed}
             {suffix && (
-              <span style={{ fontSize: 16, fontWeight: 500, color: '#6B8C6B', marginLeft: 4 }}>
+              <span style={{ fontSize: 16, fontWeight: 500, color: '#5C8079', marginLeft: 4 }}>
                 {suffix}
               </span>
             )}
@@ -157,7 +157,7 @@ export function DashboardDelegue({ user }: Props) {
         <Tag
           style={{
             background: '#E8F5E9',
-            color: '#4A7A4A',
+            color: '#2E6B5B',
             border: 'none',
             fontWeight: 600,
             borderRadius: 6,
@@ -175,7 +175,7 @@ export function DashboardDelegue({ user }: Props) {
             icon={<CalendarOutlined />}
             label="RDV cette semaine"
             value={kpi?.rdvSemaine ?? 0}
-            accent="#5B8C5A"
+            accent="#0F6E52"
             bg="#E8F5E9"
           />
         </Col>
@@ -219,7 +219,7 @@ export function DashboardDelegue({ user }: Props) {
         <Col xs={24} md={14}>
           <ProCard
             title={
-              <Text strong style={{ color: '#1C3A1C' }}>
+              <Text strong style={{ color: '#123832' }}>
                 Activité commerciale — 4 dernières semaines
               </Text>
             }
@@ -228,7 +228,7 @@ export function DashboardDelegue({ user }: Props) {
           >
             <SimpleBarChart
               data={chartData}
-              defaultColor="#5B8C5A"
+              defaultColor="#0F6E52"
               barHeight={120}
               emptyText="Aucun RDV sur la période"
             />
@@ -246,7 +246,7 @@ export function DashboardDelegue({ user }: Props) {
             <div
               style={{
                 padding: '14px 16px',
-                background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)',
+                background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -275,7 +275,7 @@ export function DashboardDelegue({ user }: Props) {
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                   description={
-                    <Text style={{ fontSize: 12, color: '#9DB89D' }}>
+                    <Text style={{ fontSize: 12, color: '#8FB0A8' }}>
                       Aucune relance planifiée
                     </Text>
                   }
@@ -294,8 +294,8 @@ export function DashboardDelegue({ user }: Props) {
                         style={{
                           padding: '10px 12px',
                           borderRadius: 8,
-                          border: '1px solid #EEF4EE',
-                          background: '#FAFCFA',
+                          border: '1px solid #E7F3F0',
+                          background: '#F7FAF9',
                           display: 'flex',
                           alignItems: 'flex-start',
                           gap: 10,
@@ -320,7 +320,7 @@ export function DashboardDelegue({ user }: Props) {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <Text
                             strong
-                            style={{ fontSize: 13, color: '#1C3A1C', display: 'block', lineHeight: 1.3 }}
+                            style={{ fontSize: 13, color: '#123832', display: 'block', lineHeight: 1.3 }}
                           >
                             {dateRelance}
                           </Text>
@@ -334,7 +334,7 @@ export function DashboardDelegue({ user }: Props) {
                           </Text>
                         </div>
                         <Link href={`/qualification/${rdv.id}`}>
-                          <ArrowRightOutlined style={{ color: '#C8D8C8', fontSize: 11 }} />
+                          <ArrowRightOutlined style={{ color: '#C7DAD5', fontSize: 11 }} />
                         </Link>
                       </div>
                     );

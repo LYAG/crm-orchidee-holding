@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   AlertOutlined,
@@ -183,7 +183,7 @@ export function HeaderNotifications({ user }: Props) {
     error:   { bg: '#FFF5F5', color: '#D32F2F', border: '#FFCDD2' },
     warning: { bg: '#FFF8F0', color: '#E65100', border: '#FFE0B2' },
     info:    { bg: '#F0F4FF', color: '#1565C0', border: '#BBDEFB' },
-    success: { bg: '#F0FBF0', color: '#2E7D32', border: '#C8E6C9' },
+    success: { bg: '#EDFAF5', color: '#2E7D32', border: '#C8E6C9' },
   };
 
   const content = (
@@ -195,10 +195,10 @@ export function HeaderNotifications({ user }: Props) {
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '12px 16px 10px',
-          borderBottom: '1px solid #EEF4EE',
+          borderBottom: '1px solid #E7F3F0',
         }}
       >
-        <Text strong style={{ fontSize: 14, color: '#1C3A1C' }}>
+        <Text strong style={{ fontSize: 14, color: '#123832' }}>
           Notifications
         </Text>
         {alerts.length > 0 && (
@@ -228,7 +228,7 @@ export function HeaderNotifications({ user }: Props) {
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
-              <span style={{ color: '#9DB89D', fontSize: 13 }}>
+              <span style={{ color: '#8FB0A8', fontSize: 13 }}>
                 Aucune action en attente
               </span>
             }
@@ -272,7 +272,7 @@ export function HeaderNotifications({ user }: Props) {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <Text
                     strong
-                    style={{ display: 'block', fontSize: 13, color: '#1C3A1C', lineHeight: 1.3 }}
+                    style={{ display: 'block', fontSize: 13, color: '#123832', lineHeight: 1.3 }}
                   >
                     {alert.title}
                   </Text>
@@ -302,12 +302,12 @@ export function HeaderNotifications({ user }: Props) {
         <div
           style={{
             padding: '8px 16px 12px',
-            borderTop: '1px solid #EEF4EE',
+            borderTop: '1px solid #E7F3F0',
             textAlign: 'center',
           }}
         >
-          <CheckCircleOutlined style={{ color: '#5B8C5A', marginRight: 6 }} />
-          <Text style={{ fontSize: 12, color: '#9DB89D' }}>
+          <CheckCircleOutlined style={{ color: '#0F6E52', marginRight: 6 }} />
+          <Text style={{ fontSize: 12, color: '#8FB0A8' }}>
             Tout est à jour
           </Text>
         </div>
@@ -329,7 +329,7 @@ export function HeaderNotifications({ user }: Props) {
           borderRadius: 12,
           boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
           overflow: 'hidden',
-          border: '1px solid #EEF4EE',
+          border: '1px solid #E7F3F0',
         },
       }}
     >
@@ -342,7 +342,7 @@ export function HeaderNotifications({ user }: Props) {
           justifyContent: 'center',
           width: 36,
           height: 36,
-          color: alerts.length > 0 ? '#1C3A1C' : '#9DB89D',
+          color: alerts.length > 0 ? '#123832' : '#8FB0A8',
         }}
       >
         <Badge

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Typography } from 'antd';
 
@@ -20,7 +20,7 @@ interface Props {
 
 export function SimpleBarChart({
   data,
-  defaultColor = '#5B8C5A',
+  defaultColor = '#0F6E52',
   barHeight = 100,
   unit = '',
   emptyText = 'Aucune donnée',

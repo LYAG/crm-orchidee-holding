@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   BarChartOutlined,
@@ -40,10 +40,10 @@ const ROLES = [
   {
     key: 'DELEGUE',
     label: 'Délégué',
-    color: '#4A7A4A',
+    color: '#2E6B5B',
     bg: '#E8F5E9',
     gradientFrom: '#2E5C2E',
-    gradientTo: '#4A7A4A',
+    gradientTo: '#2E6B5B',
     description: 'Agent commercial terrain. Gère ses propres prospects et rendez-vous dans sa zone.',
   },
   {
@@ -186,7 +186,7 @@ function AccessCell({
         }}
       />
       {label && (
-        <Text style={{ fontSize: 12, color: '#3D5C3D', lineHeight: 1.4 }}>
+        <Text style={{ fontSize: 12, color: '#1F4E45', lineHeight: 1.4 }}>
           {label}
         </Text>
       )}
@@ -265,7 +265,7 @@ export function RolesPermissionsPage() {
         style={{
           background: '#fff',
           borderRadius: 12,
-          border: '1px solid #EEF4EE',
+          border: '1px solid #E7F3F0',
           boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
           overflow: 'hidden',
         }}
@@ -274,7 +274,7 @@ export function RolesPermissionsPage() {
         <div
           style={{
             padding: '18px 24px',
-            background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)',
+            background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
             display: 'flex',
             alignItems: 'center',
             gap: 12,
@@ -324,10 +324,10 @@ export function RolesPermissionsPage() {
                     verticalAlign: 'bottom',
                     borderBottomWidth: 2,
                     borderBottomStyle: 'solid',
-                    borderBottomColor: '#EEF4EE',
+                    borderBottomColor: '#E7F3F0',
                   }}
                 >
-                  <Text style={{ fontSize: 12, fontWeight: 700, color: '#9DB89D', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <Text style={{ fontSize: 12, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Module
                   </Text>
                 </th>
@@ -340,7 +340,7 @@ export function RolesPermissionsPage() {
                       verticalAlign: 'bottom',
                       borderBottomWidth: 2,
                       borderBottomStyle: 'solid',
-                      borderBottomColor: '#EEF4EE',
+                      borderBottomColor: '#E7F3F0',
                     }}
                   >
                     <RoleHeader role={role} />
@@ -354,7 +354,7 @@ export function RolesPermissionsPage() {
               {PERMISSIONS.map((perm, i) => (
                 <tr
                   key={perm.module}
-                  style={{ background: i % 2 === 0 ? '#FAFCFA' : '#fff' }}
+                  style={{ background: i % 2 === 0 ? '#F7FAF9' : '#fff' }}
                 >
                   {/* Nom du module */}
                   <td
@@ -362,7 +362,7 @@ export function RolesPermissionsPage() {
                       padding: '14px 24px',
                       borderBottomWidth: 1,
                       borderBottomStyle: 'solid',
-                      borderBottomColor: '#F0F4F0',
+                      borderBottomColor: '#EEF5F3',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -371,18 +371,18 @@ export function RolesPermissionsPage() {
                           width: 28,
                           height: 28,
                           borderRadius: 6,
-                          background: '#EEF4EE',
+                          background: '#E7F3F0',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: '#5B8C5A',
+                          color: '#0F6E52',
                           fontSize: 13,
                           flexShrink: 0,
                         }}
                       >
                         {perm.icon}
                       </div>
-                      <Text style={{ fontWeight: 600, color: '#1C3A1C', fontSize: 13 }}>
+                      <Text style={{ fontWeight: 600, color: '#123832', fontSize: 13 }}>
                         {perm.module}
                       </Text>
                     </div>
@@ -394,7 +394,7 @@ export function RolesPermissionsPage() {
                       padding: '14px 16px',
                       borderBottomWidth: 1,
                       borderBottomStyle: 'solid',
-                      borderBottomColor: '#F0F4F0',
+                      borderBottomColor: '#EEF5F3',
                     }}
                   >
                     <AccessCell
@@ -410,7 +410,7 @@ export function RolesPermissionsPage() {
                       padding: '14px 16px',
                       borderBottomWidth: 1,
                       borderBottomStyle: 'solid',
-                      borderBottomColor: '#F0F4F0',
+                      borderBottomColor: '#EEF5F3',
                     }}
                   >
                     <AccessCell
@@ -426,7 +426,7 @@ export function RolesPermissionsPage() {
                       padding: '14px 16px',
                       borderBottomWidth: 1,
                       borderBottomStyle: 'solid',
-                      borderBottomColor: '#F0F4F0',
+                      borderBottomColor: '#EEF5F3',
                     }}
                   >
                     <AccessCell
@@ -447,24 +447,24 @@ export function RolesPermissionsPage() {
             padding: '14px 24px',
             borderTopWidth: 1,
             borderTopStyle: 'solid',
-            borderTopColor: '#EEF4EE',
-            background: '#FAFCFA',
+            borderTopColor: '#E7F3F0',
+            background: '#F7FAF9',
             display: 'flex',
             alignItems: 'center',
             gap: 24,
             flexWrap: 'wrap' as const,
           }}
         >
-          <Text style={{ fontSize: 11, fontWeight: 700, color: '#9DB89D', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <Text style={{ fontSize: 11, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Légende
           </Text>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <CheckCircleFilled style={{ color: '#4A7A4A', fontSize: 13 }} />
-            <Text style={{ fontSize: 12, color: '#5C7A5C' }}>Accès complet</Text>
+            <CheckCircleFilled style={{ color: '#2E6B5B', fontSize: 13 }} />
+            <Text style={{ fontSize: 12, color: '#4F7169' }}>Accès complet</Text>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <CheckCircleFilled style={{ color: '#4A7A4A99', fontSize: 13 }} />
-            <Text style={{ fontSize: 12, color: '#5C7A5C' }}>Accès partiel</Text>
+            <CheckCircleFilled style={{ color: '#2E6B5B99', fontSize: 13 }} />
+            <Text style={{ fontSize: 12, color: '#4F7169' }}>Accès partiel</Text>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <CloseCircleFilled style={{ color: '#E0E0E0', fontSize: 13 }} />

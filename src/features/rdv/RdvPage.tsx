@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   MedicineBoxOutlined,
@@ -73,7 +73,7 @@ function DeleguePanel({
         overflow: 'hidden',
         borderWidth: 1,
         borderStyle: 'solid',
-        borderColor: '#EEF4EE',
+        borderColor: '#E7F3F0',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
         background: '#fff',
         alignSelf: 'flex-start',
@@ -82,7 +82,7 @@ function DeleguePanel({
       }}
     >
       {/* Header */}
-      <div style={{ padding: '12px 14px', background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)' }}>
+      <div style={{ padding: '12px 14px', background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <TeamOutlined style={{ color: '#fff', fontSize: 13 }} />
@@ -94,7 +94,7 @@ function DeleguePanel({
       {/* Liste */}
       <div style={{ padding: '6px 6px 8px' }}>
         {delegues.length === 0 ? (
-          <Text style={{ fontSize: 11, color: '#C8D8C8', display: 'block', textAlign: 'center', padding: '12px 0' }}>
+          <Text style={{ fontSize: 11, color: '#C7DAD5', display: 'block', textAlign: 'center', padding: '12px 0' }}>
             Aucun délégué
           </Text>
         ) : (
@@ -110,7 +110,7 @@ function DeleguePanel({
                   flexDirection: 'column',
                   alignItems: 'flex-start',
                   width: '100%',
-                  background: isSelected ? '#EEF4EE' : 'transparent',
+                  background: isSelected ? '#E7F3F0' : 'transparent',
                   border: 'none',
                   borderRadius: 8,
                   padding: '8px 10px',
@@ -119,14 +119,14 @@ function DeleguePanel({
                   marginBottom: 2,
                   textAlign: 'left',
                 }}
-                onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#F5FAF5'; }}
+                onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#F2F9F7'; }}
                 onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
               >
-                <Text style={{ fontWeight: isSelected ? 700 : 600, color: isSelected ? '#1C3A1C' : '#3D5C3D', fontSize: 12, lineHeight: 1.3 }}>
+                <Text style={{ fontWeight: isSelected ? 700 : 600, color: isSelected ? '#123832' : '#1F4E45', fontSize: 12, lineHeight: 1.3 }}>
                   {d.prenom} {d.nom}
                 </Text>
                 {isSelected && (
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#5B8C5A', marginTop: 3 }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F6E52', marginTop: 3 }} />
                 )}
               </button>
             );
@@ -164,7 +164,7 @@ function ContactsPanel({
         overflow: 'hidden',
         borderWidth: 1,
         borderStyle: 'solid',
-        borderColor: '#EEF4EE',
+        borderColor: '#E7F3F0',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
         background: '#fff',
         alignSelf: 'flex-start',
@@ -192,17 +192,17 @@ function ContactsPanel({
       {/* Contenu */}
       <div style={{ padding: '6px 6px 8px', maxHeight: 'calc(100vh - 220px)', overflowY: 'auto' }}>
         {loading ? (
-          <Text style={{ fontSize: 11, color: '#C8D8C8', display: 'block', textAlign: 'center', padding: '16px 0' }}>
+          <Text style={{ fontSize: 11, color: '#C7DAD5', display: 'block', textAlign: 'center', padding: '16px 0' }}>
             Chargement…
           </Text>
         ) : !selectedDelegue && prospects.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={<Text style={{ fontSize: 11, color: '#C8D8C8' }}>Sélectionnez un délégué</Text>}
+            description={<Text style={{ fontSize: 11, color: '#C7DAD5' }}>Sélectionnez un délégué</Text>}
             style={{ margin: '14px 0' }}
           />
         ) : !hasAny ? (
-          <Text style={{ fontSize: 11, color: '#C8D8C8', display: 'block', textAlign: 'center', padding: '12px 0' }}>
+          <Text style={{ fontSize: 11, color: '#C7DAD5', display: 'block', textAlign: 'center', padding: '12px 0' }}>
             Aucun contact affecté
           </Text>
         ) : (
@@ -237,7 +237,7 @@ function ContactsPanel({
                       padding: '7px 10px',
                       borderRadius: 7,
                       cursor: 'grab',
-                      background: '#FAFCFA',
+                      background: '#F7FAF9',
                       marginBottom: 3,
                       borderLeftWidth: 3,
                       borderLeftStyle: 'solid',
@@ -247,10 +247,10 @@ function ContactsPanel({
                     onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.08)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                   >
-                    <Text style={{ fontWeight: 600, fontSize: 11, color: '#1C3A1C', lineHeight: 1.3 }}>
+                    <Text style={{ fontWeight: 600, fontSize: 11, color: '#123832', lineHeight: 1.3 }}>
                       {p.prenom} {p.nom}
                     </Text>
-                    <Text style={{ fontSize: 10, color: '#9DB89D', lineHeight: 1.3, marginTop: 1 }}>
+                    <Text style={{ fontSize: 10, color: '#8FB0A8', lineHeight: 1.3, marginTop: 1 }}>
                       {p.entreprise}
                     </Text>
                   </div>
@@ -263,7 +263,7 @@ function ContactsPanel({
 
       {/* Footer hint */}
       {hasAny && (
-        <div style={{ padding: '8px 12px', borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: '#EEF4EE', background: '#FAFCFA' }}>
+        <div style={{ padding: '8px 12px', borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: '#E7F3F0', background: '#F7FAF9' }}>
           <Text style={{ fontSize: 10, color: '#B0C8B0' }}>
             ↕ Glissez un contact sur une date
           </Text>
@@ -355,8 +355,8 @@ export function RdvPage() {
       tags={
         <Tag
           style={{
-            background: '#EEF4EE',
-            color: '#5B8C5A',
+            background: '#E7F3F0',
+            color: '#0F6E52',
             border: 'none',
             fontWeight: 600,
             borderRadius: 6,

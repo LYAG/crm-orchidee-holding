@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { ClockCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { ProForm, ProFormDigit } from '@ant-design/pro-components';
@@ -49,7 +49,7 @@ export function ParametresPage() {
           maxWidth: 560,
           background: '#fff',
           borderRadius: 12,
-          border: '1px solid #EEF4EE',
+          border: '1px solid #E7F3F0',
           boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
           overflow: 'hidden',
         }}
@@ -58,7 +58,7 @@ export function ParametresPage() {
         <div
           style={{
             padding: '18px 24px',
-            background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)',
+            background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
             display: 'flex',
             alignItems: 'center',
             gap: 12,
@@ -95,8 +95,8 @@ export function ParametresPage() {
             style={{
               padding: '12px 14px',
               borderRadius: 8,
-              background: '#F8FBF8',
-              border: '1px solid #EEF4EE',
+              background: '#F3F9F7',
+              border: '1px solid #E7F3F0',
               marginBottom: 20,
             }}
           >
@@ -105,7 +105,7 @@ export function ParametresPage() {
               <strong>nombre de slides × temps moyen par slide</strong>.
               <br />
               Valeur actuelle :{' '}
-              <strong style={{ color: '#5B8C5A' }}>{dureeFmt} par slide</strong>
+              <strong style={{ color: '#0F6E52' }}>{dureeFmt} par slide</strong>
             </Text>
           </div>
 

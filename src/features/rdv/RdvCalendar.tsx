@@ -173,7 +173,7 @@ function EventPill({ rdv, onClick }: { rdv: RendezVous; onClick: () => void }) {
         background: cfg.bg, borderRadius: 4,
         paddingTop: 2, paddingBottom: 2, paddingLeft: 5, paddingRight: 5,
         borderLeftWidth: 3, borderLeftStyle: 'solid' as const, borderLeftColor: cfg.color,
-        fontSize: 10, fontWeight: 600, marginBottom: 2, cursor: 'pointer', color: '#1C3A1C',
+        fontSize: 10, fontWeight: 600, marginBottom: 2, cursor: 'pointer', color: '#123832',
         whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis',
         boxShadow: '0 1px 2px rgba(0,0,0,0.04)', transition: 'opacity 0.12s',
       }}
@@ -196,26 +196,26 @@ function RdvCard({ rdv, onClick }: { rdv: RendezVous; onClick: () => void }) {
       style={{
         display: 'flex', alignItems: 'center', gap: 10,
         paddingTop: 10, paddingBottom: 10, paddingLeft: 0, paddingRight: 12,
-        borderRadius: 8, background: '#FAFCFA', cursor: 'pointer',
+        borderRadius: 8, background: '#F7FAF9', cursor: 'pointer',
         transition: 'all 0.15s', marginBottom: 6, overflow: 'hidden',
       }}
       onMouseEnter={(e) => { e.currentTarget.style.background = cfg.bg; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = '#FAFCFA'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = '#F7FAF9'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div style={{ width: 4, alignSelf: 'stretch', background: cfg.color, borderRadius: '0 2px 2px 0', flexShrink: 0 }} />
       <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cfg.color}16`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: cfg.color, fontSize: 14, flexShrink: 0 }}>
         {cfg.icon}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, color: '#1C3A1C', fontSize: 13, lineHeight: 1.25 }}>
+        <div style={{ fontWeight: 700, color: '#123832', fontSize: 13, lineHeight: 1.25 }}>
           {hhmm(rdv.dateHeure)}
-          <span style={{ fontWeight: 400, color: '#9DB89D', fontSize: 11, marginLeft: 5 }}>· {rdv.dureeMinutes} min</span>
+          <span style={{ fontWeight: 400, color: '#8FB0A8', fontSize: 11, marginLeft: 5 }}>· {rdv.dureeMinutes} min</span>
         </div>
         <div style={{ display: 'inline-flex', alignItems: 'center', marginTop: 4, background: `${cfg.color}16`, color: cfg.color, borderRadius: 4, paddingTop: 1, paddingBottom: 1, paddingLeft: 6, paddingRight: 6, fontSize: 10, fontWeight: 700 }}>
           {cfg.label}
         </div>
       </div>
-      <RightOutlined style={{ color: '#C8D8C8', fontSize: 10, flexShrink: 0 }} />
+      <RightOutlined style={{ color: '#C7DAD5', fontSize: 10, flexShrink: 0 }} />
     </div>
   );
 }
@@ -255,7 +255,7 @@ function CalendarTopBar({
       style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         paddingTop: 12, paddingBottom: 12, paddingLeft: 20, paddingRight: 20,
-        borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#EEF4EE',
+        borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E7F3F0',
         flexWrap: 'wrap' as const, gap: 10, background: '#fff',
       }}
     >
@@ -266,7 +266,7 @@ function CalendarTopBar({
         </Button>
         <Button type="text" size="small" icon={<LeftOutlined style={{ fontSize: 11 }} />} style={{ borderRadius: 6, width: 28, height: 28 }} onClick={navigatePrev} />
         <Button type="text" size="small" icon={<RightOutlined style={{ fontSize: 11 }} />} style={{ borderRadius: 6, width: 28, height: 28 }} onClick={navigateNext} />
-        <span style={{ fontWeight: 700, fontSize: 15, color: '#1C3A1C', marginLeft: 6, letterSpacing: '-0.3px' }}>
+        <span style={{ fontWeight: 700, fontSize: 15, color: '#123832', marginLeft: 6, letterSpacing: '-0.3px' }}>
           {getTitle()}
         </span>
       </div>
@@ -279,14 +279,14 @@ function CalendarTopBar({
             {LEGEND.map((l) => (
               <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <div style={{ width: 9, height: 9, borderRadius: 2, background: l.color }} />
-                <span style={{ fontSize: 10, fontWeight: 600, color: '#5C7A5C' }}>{l.label}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: '#4F7169' }}>{l.label}</span>
               </div>
             ))}
           </div>
         )}
 
         {/* Vue switcher */}
-        <div style={{ display: 'flex', background: '#EEF4EE', borderRadius: 8, padding: 3, gap: 2 }}>
+        <div style={{ display: 'flex', background: '#E7F3F0', borderRadius: 8, padding: 3, gap: 2 }}>
           {(['semaine', 'mois', 'jour'] as ViewMode[]).map((v) => (
             <button
               key={v}
@@ -299,7 +299,7 @@ function CalendarTopBar({
                 padding: '4px 11px',
                 fontSize: 12,
                 fontWeight: viewMode === v ? 700 : 500,
-                color: viewMode === v ? '#1C3A1C' : '#5C7A5C',
+                color: viewMode === v ? '#123832' : '#4F7169',
                 cursor: 'pointer',
                 boxShadow: viewMode === v ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                 transition: 'all 0.12s',
@@ -351,10 +351,10 @@ function DayColumn({
         flex: 1,
         position: 'relative' as const,
         height: GRID_H,
-        background: isToday ? 'rgba(91,140,90,0.025)' : '#fff',
+        background: isToday ? 'rgba(15,110,82,0.025)' : '#fff',
         borderLeftWidth: 1,
         borderLeftStyle: 'solid' as const,
-        borderLeftColor: '#EEF4EE',
+        borderLeftColor: '#E7F3F0',
       }}
       onDragOver={(e) => { e.preventDefault(); setDragSlot(slotFromY(e.clientY)); }}
       onDragLeave={(e) => {
@@ -378,7 +378,7 @@ function DayColumn({
             left: 0,
             right: 0,
             height: 1,
-            background: i % 2 === 0 ? '#DDE8DD' : '#F2F7F2',
+            background: i % 2 === 0 ? '#DCE8E4' : '#EFF6F4',
           }}
         />
       ))}
@@ -390,11 +390,11 @@ function DayColumn({
           top: dragSlot * SLOT_H + 1,
           left: 3, right: 3,
           height: SLOT_H - 2,
-          background: 'rgba(91,140,90,0.13)',
+          background: 'rgba(15,110,82,0.13)',
           borderRadius: 5,
           borderWidth: 1,
           borderStyle: 'dashed',
-          borderColor: '#5B8C5A',
+          borderColor: '#0F6E52',
           pointerEvents: 'none',
           zIndex: 3,
         }} />
@@ -443,7 +443,7 @@ function WeekView({
   return (
     <div style={{ display: 'flex', flexDirection: 'column' as const, height: '100%' }}>
       {/* En-têtes des jours */}
-      <div style={{ display: 'flex', borderBottomWidth: 2, borderBottomStyle: 'solid' as const, borderBottomColor: '#EEF4EE', background: '#FAFCFA' }}>
+      <div style={{ display: 'flex', borderBottomWidth: 2, borderBottomStyle: 'solid' as const, borderBottomColor: '#E7F3F0', background: '#F7FAF9' }}>
         {/* Coin heure */}
         <div style={{ width: TIME_COL_W, flexShrink: 0 }} />
 
@@ -460,25 +460,25 @@ function WeekView({
                 paddingLeft: 14,
                 borderLeftWidth: 1,
                 borderLeftStyle: 'solid' as const,
-                borderLeftColor: '#EEF4EE',
-                background: isToday ? 'rgba(91,140,90,0.05)' : undefined,
+                borderLeftColor: '#E7F3F0',
+                background: isToday ? 'rgba(15,110,82,0.05)' : undefined,
               }}
             >
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#9DB89D', textTransform: 'uppercase' as const, letterSpacing: '0.6px', lineHeight: 1 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase' as const, letterSpacing: '0.6px', lineHeight: 1 }}>
                 {day.format('ddd')}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                 <div style={{
                   width: 30, height: 30, borderRadius: '50%',
-                  background: isToday ? '#5B8C5A' : 'transparent',
+                  background: isToday ? '#0F6E52' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 16, fontWeight: isToday ? 800 : 600,
-                  color: isToday ? '#fff' : '#1C3A1C',
+                  color: isToday ? '#fff' : '#123832',
                 }}>
                   {day.date()}
                 </div>
                 {cnt > 0 && (
-                  <span style={{ fontSize: 10, color: '#9DB89D', fontWeight: 600 }}>
+                  <span style={{ fontSize: 10, color: '#8FB0A8', fontWeight: 600 }}>
                     {cnt} RDV
                   </span>
                 )}
@@ -584,9 +584,9 @@ function MonthGrid({
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: '#FAFCFA', borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#EEF4EE' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: '#F7FAF9', borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E7F3F0' }}>
         {JOURS.map((j) => (
-          <div key={j} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: '#9DB89D', padding: '7px 4px', textTransform: 'uppercase' as const, letterSpacing: '0.6px' }}>
+          <div key={j} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: '#8FB0A8', padding: '7px 4px', textTransform: 'uppercase' as const, letterSpacing: '0.6px' }}>
             {j}
           </div>
         ))}
@@ -617,11 +617,11 @@ function MonthGrid({
               }}
               style={{
                 minHeight: 90,
-                borderRightWidth: 1, borderRightStyle: 'solid' as const, borderRightColor: '#EEF4EE',
-                borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#EEF4EE',
+                borderRightWidth: 1, borderRightStyle: 'solid' as const, borderRightColor: '#E7F3F0',
+                borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E7F3F0',
                 padding: '4px 3px',
                 cursor: 'pointer',
-                background: isDO ? '#EAF3EA' : isSel ? '#EEF4EE' : '#fff',
+                background: isDO ? '#E6F2EE' : isSel ? '#E7F3F0' : '#fff',
                 transition: 'background 0.1s',
                 position: 'relative' as const,
               }}
@@ -629,8 +629,8 @@ function MonthGrid({
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
                 <div style={{
                   width: 22, height: 22, borderRadius: '50%',
-                  background: isToday ? '#5B8C5A' : 'transparent',
-                  color: isToday ? '#fff' : isCurMonth ? '#1C3A1C' : '#C8D8C8',
+                  background: isToday ? '#0F6E52' : 'transparent',
+                  color: isToday ? '#fff' : isCurMonth ? '#123832' : '#C7DAD5',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 12, fontWeight: isToday ? 700 : isCurMonth ? 500 : 400,
                 }}>
@@ -641,9 +641,9 @@ function MonthGrid({
                 <EventPill key={rdv.id} rdv={rdv} onClick={() => onSelectRdv(rdv)} />
               ))}
               {rdvs.length > 2 && (
-                <div style={{ fontSize: 10, color: '#9DB89D', fontWeight: 600, paddingLeft: 4 }}>+{rdvs.length - 2}</div>
+                <div style={{ fontSize: 10, color: '#8FB0A8', fontWeight: 600, paddingLeft: 4 }}>+{rdvs.length - 2}</div>
               )}
-              {isDO && <div style={{ position: 'absolute', inset: 0, borderWidth: 2, borderStyle: 'dashed', borderColor: '#5B8C5A', pointerEvents: 'none' }} />}
+              {isDO && <div style={{ position: 'absolute', inset: 0, borderWidth: 2, borderStyle: 'dashed', borderColor: '#0F6E52', pointerEvents: 'none' }} />}
             </div>
           );
         })}
@@ -664,7 +664,7 @@ function AgendaPanel({
   return (
     <div style={{ width: 270, flexShrink: 0 }}>
       <ProCard bordered style={{ borderRadius: 12, overflow: 'hidden', position: 'sticky', top: 72 }} bodyStyle={{ padding: 0 }}>
-        <div style={{ padding: '16px 18px', background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)' }}>
+        <div style={{ padding: '16px 18px', background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               {selectedDate ? (
@@ -690,7 +690,7 @@ function AgendaPanel({
         </div>
         <div style={{ padding: '10px 10px 12px' }}>
           {!selectedDate || rdvDuJour.length === 0 ? (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<Text style={{ fontSize: 12, color: '#C8D8C8' }}>{selectedDate ? 'Aucun rendez-vous' : 'Cliquez sur une date'}</Text>} style={{ margin: '16px 0' }} />
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<Text style={{ fontSize: 12, color: '#C7DAD5' }}>{selectedDate ? 'Aucun rendez-vous' : 'Cliquez sur une date'}</Text>} style={{ margin: '16px 0' }} />
           ) : (
             rdvDuJour.map((rdv) => <RdvCard key={rdv.id} rdv={rdv} onClick={() => onSelectRdv(rdv)} />)
           )}

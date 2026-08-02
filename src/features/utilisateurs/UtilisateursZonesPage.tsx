@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   DeleteOutlined,
@@ -38,7 +38,7 @@ const { Text, Title } = Typography;
 const ROLE_COLOR: Record<UserRole, string> = {
   ADMIN: '#6A1B9A',
   MANAGER: '#1565C0',
-  DELEGUE: '#4A7A4A',
+  DELEGUE: '#2E6B5B',
 };
 
 const ROLE_BG: Record<UserRole, string> = {
@@ -148,7 +148,7 @@ function UtilisateurModal({
               height: 32,
               borderRadius: 8,
               background: '#E8F5E9',
-              color: '#5B8C5A',
+              color: '#0F6E52',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -156,7 +156,7 @@ function UtilisateurModal({
           >
             <UserOutlined />
           </div>
-          <span style={{ color: '#1C3A1C' }}>
+          <span style={{ color: '#123832' }}>
             {editing ? "Modifier l'utilisateur" : 'Nouvel utilisateur'}
           </span>
         </Space>
@@ -302,7 +302,7 @@ function ZoneModal({
               height: 32,
               borderRadius: 8,
               background: '#E8F5E9',
-              color: '#5B8C5A',
+              color: '#0F6E52',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -310,7 +310,7 @@ function ZoneModal({
           >
             <EnvironmentOutlined />
           </div>
-          <span style={{ color: '#1C3A1C' }}>
+          <span style={{ color: '#123832' }}>
             {editing ? 'Modifier la zone' : 'Nouvelle zone'}
           </span>
         </Space>
@@ -364,7 +364,7 @@ function ZoneCard({
       {/* Header coloré */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)',
+          background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
           padding: '20px 20px 16px',
         }}
       >
@@ -448,7 +448,7 @@ function ZoneCard({
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: '#9DB89D',
+                color: '#8FB0A8',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
                 display: 'block',
@@ -487,7 +487,7 @@ function ZoneCard({
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: '#9DB89D',
+              color: '#8FB0A8',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               display: 'block',
@@ -513,8 +513,8 @@ function ZoneCard({
                       gap: 10,
                       padding: '8px 10px',
                       borderRadius: 8,
-                      background: '#F8FBF8',
-                      border: '1px solid #EEF4EE',
+                      background: '#F3F9F7',
+                      border: '1px solid #E7F3F0',
                     }}
                   >
                     <Avatar
@@ -771,7 +771,7 @@ export function UtilisateursZonesPage() {
               </div>
             }
           >
-            <Badge count={u.delegueIds.length} style={{ background: '#5B8C5A' }}>
+            <Badge count={u.delegueIds.length} style={{ background: '#0F6E52' }}>
               <Tag icon={<TeamOutlined />} style={{ borderRadius: 6, cursor: 'default' }}>
                 délégués
               </Tag>
@@ -791,7 +791,7 @@ export function UtilisateursZonesPage() {
               type="text"
               size="small"
               icon={<EditOutlined />}
-              style={{ color: '#5B8C5A' }}
+              style={{ color: '#0F6E52' }}
               onClick={() => openEditUser(u)}
             />
           </Tooltip>

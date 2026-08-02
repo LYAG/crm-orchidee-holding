@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   ArrowRightOutlined,
@@ -54,9 +54,9 @@ function OppCard({
       style={{
         background: '#fff',
         borderRadius: 10,
-        borderTop: `1px solid ${hovered ? color + '60' : '#EEF4EE'}`,
-        borderRight: `1px solid ${hovered ? color + '60' : '#EEF4EE'}`,
-        borderBottom: `1px solid ${hovered ? color + '60' : '#EEF4EE'}`,
+        borderTop: `1px solid ${hovered ? color + '60' : '#E7F3F0'}`,
+        borderRight: `1px solid ${hovered ? color + '60' : '#E7F3F0'}`,
+        borderBottom: `1px solid ${hovered ? color + '60' : '#E7F3F0'}`,
         borderLeft: `3px solid ${color}`,
         padding: '12px 12px 10px',
         cursor: isDragging ? 'grabbing' : 'grab',
@@ -77,7 +77,7 @@ function OppCard({
             position: 'absolute',
             top: 8,
             right: 8,
-            color: '#C8D8C8',
+            color: '#C7DAD5',
             fontSize: 12,
           }}
         >
@@ -91,7 +91,7 @@ function OppCard({
         style={{
           display: 'block',
           fontSize: 13,
-          color: '#1C3A1C',
+          color: '#123832',
           lineHeight: 1.35,
           marginBottom: 3,
           paddingRight: 16,
@@ -266,7 +266,7 @@ export function OpportuniteKanban({
               flex: '0 0 230px',
               borderRadius: 12,
               border: isOver ? `2px dashed ${color}` : '2px solid transparent',
-              background: isOver ? bgColor : '#F2F5F2',
+              background: isOver ? bgColor : '#EFF6F4',
               transition: 'all 0.15s ease',
               minHeight: 240,
               display: 'flex',
@@ -278,7 +278,7 @@ export function OpportuniteKanban({
             <div
               style={{
                 padding: '12px 14px 10px',
-                background: isOver ? bgColor : '#EAEEEA',
+                background: isOver ? bgColor : '#E7EDEA',
                 borderBottom: `2px solid ${isOver ? color + '40' : 'transparent'}`,
                 transition: 'all 0.15s',
               }}
@@ -307,7 +307,7 @@ export function OpportuniteKanban({
                   strong
                   style={{
                     fontSize: 13,
-                    color: isOver ? color : '#3D5C3D',
+                    color: isOver ? color : '#1F4E45',
                     letterSpacing: '-0.1px',
                   }}
                 >

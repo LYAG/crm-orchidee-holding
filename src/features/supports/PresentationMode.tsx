@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   CheckCircleOutlined,
@@ -219,7 +219,7 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
             <Text style={{ color: '#aaa', fontSize: 12 }}>Total</Text>
             <Text
               style={{
-                color: '#5B8C5A',
+                color: '#0F6E52',
                 fontFamily: 'monospace',
                 fontSize: 20,
                 fontWeight: 'bold',
@@ -353,7 +353,7 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
         <Progress
           percent={Math.round(((currentSlide + 1) / slides.length) * 100)}
           showInfo={false}
-          strokeColor="#5B8C5A"
+          strokeColor="#0F6E52"
           trailColor="rgba(255,255,255,0.1)"
           size="small"
         />
@@ -406,7 +406,7 @@ function PresentationSummary({ metrique, support, onReturn }: SummaryProps) {
             percent={pct}
             size="small"
             showInfo={false}
-            strokeColor={pct >= 100 ? '#5B8C5A' : '#E65100'}
+            strokeColor={pct >= 100 ? '#0F6E52' : '#E65100'}
           />
         );
       },
@@ -456,7 +456,7 @@ function PresentationSummary({ metrique, support, onReturn }: SummaryProps) {
             </div>
           </Col>
           <Col span={8}>
-            <div style={{ ...statCardStyle, borderColor: conforme ? '#5B8C5A' : '#c0392b' }}>
+            <div style={{ ...statCardStyle, borderColor: conforme ? '#0F6E52' : '#c0392b' }}>
               <Text style={{ color: '#888', fontSize: 12 }}>Conformité</Text>
               <div style={{ marginTop: 8 }}>
                 {conforme ? (

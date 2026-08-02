@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 import { App, ConfigProvider } from 'antd';
@@ -6,8 +6,8 @@ import frFR from 'antd/locale/fr_FR';
 import { useServerInsertedHTML } from 'next/navigation';
 import React from 'react';
 
-export const BRAND_GREEN = '#5B8C5A';
-export const BRAND_GREEN_DARK = '#1C3A1C';
+export const BRAND_GREEN = '#0F6E52';
+export const BRAND_GREEN_DARK = '#123832';
 
 export default function AntdProvider({ children }: { children: React.ReactNode }) {
   const [cache] = React.useState(() => createCache());
@@ -33,12 +33,12 @@ export default function AntdProvider({ children }: { children: React.ReactNode }
             colorInfo: '#1565C0',
 
             /* Surfaces */
-            colorBgLayout: '#F5F7F5',
+            colorBgLayout: '#F4F7F6',
             colorBgContainer: '#FFFFFF',
 
             /* Borders */
-            colorBorder: '#DDE7DD',
-            colorBorderSecondary: '#EEF4EE',
+            colorBorder: '#DCE8E4',
+            colorBorderSecondary: '#E7F3F0',
             borderRadius: 8,
             borderRadiusLG: 12,
             borderRadiusSM: 6,
@@ -73,10 +73,10 @@ export default function AntdProvider({ children }: { children: React.ReactNode }
               borderRadiusLG: 12,
             },
             Table: {
-              headerBg: '#F8FBF8',
-              headerColor: '#3D5C3D',
-              rowHoverBg: '#F2F8F2',
-              borderColor: '#EEF4EE',
+              headerBg: '#F3F9F7',
+              headerColor: '#1F4E45',
+              rowHoverBg: '#ECF6F3',
+              borderColor: '#E7F3F0',
             },
             Menu: {
               itemBorderRadius: 8,
@@ -90,7 +90,7 @@ export default function AntdProvider({ children }: { children: React.ReactNode }
             },
             Button: {
               borderRadius: 8,
-              primaryShadow: '0 2px 6px rgba(91,140,90,0.28)',
+              primaryShadow: '0 2px 6px rgba(15,110,82,0.28)',
             },
             Input: {
               borderRadius: 8,

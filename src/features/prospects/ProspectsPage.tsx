@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   DeleteOutlined,
@@ -68,13 +68,13 @@ export function ProspectsPage() {
           <Space size={10}>
             <Avatar
               size={34}
-              style={{ background: '#E8F5E9', color: '#4A7A4A', fontWeight: 700, fontSize: 12, flexShrink: 0 }}
+              style={{ background: '#E8F5E9', color: '#2E6B5B', fontWeight: 700, fontSize: 12, flexShrink: 0 }}
             >
               {initials}
             </Avatar>
             <Space direction="vertical" size={0}>
-              <strong style={{ color: '#1C3A1C' }}>{p.nom} {p.prenom}</strong>
-              <span style={{ color: '#9DB89D', fontSize: 12 }}>{p.entreprise}</span>
+              <strong style={{ color: '#123832' }}>{p.nom} {p.prenom}</strong>
+              <span style={{ color: '#8FB0A8', fontSize: 12 }}>{p.entreprise}</span>
             </Space>
           </Space>
         );
@@ -118,18 +118,18 @@ export function ProspectsPage() {
       dataIndex: 'delegueId',
       valueEnum: delegueOptions,
       render: (_, p) => {
-        if (!p.delegueId) return <span style={{ color: '#C8D8C8' }}>—</span>;
+        if (!p.delegueId) return <span style={{ color: '#C7DAD5' }}>—</span>;
         const d = delegues.find((u) => u.id === p.delegueId);
-        if (!d) return <span style={{ color: '#C8D8C8' }}>—</span>;
+        if (!d) return <span style={{ color: '#C7DAD5' }}>—</span>;
         return (
           <Space size={6}>
             <Avatar
               size={24}
-              style={{ background: '#E8F5E9', color: '#4A7A4A', fontWeight: 700, fontSize: 10 }}
+              style={{ background: '#E8F5E9', color: '#2E6B5B', fontWeight: 700, fontSize: 10 }}
             >
               {`${d.prenom[0]}${d.nom[0]}`.toUpperCase()}
             </Avatar>
-            <span style={{ fontSize: 13, color: '#1C3A1C' }}>{d.prenom} {d.nom}</span>
+            <span style={{ fontSize: 13, color: '#123832' }}>{d.prenom} {d.nom}</span>
           </Space>
         );
       },

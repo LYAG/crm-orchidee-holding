@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   ArrowRightOutlined,
@@ -20,7 +20,7 @@ import { SimpleBarChart } from './SimpleBarChart';
 const { Text } = Typography;
 
 const BAR_COLORS = [
-  '#5B8C5A', '#1565C0', '#E65100', '#6A1B9A', '#2E7D32',
+  '#0F6E52', '#1565C0', '#E65100', '#6A1B9A', '#2E7D32',
   '#C62828', '#0277BD', '#4E342E',
 ];
 
@@ -55,7 +55,7 @@ function KpiCard({
       style={{
         background: '#fff',
         borderRadius: 12,
-        border: '1px solid #EEF4EE',
+        border: '1px solid #E7F3F0',
         padding: '20px 24px',
         height: '100%',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
@@ -85,14 +85,14 @@ function KpiCard({
             style={{
               fontSize: 30,
               fontWeight: 800,
-              color: '#1C3A1C',
+              color: '#123832',
               lineHeight: 1,
               letterSpacing: '-1px',
             }}
           >
             {displayed}
             {suffix && (
-              <span style={{ fontSize: 16, fontWeight: 500, color: '#6B8C6B', marginLeft: 4 }}>
+              <span style={{ fontSize: 16, fontWeight: 500, color: '#5C8079', marginLeft: 4 }}>
                 {suffix}
               </span>
             )}
@@ -134,8 +134,8 @@ function DelegueRow({
         gap: 12,
         padding: '10px 14px',
         borderRadius: 8,
-        border: `1px solid ${isLow ? '#FFE0B2' : '#EEF4EE'}`,
-        background: isLow ? '#FFFBF7' : '#FAFCFA',
+        border: `1px solid ${isLow ? '#FFE0B2' : '#E7F3F0'}`,
+        background: isLow ? '#FFFBF7' : '#F7FAF9',
         marginBottom: 8,
         transition: 'box-shadow 0.15s',
       }}
@@ -152,8 +152,8 @@ function DelegueRow({
           width: 24,
           height: 24,
           borderRadius: '50%',
-          background: rank <= 3 ? color : '#F2F5F2',
-          color: rank <= 3 ? '#fff' : '#6B8C6B',
+          background: rank <= 3 ? color : '#EFF6F4',
+          color: rank <= 3 ? '#fff' : '#5C8079',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -175,7 +175,7 @@ function DelegueRow({
 
       {/* Name */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <Text strong style={{ fontSize: 13, color: '#1C3A1C', display: 'block', lineHeight: 1.2 }}>
+        <Text strong style={{ fontSize: 13, color: '#123832', display: 'block', lineHeight: 1.2 }}>
           {d.nom}
         </Text>
         <Text type="secondary" style={{ fontSize: 11 }}>
@@ -193,7 +193,7 @@ function DelegueRow({
             marginBottom: 2,
           }}
         >
-          <Text style={{ fontSize: 11, color: isLow ? '#E65100' : '#5B8C5A', fontWeight: 600 }}>
+          <Text style={{ fontSize: 11, color: isLow ? '#E65100' : '#0F6E52', fontWeight: 600 }}>
             {taux}%
           </Text>
           {isLow && (
@@ -206,7 +206,7 @@ function DelegueRow({
           percent={taux}
           size="small"
           showInfo={false}
-          strokeColor={isLow ? '#E65100' : '#5B8C5A'}
+          strokeColor={isLow ? '#E65100' : '#0F6E52'}
           trailColor={isLow ? '#FFE0B2' : '#E8F5E9'}
           style={{ marginBottom: 0 }}
         />
@@ -231,7 +231,7 @@ function DelegueRow({
       </div>
 
       <Link href="/reporting">
-        <ArrowRightOutlined style={{ color: '#C8D8C8', fontSize: 11 }} />
+        <ArrowRightOutlined style={{ color: '#C7DAD5', fontSize: 11 }} />
       </Link>
     </div>
   );
@@ -295,7 +295,7 @@ export function DashboardManager({ user }: Props) {
             icon={<TeamOutlined />}
             label="RDV total — équipe"
             value={kpi?.delegues.reduce((s, d) => s + d.nbRdv, 0) ?? 0}
-            accent="#5B8C5A"
+            accent="#0F6E52"
             bg="#E8F5E9"
           />
         </Col>
@@ -336,7 +336,7 @@ export function DashboardManager({ user }: Props) {
             <div
               style={{
                 padding: '14px 16px',
-                background: 'linear-gradient(135deg, #1C3A1C 0%, #2D5A2D 100%)',
+                background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
@@ -373,7 +373,7 @@ export function DashboardManager({ user }: Props) {
         <Col xs={24} lg={10}>
           <ProCard
             title={
-              <Text strong style={{ color: '#1C3A1C' }}>
+              <Text strong style={{ color: '#123832' }}>
                 Pipeline par délégué
               </Text>
             }

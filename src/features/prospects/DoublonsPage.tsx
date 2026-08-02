@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   CheckCircleOutlined,
@@ -28,14 +28,14 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
         display: 'flex',
         gap: 8,
         padding: '7px 0',
-        borderBottom: '1px solid #F0F4F0',
+        borderBottom: '1px solid #EEF5F3',
       }}
     >
       <Text
         style={{
           fontSize: 11,
           fontWeight: 600,
-          color: '#9DB89D',
+          color: '#8FB0A8',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
           width: 100,
@@ -44,7 +44,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
       >
         {label}
       </Text>
-      <Text style={{ fontSize: 13, color: '#1C3A1C', flex: 1 }}>{value ?? '—'}</Text>
+      <Text style={{ fontSize: 13, color: '#123832', flex: 1 }}>{value ?? '—'}</Text>
     </div>
   );
 }
@@ -117,7 +117,7 @@ export function DoublonsPage() {
           style={{
             background: '#fff',
             borderRadius: 12,
-            border: '1px solid #EEF4EE',
+            border: '1px solid #E7F3F0',
             padding: '60px 24px',
             textAlign: 'center',
             boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
@@ -133,13 +133,13 @@ export function DoublonsPage() {
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: 24,
-              color: '#5B8C5A',
+              color: '#0F6E52',
               margin: '0 auto 16px',
             }}
           >
             <CheckCircleOutlined />
           </div>
-          <Text strong style={{ fontSize: 16, color: '#1C3A1C', display: 'block', marginBottom: 6 }}>
+          <Text strong style={{ fontSize: 16, color: '#123832', display: 'block', marginBottom: 6 }}>
             Aucun doublon en attente
           </Text>
           <Text type="secondary" style={{ fontSize: 13 }}>
@@ -154,7 +154,7 @@ export function DoublonsPage() {
               style={{
                 background: '#fff',
                 borderRadius: 12,
-                border: '1px solid #EEF4EE',
+                border: '1px solid #E7F3F0',
                 boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                 overflow: 'hidden',
               }}
@@ -163,8 +163,8 @@ export function DoublonsPage() {
               <div
                 style={{
                   padding: '14px 20px',
-                  background: '#FAFCFA',
-                  borderBottom: '1px solid #EEF4EE',
+                  background: '#F7FAF9',
+                  borderBottom: '1px solid #E7F3F0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -190,7 +190,7 @@ export function DoublonsPage() {
                     <MergeCellsOutlined />
                   </div>
                   <div>
-                    <Text strong style={{ fontSize: 14, color: '#1C3A1C', display: 'block' }}>
+                    <Text strong style={{ fontSize: 14, color: '#123832', display: 'block' }}>
                       {d.nouvelleEntree.nom} {d.nouvelleEntree.prenom}
                     </Text>
                     <Text type="secondary" style={{ fontSize: 12 }}>
@@ -239,7 +239,7 @@ export function DoublonsPage() {
                 <Col xs={24} md={12}>
                   <div
                     style={{
-                      borderRight: '1px solid #EEF4EE',
+                      borderRight: '1px solid #E7F3F0',
                       height: '100%',
                     }}
                   >
