@@ -180,11 +180,25 @@ export function ImportWizard() {
     },
     {
       title: 'Consultation',
-      render: (_, l) => (l.joursConsultation ? formatJoursConsultation(l.joursConsultation) : <Text type="danger">{l.jrsConsBrut || '—'}</Text>),
+      render: (_, l) =>
+        l.joursConsultation ? (
+          formatJoursConsultation(l.joursConsultation)
+        ) : l.jrsConsBrut ? (
+          <Text type="danger">{l.jrsConsBrut}</Text>
+        ) : (
+          '—'
+        ),
     },
     {
       title: 'Potentiel',
-      render: (_, l) => (l.potentielCas ? formatPotentielCas(l.potentielCas) : <Text type="danger">{l.nbreDeCasBrut || '—'}</Text>),
+      render: (_, l) =>
+        l.potentielCas ? (
+          formatPotentielCas(l.potentielCas)
+        ) : l.nbreDeCasBrut ? (
+          <Text type="danger">{l.nbreDeCasBrut}</Text>
+        ) : (
+          '—'
+        ),
     },
     {
       title: 'Statut',

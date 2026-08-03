@@ -42,10 +42,13 @@ export function transformerLignes(lignes: LigneBrute[], ctx: ContexteTransformat
           : []
         : telephones;
 
+      const nomCible = normaliserTexte(nom);
       const doublon = centre
-        ? ctx.professionnelsExistants.find(
-            (p) => p.centreId === centre.id && normaliserTexte(p.nom) === normaliserTexte(nom),
-          )
+        ? ctx.professionnelsExistants.find((p) => {
+            if (p.centreId !== centre.id) return false;
+            const nomComplet = normaliserTexte(`${p.nom} ${p.prenom ?? ''}`.trim());
+            return nomComplet === nomCible || normaliserTexte(p.nom) === nomCible;
+          })
         : undefined;
 
       const specialitesManquantes = specialitesInconnues.length > 0;
