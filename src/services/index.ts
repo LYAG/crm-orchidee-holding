@@ -9,6 +9,7 @@
 
 import type { AuthService } from './api/AuthService';
 import type { OpportuniteService } from './api/OpportuniteService';
+import type { ProfessionnelService } from './api/ProfessionnelService';
 import type { ProspectService } from './api/ProspectService';
 import type { QualificationService } from './api/QualificationService';
 import type { ReportingService } from './api/ReportingService';
@@ -23,6 +24,7 @@ const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS !== 'false';
 function loadMocks() {
   const { AuthServiceMock } = require('./mocks/AuthServiceMock');
   const { OpportuniteServiceMock } = require('./mocks/OpportuniteServiceMock');
+  const { ProfessionnelServiceMock } = require('./mocks/ProfessionnelServiceMock');
   const { ProspectServiceMock } = require('./mocks/ProspectServiceMock');
   const { QualificationServiceMock } = require('./mocks/QualificationServiceMock');
   const { ReportingServiceMock } = require('./mocks/ReportingServiceMock');
@@ -40,6 +42,7 @@ function loadMocks() {
     supportService: new SupportServiceMock() as SupportService,
     qualificationService: new QualificationServiceMock() as QualificationService,
     opportuniteService: new OpportuniteServiceMock() as OpportuniteService,
+    professionnelService: new ProfessionnelServiceMock() as ProfessionnelService,
     reportingService: new ReportingServiceMock() as ReportingService,
     utilisateurService: new UtilisateurServiceMock() as UtilisateurService,
     zoneService: new ZoneServiceMock() as ZoneService,
@@ -62,6 +65,7 @@ export const roleService = services.roleService;
 export const supportService = services.supportService;
 export const qualificationService = services.qualificationService;
 export const opportuniteService = services.opportuniteService;
+export const professionnelService = services.professionnelService;
 export const reportingService = services.reportingService;
 export const utilisateurService = services.utilisateurService;
 export const zoneService = services.zoneService;
