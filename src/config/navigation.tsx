@@ -6,6 +6,7 @@ import {
   EnvironmentOutlined,
   FileTextOutlined,
   GiftOutlined,
+  MedicineBoxOutlined,
   MergeCellsOutlined,
   PlayCircleOutlined,
   SafetyCertificateOutlined,
@@ -36,6 +37,11 @@ const allRoutes: MenuRoute[] = [
     path: '/prospects',
     name: 'Prospects',
     icon: <TeamOutlined />,
+  },
+  {
+    path: '/professionnels',
+    name: 'Professionnels de santé',
+    icon: <MedicineBoxOutlined />,
   },
   {
     path: '/rdv',
@@ -131,6 +137,7 @@ export function getMenuRoutes(role: UserRole) {
 export const PAGE_TITLES: Record<string, string> = {
   '/': 'Tableau de bord',
   '/prospects': 'Prospects',
+  '/professionnels': 'Professionnels de santé',
   '/rdv': 'Rendez-vous',
   '/opportunites': 'Opportunités',
   '/supports': 'Supports commerciaux',

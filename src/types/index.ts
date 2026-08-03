@@ -160,7 +160,9 @@ export enum RdvStatut {
 
 export interface RendezVous {
   id: string;
-  prospectId: string;
+  /** RDV avec un prospect ou avec un professionnel de santé (l'un des deux, jamais les deux) */
+  prospectId?: string;
+  professionnelId?: string;
   delegueId: string;
   supportId: string;
   dateHeure: string;
@@ -314,6 +316,7 @@ export interface FiltresProspect {
 export interface FiltresRdv {
   delegueId?: string;
   prospectId?: string;
+  professionnelId?: string;
   statut?: RdvStatut;
   dateDebut?: string;
   dateFin?: string;

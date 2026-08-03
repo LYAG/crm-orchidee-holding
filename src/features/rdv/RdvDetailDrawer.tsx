@@ -39,7 +39,7 @@ export function RdvDetailDrawer({ open, onClose, rdv, onEdit, onAnnuler }: Props
   useEffect(() => {
     if (!rdv || !open) return;
     Promise.all([
-      prospectService.getById(rdv.prospectId),
+      rdv.prospectId ? prospectService.getById(rdv.prospectId) : Promise.resolve(null),
       supportService.getById(rdv.supportId),
     ])
       .then(([p, s]) => { setProspect(p); setSupport(s); })

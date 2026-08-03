@@ -65,9 +65,11 @@ export interface ProfessionnelService {
   createProfessionnel(data: CreateProfessionnelDto): Promise<ProfessionnelSante>;
   updateProfessionnel(id: string, data: UpdateProfessionnelDto): Promise<ProfessionnelSante>;
   deleteProfessionnel(id: string): Promise<void>;
+  /** Verrouille la fiche pour le délégué (règle aDejaEuContact), appelé à la planification d'un RDV. */
+  marquerContactEffectue(id: string): Promise<ProfessionnelSante>;
 
   // Gestes réalisés (historique)
-  getGestesRealises(professionnelId: string): Promise<GesteRealise[]>;
+  getGestesRealises(professionnelId?: string): Promise<GesteRealise[]>;
   enregistrerGeste(data: CreateGesteRealiseDto): Promise<GesteRealise>;
 
   // Planning de tournée

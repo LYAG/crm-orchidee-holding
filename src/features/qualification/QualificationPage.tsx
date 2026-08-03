@@ -77,8 +77,10 @@ export function QualificationPage() {
       .then(async ([r, q]) => {
         setRdv(r);
         setExistingQual(q);
-        const p = await prospectService.getById(r.prospectId);
-        setProspect(p);
+        if (r.prospectId) {
+          const p = await prospectService.getById(r.prospectId);
+          setProspect(p);
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));

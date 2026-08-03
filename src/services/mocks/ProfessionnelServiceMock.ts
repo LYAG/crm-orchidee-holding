@@ -258,12 +258,20 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     professionnels.splice(idx, 1);
   }
 
+  async marquerContactEffectue(id: string): Promise<ProfessionnelSante> {
+    await delay();
+    const idx = professionnels.findIndex((p) => p.id === id);
+    if (idx < 0) notFound('Professionnel de santé', id);
+    professionnels[idx] = { ...professionnels[idx], aDejaEuContact: true, updatedAt: today() };
+    return professionnels[idx];
+  }
+
   // ── Gestes réalisés ──────────────────────────────────────────────────────
 
-  async getGestesRealises(professionnelId: string): Promise<GesteRealise[]> {
+  async getGestesRealises(professionnelId?: string): Promise<GesteRealise[]> {
     await delay();
     return gestesRealises
-      .filter((g) => g.professionnelId === professionnelId)
+      .filter((g) => !professionnelId || g.professionnelId === professionnelId)
       .sort((a, b) => b.date.localeCompare(a.date));
   }
 

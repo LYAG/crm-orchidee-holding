@@ -11,6 +11,7 @@ export class RdvServiceMock implements RdvService {
     let result = [...rendezvous];
     if (filtres?.delegueId) result = result.filter((r) => r.delegueId === filtres.delegueId);
     if (filtres?.prospectId) result = result.filter((r) => r.prospectId === filtres.prospectId);
+    if (filtres?.professionnelId) result = result.filter((r) => r.professionnelId === filtres.professionnelId);
     if (filtres?.statut) result = result.filter((r) => r.statut === filtres.statut);
     if (filtres?.dateDebut) result = result.filter((r) => r.dateHeure >= filtres.dateDebut!);
     if (filtres?.dateFin) result = result.filter((r) => r.dateHeure <= filtres.dateFin!);
