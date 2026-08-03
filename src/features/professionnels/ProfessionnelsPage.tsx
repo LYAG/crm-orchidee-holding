@@ -1,9 +1,10 @@
 'use client';
 
-import { PhoneOutlined, PlusOutlined } from '@ant-design/icons';
+import { PhoneOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Avatar, Button, Space, Tag, Tooltip } from 'antd';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
@@ -188,7 +189,12 @@ export function ProfessionnelsPage() {
               Nouveau professionnel
             </Button>
           </Tooltip>,
-        ]}
+          role === UserRole.DELEGUE && (
+            <Link key="import" href="/professionnels/import">
+              <Button icon={<UploadOutlined />}>Importer Excel</Button>
+            </Link>
+          ),
+        ].filter(Boolean)}
       />
 
       <ProfessionnelDrawer

@@ -71,6 +71,12 @@ const allRoutes: MenuRoute[] = [
     roles: ['ADMIN'],
   },
   {
+    path: '/validations',
+    name: 'File de validation',
+    icon: <SafetyCertificateOutlined />,
+    roles: ['ADMIN'],
+  },
+  {
     path: '/utilisateurs',
     name: 'Utilisateurs & Zones',
     icon: <UsergroupAddOutlined />,
@@ -143,6 +149,8 @@ export const PAGE_TITLES: Record<string, string> = {
   '/supports': 'Supports commerciaux',
   '/reporting': 'Reporting équipe',
   '/doublons': 'Gestion des doublons',
+  '/validations': 'File de validation',
+  '/professionnels/import': 'Import professionnels de santé',
   '/utilisateurs': 'Utilisateurs & Zones',
   '/referentiels': 'Référentiels',
   '/referentiels/centres': 'Centres de santé',
