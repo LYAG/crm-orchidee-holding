@@ -125,6 +125,28 @@ export interface ParametresApp {
   tempsMoyenParSlide: number; // secondes
 }
 
+// ─── Rôles & permissions ──────────────────────────────────────────────────────
+
+export interface RoleDefinition {
+  key: UserRole;
+  label: string;
+  color: string;
+  bg: string;
+  gradientFrom: string;
+  gradientTo: string;
+  description: string;
+}
+
+export type PermissionAccess = 'full' | 'partial' | 'none';
+
+export interface PermissionModule {
+  id: string;
+  module: string;
+  icon: string;
+  access: Record<UserRole, PermissionAccess>;
+  labels: Partial<Record<UserRole, string>>;
+}
+
 // ─── Rendez-vous ─────────────────────────────────────────────────────────────
 
 export enum RdvStatut {

@@ -18,7 +18,9 @@ import {
 } from '@/types';
 import type {
   DoublonDetecte,
+  PermissionModule,
   Prospect,
+  RoleDefinition,
   SupportCommercial,
   Utilisateur,
   Zone,
@@ -378,6 +380,127 @@ export const supports: SupportCommercial[] = [
 export const parametresApp: ParametresApp = {
   tempsMoyenParSlide: 120, // 2 minutes par slide
 };
+
+// ─── Rôles & permissions ──────────────────────────────────────────────────────
+
+export const roleDefinitions: RoleDefinition[] = [
+  {
+    key: UserRole.DELEGUE,
+    label: 'Délégué',
+    color: '#2E6B5B',
+    bg: '#E8F5E9',
+    gradientFrom: '#2E5C2E',
+    gradientTo: '#2E6B5B',
+    description: 'Agent commercial terrain. Gère ses propres prospects et rendez-vous dans sa zone.',
+  },
+  {
+    key: UserRole.MANAGER,
+    label: 'Manager',
+    color: '#1565C0',
+    bg: '#E3F2FD',
+    gradientFrom: '#0D47A1',
+    gradientTo: '#1565C0',
+    description: 'Responsable d\'équipe. Supervise les délégués, visualise le reporting et attribue les prospects.',
+  },
+  {
+    key: UserRole.ADMIN,
+    label: 'Administrateur',
+    color: '#6A1B9A',
+    bg: '#F3E5F5',
+    gradientFrom: '#4A148C',
+    gradientTo: '#6A1B9A',
+    description: 'Accès complet. Administre les utilisateurs, zones, paramètres et toutes les données.',
+  },
+];
+
+export const permissionModules: PermissionModule[] = [
+  {
+    id: 'perm-dashboard',
+    module: 'Tableau de bord',
+    icon: 'DashboardOutlined',
+    access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
+    labels: {
+      DELEGUE: 'Ses propres KPIs',
+      MANAGER: 'KPIs de l\'équipe',
+      ADMIN: 'Vue globale',
+    },
+  },
+  {
+    id: 'perm-prospects',
+    module: 'Prospects',
+    icon: 'TeamOutlined',
+    access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
+    labels: {
+      DELEGUE: 'Sa zone (PNA + attribués)',
+      MANAGER: 'Équipe + attribution',
+      ADMIN: 'Tous + CRUD complet',
+    },
+  },
+  {
+    id: 'perm-rdv',
+    module: 'Rendez-vous',
+    icon: 'CalendarOutlined',
+    access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
+    labels: {
+      DELEGUE: 'Ses propres RDV',
+      MANAGER: 'RDV de l\'équipe',
+      ADMIN: 'Tous les RDV',
+    },
+  },
+  {
+    id: 'perm-opportunites',
+    module: 'Opportunités',
+    icon: 'TrophyOutlined',
+    access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
+    labels: {
+      DELEGUE: 'Ses propres opportunités',
+      MANAGER: 'Équipe + pipeline',
+      ADMIN: 'Toutes + pipeline global',
+    },
+  },
+  {
+    id: 'perm-supports',
+    module: 'Supports commerciaux',
+    icon: 'FileTextOutlined',
+    access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
+    labels: {
+      DELEGUE: 'Consultation + présentation',
+      MANAGER: 'Consultation + présentation',
+      ADMIN: 'CRUD complet + import',
+    },
+  },
+  {
+    id: 'perm-reporting',
+    module: 'Reporting équipe',
+    icon: 'BarChartOutlined',
+    access: { DELEGUE: 'none', MANAGER: 'full', ADMIN: 'full' },
+    labels: {
+      MANAGER: 'Son équipe',
+      ADMIN: 'Toutes les équipes',
+    },
+  },
+  {
+    id: 'perm-doublons',
+    module: 'Gestion des doublons',
+    icon: 'MergeCellsOutlined',
+    access: { DELEGUE: 'none', MANAGER: 'none', ADMIN: 'full' },
+    labels: { ADMIN: 'Fusion & suppression' },
+  },
+  {
+    id: 'perm-utilisateurs',
+    module: 'Utilisateurs & Zones',
+    icon: 'UsergroupAddOutlined',
+    access: { DELEGUE: 'none', MANAGER: 'none', ADMIN: 'full' },
+    labels: { ADMIN: 'CRUD complet' },
+  },
+  {
+    id: 'perm-parametres',
+    module: 'Paramètres',
+    icon: 'SettingOutlined',
+    access: { DELEGUE: 'none', MANAGER: 'none', ADMIN: 'full' },
+    labels: { ADMIN: 'Configuration globale' },
+  },
+];
 
 // ─── Rendez-vous ─────────────────────────────────────────────────────────────
 
