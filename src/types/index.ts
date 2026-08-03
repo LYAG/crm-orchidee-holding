@@ -3,6 +3,7 @@ import type { UserRole } from '@/lib/constants';
 export type { UserRole };
 
 export * from './professionnels';
+export * from './validations';
 
 // ─── Zone ────────────────────────────────────────────────────────────────────
 

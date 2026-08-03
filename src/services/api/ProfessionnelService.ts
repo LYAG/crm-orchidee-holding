@@ -1,12 +1,14 @@
 import type { UserRole } from '@/lib/constants';
 import type {
   Centre,
+  DemandeValidation,
   FiltresProfessionnel,
   GesteMarketing,
   GesteRealise,
   JourTournee,
   ProfessionnelSante,
   Specialite,
+  StatutDemandeValidation,
 } from '@/types';
 
 export type CreateCentreDto = Omit<Centre, 'id' | 'createdAt' | 'updatedAt'>;
@@ -75,4 +77,10 @@ export interface ProfessionnelService {
   // Planning de tournée
   getJourneesTournee(delegueId: string): Promise<JourTournee[]>;
   saveJourTournee(data: Omit<JourTournee, 'id'>): Promise<JourTournee>;
+
+  // Import Excel : intégration directe + file de validation ADMIN
+  importerProfessionnel(data: CreateProfessionnelDto): Promise<ProfessionnelSante>;
+  getDemandesValidation(statut?: StatutDemandeValidation): Promise<DemandeValidation[]>;
+  creerDemandeValidation(data: Omit<DemandeValidation, 'id' | 'dateCreation' | 'statut'>): Promise<DemandeValidation>;
+  traiterDemandeValidation(id: string, statut: StatutDemandeValidation): Promise<DemandeValidation>;
 }

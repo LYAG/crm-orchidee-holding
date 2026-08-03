@@ -14,6 +14,7 @@ import type {
 import { UserRole } from '@/lib/constants';
 import type {
   Centre,
+  DemandeValidation,
   FiltresProfessionnel,
   GesteMarketing,
   GesteRealise,
@@ -21,6 +22,7 @@ import type {
   ProfessionnelSante,
   Specialite,
 } from '@/types';
+import { StatutDemandeValidation } from '@/types';
 import { deepClone, delay, generateId, notFound } from './_utils';
 import {
   centres as mockCentres,
@@ -37,6 +39,7 @@ const gestesMarketing: GesteMarketing[] = deepClone(mockGestesMarketing);
 const professionnels: ProfessionnelSante[] = deepClone(mockProfessionnels);
 const gestesRealises: GesteRealise[] = deepClone(mockGestesRealises);
 const joursTournee: JourTournee[] = deepClone(mockJoursTournee);
+const demandesValidation: DemandeValidation[] = [];
 
 /** Normalise pour rapprochement flou : majuscules, sans ponctuation, sans espaces multiples. */
 function normaliser(texte: string): string {
@@ -299,5 +302,54 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     const jourTournee: JourTournee = { ...data, id: generateId('tournee') };
     joursTournee.push(jourTournee);
     return jourTournee;
+  }
+
+  // ── Import Excel ─────────────────────────────────────────────────────────
+
+  async importerProfessionnel(data: CreateProfessionnelDto): Promise<ProfessionnelSante> {
+    return this.createProfessionnel(data);
+  }
+
+  async getDemandesValidation(statut?: StatutDemandeValidation): Promise<DemandeValidation[]> {
+    await delay();
+    return demandesValidation
+      .filter((d) => !statut || d.statut === statut)
+      .sort((a, b) => b.dateCreation.localeCompare(a.dateCreation));
+  }
+
+  async creerDemandeValidation(
+    data: Omit<DemandeValidation, 'id' | 'dateCreation' | 'statut'>,
+  ): Promise<DemandeValidation> {
+    await delay();
+    const demande: DemandeValidation = {
+      ...data,
+      id: generateId('demande'),
+      dateCreation: today(),
+      statut: StatutDemandeValidation.EN_ATTENTE,
+    };
+    demandesValidation.push(demande);
+    return demande;
+  }
+
+  async traiterDemandeValidation(id: string, statut: StatutDemandeValidation): Promise<DemandeValidation> {
+    await delay();
+    const idx = demandesValidation.findIndex((d) => d.id === id);
+    if (idx < 0) notFound('Demande de validation', id);
+    demandesValidation[idx] = { ...demandesValidation[idx], statut };
+
+    if (statut === StatutDemandeValidation.APPROUVEE) {
+      const demande = demandesValidation[idx];
+      if (demande.type === 'NOUVEAU_CENTRE') {
+        await this.createCentre(demande.donnees as unknown as CreateCentreDto);
+      } else if (demande.type === 'NOUVELLE_SPECIALITE') {
+        await this.createSpecialite(demande.donnees as unknown as CreateSpecialiteDto);
+      } else if (demande.type === 'NOUVEAU_GESTE') {
+        await this.createGesteMarketing(demande.donnees as unknown as CreateGesteMarketingDto);
+      } else if (demande.type === 'DOUBLON_PROFESSIONNEL') {
+        await this.createProfessionnel(demande.donnees as unknown as CreateProfessionnelDto);
+      }
+    }
+
+    return demandesValidation[idx];
   }
 }
