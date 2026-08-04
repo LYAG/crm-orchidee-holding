@@ -3,8 +3,12 @@ import { JourSemaine, ModeJoursConsultation, TypeCas, UniteCas } from '@/types';
 
 /* ── Normalisation générique de texte ───────────────────────────────────── */
 
+const REGEX_DIACRITIQUES = new RegExp('[̀-ͯ]', 'g');
+
 export function normaliserTexte(texte: string): string {
   return texte
+    .normalize('NFD')
+    .replace(REGEX_DIACRITIQUES, '') // supprime les accents (é → e, è → e, ...)
     .toUpperCase()
     .replace(/[.,;:'’-]/g, ' ')
     .replace(/\s+/g, ' ')

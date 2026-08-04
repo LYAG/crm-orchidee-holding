@@ -19,6 +19,7 @@ import {
   Skeleton,
   Space,
   Table,
+  Tabs,
   Tag,
   Typography,
 } from 'antd';
@@ -35,6 +36,7 @@ import {
 } from '@/services';
 import { ProspectStatut, RdvStatut } from '@/types';
 import type { Prospect, RendezVous, Utilisateur, Zone } from '@/types';
+import { SuiviProfessionnelsTab } from './SuiviProfessionnelsTab';
 
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -323,20 +325,8 @@ export function ReportingPage() {
     },
   ];
 
-  return (
-    <PageContainer
-      title="Reporting équipe"
-      extra={
-        <Button
-          type="primary"
-          icon={<DownloadOutlined />}
-          loading={exporting}
-          onClick={handleExport}
-        >
-          Exporter en CSV
-        </Button>
-      }
-    >
+  const prospectsTab = (
+    <>
       {/* ── Filtres ── */}
       <ProCard
         bordered
@@ -446,6 +436,30 @@ export function ReportingPage() {
           size="middle"
         />
       </ProCard>
+    </>
+  );
+
+  return (
+    <PageContainer
+      title="Reporting équipe"
+      extra={
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          loading={exporting}
+          onClick={handleExport}
+        >
+          Exporter en CSV
+        </Button>
+      }
+    >
+      <Tabs
+        defaultActiveKey="prospects"
+        items={[
+          { key: 'prospects', label: 'Prospects', children: prospectsTab },
+          { key: 'professionnels', label: 'Suivi Professionnels', children: <SuiviProfessionnelsTab /> },
+        ]}
+      />
     </PageContainer>
   );
 }
