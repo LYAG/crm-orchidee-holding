@@ -9,6 +9,7 @@ export interface ResultatSoumission {
   miseAJour: number;
   ignorees: number;
   demandesValidation: number;
+  centresCrees: number;
 }
 
 function joursConsultationFinal(ligne: ProfessionnelAImporter): JoursConsultation {
@@ -48,33 +49,38 @@ async function construireDto(ligne: ProfessionnelAImporter, delegueId: string): 
 export async function soumettreImport(
   lignes: ProfessionnelAImporter[],
   delegueId: string,
+  zoneId: string,
 ): Promise<ResultatSoumission> {
-  const resultat: ResultatSoumission = { creees: 0, miseAJour: 0, ignorees: 0, demandesValidation: 0 };
-  const centresACreerVus = new Set<string>();
+  const resultat: ResultatSoumission = { creees: 0, miseAJour: 0, ignorees: 0, demandesValidation: 0, centresCrees: 0 };
+  // Un seul centre créé par nom rencontré dans le lot, réutilisé pour les lignes suivantes.
+  const centresCreesParNom = new Map<string, string>();
   const planningParJour = new Map<JourTourneeKey, Set<string>>();
 
   for (const ligne of lignes) {
+    // Centre inconnu : on le crée directement dans la zone du délégué pour ne pas
+    // bloquer l'import, tout en gardant une trace (demande de validation informative).
+    if (ligne.centreACreer && !ligne.centreId) {
+      const clef = ligne.centreBrut.trim().toUpperCase();
+      let centreId = centresCreesParNom.get(clef);
+      if (!centreId) {
+        const centre = await professionnelService.createCentre({ nom: ligne.centreBrut.trim(), zoneId, actif: true });
+        centreId = centre.id;
+        centresCreesParNom.set(clef, centreId);
+        resultat.centresCrees++;
+        await professionnelService.creerDemandeValidation({
+          type: TypeDemandeValidation.NOUVEAU_CENTRE,
+          delegueId,
+          libelle: `Nouveau centre créé à l'import : "${ligne.centreBrut}"`,
+          donnees: { nom: ligne.centreBrut, zoneId, actif: true },
+        });
+      }
+      ligne.centreId = centreId;
+    }
+
     if (ligne.jourTournee && ligne.jourTournee !== JourSemaine.DIM && ligne.centreId) {
       const jourTournee = ligne.jourTournee as JourTourneeKey;
       if (!planningParJour.has(jourTournee)) planningParJour.set(jourTournee, new Set());
       planningParJour.get(jourTournee)!.add(ligne.centreId);
-    }
-
-    // Centre manquant : une seule demande par nom de centre, le professionnel attend la validation.
-    if (ligne.centreACreer) {
-      const clef = ligne.centreBrut.trim().toUpperCase();
-      if (!centresACreerVus.has(clef)) {
-        centresACreerVus.add(clef);
-        await professionnelService.creerDemandeValidation({
-          type: TypeDemandeValidation.NOUVEAU_CENTRE,
-          delegueId,
-          libelle: `Nouveau centre proposé : "${ligne.centreBrut}"`,
-          donnees: { nom: ligne.centreBrut, actif: true },
-        });
-        resultat.demandesValidation++;
-      }
-      resultat.ignorees++;
-      continue;
     }
 
     for (const code of ligne.specialitesInconnues) {

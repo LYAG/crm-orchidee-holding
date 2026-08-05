@@ -63,6 +63,8 @@ export function rapprocherCentre(nomBrut: string, zoneId: string, centres: Centr
 const SYNONYMES_SPECIALITE: Record<string, string> = {
   CPON: 'CPN',
   PEDIATRE: 'PEDIATRIE',
+  SALL_ACC: 'SA',
+  IDS: 'IDE',
 };
 
 export interface ResultatSpecialites {
@@ -130,7 +132,7 @@ export function mapperGestes(brut: string, referentiel: GesteMarketing[]): Resul
 /* ── Potentiel de cas (colonne NBRE DE CAS) ─────────────────────────────── */
 
 function uniteDepuis(texte: string): UniteCas | null {
-  if (/JOUR/i.test(texte)) return UniteCas.JOUR;
+  if (/JOUR|\bJRS?\b/i.test(texte)) return UniteCas.JOUR;
   if (/SEM/i.test(texte)) return UniteCas.SEMAINE;
   if (/MOIS/i.test(texte)) return UniteCas.MOIS;
   return null;
@@ -152,7 +154,7 @@ export function parserPotentielCas(brut: string): PotentielCas | null {
   const estMinimum = /^MIN\b/i.test(t.trim());
 
   // "2 A 3 CAS / JOUR", "2 accouch / jour"
-  const plage = t.match(/(\d+)\s*(?:A|À|-)\s*(\d+)/i);
+  const plage = t.match(/(\d+)\s*(?:A|À|-|–|—)\s*(\d+)/i);
   if (plage) {
     return { min: Number(plage[1]), max: Number(plage[2]), unite, typeCas };
   }
@@ -168,22 +170,43 @@ export function parserPotentielCas(brut: string): PotentielCas | null {
 
 /* ── Jours de consultation (colonne JRS/CONS) ───────────────────────────── */
 
-const JOUR_ALIASES: Record<string, JourSemaine> = {
-  LUN: JourSemaine.LUN,
-  LUNDI: JourSemaine.LUN,
-  MAR: JourSemaine.MAR,
-  MARDI: JourSemaine.MAR,
-  MER: JourSemaine.MER,
-  MERCREDI: JourSemaine.MER,
-  JEU: JourSemaine.JEU,
-  JEUDI: JourSemaine.JEU,
-  VEN: JourSemaine.VEN,
-  VENDREDI: JourSemaine.VEN,
-  SAM: JourSemaine.SAM,
-  SAMEDI: JourSemaine.SAM,
-  DIM: JourSemaine.DIM,
-  DIMANCHE: JourSemaine.DIM,
-};
+// Ordre de la semaine, utilisé pour développer les plages ("LUND-VENDR" → LUN..VEN).
+const JOURS_ORDRE = [
+  JourSemaine.LUN,
+  JourSemaine.MAR,
+  JourSemaine.MER,
+  JourSemaine.JEU,
+  JourSemaine.VEN,
+  JourSemaine.SAM,
+  JourSemaine.DIM,
+];
+
+// Préfixes plutôt que noms exacts : tolère les abréviations et coquilles réelles
+// du terrain ("LUND", "MERCR", "JEUND", "VENDR"...).
+const JOUR_PREFIXES: [string, JourSemaine][] = [
+  ['LUN', JourSemaine.LUN],
+  ['MAR', JourSemaine.MAR],
+  ['MER', JourSemaine.MER],
+  ['JEU', JourSemaine.JEU],
+  ['VEN', JourSemaine.VEN],
+  ['SAM', JourSemaine.SAM],
+  ['DIM', JourSemaine.DIM],
+];
+
+function jourDepuisToken(token: string): JourSemaine | null {
+  const t = token.trim();
+  for (const [prefixe, jour] of JOUR_PREFIXES) {
+    if (t.startsWith(prefixe)) return jour;
+  }
+  return null;
+}
+
+function joursDansIntervalle(debut: JourSemaine, fin: JourSemaine): JourSemaine[] {
+  const iDebut = JOURS_ORDRE.indexOf(debut);
+  const iFin = JOURS_ORDRE.indexOf(fin);
+  if (iDebut === -1 || iFin === -1 || iFin < iDebut) return [debut, fin].filter((j, i, arr) => arr.indexOf(j) === i);
+  return JOURS_ORDRE.slice(iDebut, iFin + 1);
+}
 
 export function parserJoursConsultation(brut: string): JoursConsultation | null {
   const t = brut.trim();
@@ -201,11 +224,22 @@ export function parserJoursConsultation(brut: string): JoursConsultation | null 
     return { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: freq };
   }
 
-  // Jours explicites séparés par ; , . ou espaces
-  const tokens = majuscule.split(/[;,.\s]+/).filter(Boolean);
+  // Plage "LUNDI - VENDREDI" / "LUND-VENDR" / "MARDI – JEUDI" : deux jours reliés
+  // par un seul tiret → on développe l'intervalle complet.
+  const partsPlage = majuscule.split(/\s*[–—-]\s*/).map((p) => p.trim()).filter(Boolean);
+  if (partsPlage.length === 2) {
+    const debut = jourDepuisToken(partsPlage[0]);
+    const fin = jourDepuisToken(partsPlage[1]);
+    if (debut && fin) {
+      return { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: joursDansIntervalle(debut, fin) };
+    }
+  }
+
+  // Jours explicites séparés par ; , . / ou espaces
+  const tokens = majuscule.split(/[;,./\s]+/).filter(Boolean);
   const jours: JourSemaine[] = [];
   for (const token of tokens) {
-    const jour = JOUR_ALIASES[token];
+    const jour = jourDepuisToken(token);
     if (jour && !jours.includes(jour)) jours.push(jour);
   }
   if (jours.length > 0) {
@@ -254,7 +288,7 @@ const SECTIONS_PARASITES = /^(RESUME|AUTRES\s*SF|SEMAINE\s*\d+)$/i;
 export function estJourDeTourneeValide(brut: string): JourSemaine | null {
   const t = normaliserTexte(brut);
   if (SECTIONS_PARASITES.test(t)) return null;
-  return JOUR_ALIASES[t] ?? null;
+  return jourDepuisToken(t);
 }
 
 export function estLigneParasite(jourBrut: string, nomBrut: string): boolean {

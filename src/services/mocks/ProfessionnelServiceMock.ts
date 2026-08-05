@@ -353,7 +353,13 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     if (statut === StatutDemandeValidation.APPROUVEE) {
       const demande = demandesValidation[idx];
       if (demande.type === 'NOUVEAU_CENTRE') {
-        await this.createCentre(demande.donnees as unknown as CreateCentreDto);
+        const donnees = demande.donnees as unknown as CreateCentreDto;
+        // Idempotent : si le centre a déjà été créé (ex. import qui ne bloque pas
+        // sur les centres inconnus), on ne recrée pas de doublon à l'approbation.
+        const dejaExistant = centres.some(
+          (c) => c.zoneId === donnees.zoneId && c.nom.trim().toUpperCase() === donnees.nom.trim().toUpperCase(),
+        );
+        if (!dejaExistant) await this.createCentre(donnees);
       } else if (demande.type === 'NOUVELLE_SPECIALITE') {
         await this.createSpecialite(demande.donnees as unknown as CreateSpecialiteDto);
       } else if (demande.type === 'NOUVEAU_GESTE') {

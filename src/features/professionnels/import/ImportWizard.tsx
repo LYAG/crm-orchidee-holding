@@ -17,12 +17,13 @@ import {
   Upload,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { professionnelService } from '@/services';
-import type { Centre, GesteMarketing, ProfessionnelSante, Specialite } from '@/types';
+import { UserRole } from '@/lib/constants';
+import { professionnelService, utilisateurService } from '@/services';
+import type { Centre, GesteMarketing, ProfessionnelSante, Specialite, Utilisateur } from '@/types';
 import { formatJoursConsultation, formatPotentielCas } from '../utils';
-import { listerFeuilles, parserFeuille } from './parseFichier';
+import { listerFeuillesImportables, parserFeuille } from './parseFichier';
 import { soumettreImport, type ResultatSoumission } from './soumettreImport';
 import { transformerLignes } from './transformerLignes';
 import type { LigneBrute, ProfessionnelAImporter } from './types';
@@ -42,6 +43,10 @@ export function ImportWizard() {
 
   const [step, setStep] = useState(0);
 
+  const estGestionnaire = user?.role === UserRole.ADMIN || user?.role === UserRole.MANAGER;
+  const [delegues, setDelegues] = useState<Utilisateur[]>([]);
+  const [delegueChoisiId, setDelegueChoisiId] = useState<string | null>(null);
+
   // Étape 1
   const [file, setFile] = useState<File | null>(null);
   const [feuilles, setFeuilles] = useState<string[]>([]);
@@ -59,7 +64,15 @@ export function ImportWizard() {
   const [resultat, setResultat] = useState<ResultatSoumission | null>(null);
   const [soumission, setSoumission] = useState(false);
 
-  const zoneId = user?.zoneIds?.[0];
+  useEffect(() => {
+    if (estGestionnaire) {
+      utilisateurService.getByRole(UserRole.DELEGUE).then(setDelegues).catch(() => {});
+    }
+  }, [estGestionnaire]);
+
+  const delegueChoisi = delegues.find((d) => d.id === delegueChoisiId);
+  const delegueId = estGestionnaire ? delegueChoisiId ?? undefined : user?.id;
+  const zoneId = estGestionnaire ? delegueChoisi?.zoneIds?.[0] : user?.zoneIds?.[0];
 
   async function handleFileSelected(f: File) {
     setFile(f);

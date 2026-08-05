@@ -20,15 +20,38 @@ export async function listerFeuilles(file: File): Promise<string[]> {
   return workbook.SheetNames;
 }
 
-function normaliserEntete(texte: unknown): string {
-  return String(texte ?? '').trim().toUpperCase();
+/**
+ * Ne garde que les feuilles exploitables (contenant une ligne d'en-tête JOUR+CENTRE
+ * dans les 5 premières lignes) — écarte les feuilles vides ou mal formées.
+ */
+export async function listerFeuillesImportables(file: File): Promise<string[]> {
+  const buffer = await file.arrayBuffer();
+  const workbook = XLSX.read(buffer, { type: 'array' });
+  return workbook.SheetNames.filter((nom) => {
+    const grille: unknown[][] = XLSX.utils.sheet_to_json(workbook.Sheets[nom], { header: 1, defval: '' });
+    for (let i = 0; i < Math.min(grille.length, 5); i++) {
+      const colonnes = trouverIndexColonnes(grille[i]);
+      if (colonnes.jour != null && colonnes.centre != null) return true;
+    }
+    return false;
+  });
+}
+
+// Comparaison tolérante aux variations d'espacement/ponctuation dans les en-têtes
+// (ex. "JRS/CONS" vs "JRS/ CONS" vs "JRS / CONS").
+function normaliserEnteteCompact(texte: unknown): string {
+  return String(texte ?? '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-ZÀ-Ÿ0-9]/g, '');
 }
 
 function trouverIndexColonnes(headerRow: unknown[]): Partial<Record<keyof Omit<LigneBrute, 'ligneExcel'>, number>> {
-  const entetes = headerRow.map(normaliserEntete);
+  const entetes = headerRow.map(normaliserEnteteCompact);
   const resultat: Partial<Record<keyof Omit<LigneBrute, 'ligneExcel'>, number>> = {};
   for (const [cle, alias] of Object.entries(COLONNES_ATTENDUES)) {
-    const idx = entetes.findIndex((e) => alias.includes(e));
+    const aliasCompacts = alias.map(normaliserEnteteCompact);
+    const idx = entetes.findIndex((e) => aliasCompacts.includes(e));
     if (idx >= 0) resultat[cle as keyof Omit<LigneBrute, 'ligneExcel'>] = idx;
   }
   return resultat;
