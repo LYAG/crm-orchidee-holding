@@ -10,7 +10,6 @@ import {
   PlayCircleOutlined,
   SafetyCertificateOutlined,
   SettingOutlined,
-  TeamOutlined,
   TrophyOutlined,
   UsergroupAddOutlined,
 } from '@ant-design/icons';
@@ -31,11 +30,6 @@ const allRoutes: MenuRoute[] = [
     path: '/',
     name: 'Tableau de bord',
     icon: <DashboardOutlined />,
-  },
-  {
-    path: '/prospects',
-    name: 'Prospects',
-    icon: <TeamOutlined />,
   },
   {
     path: '/professionnels',
@@ -135,7 +129,6 @@ export function getMenuRoutes(role: UserRole) {
 
 export const PAGE_TITLES: Record<string, string> = {
   '/': 'Tableau de bord',
-  '/prospects': 'Prospects',
   '/professionnels': 'Professionnels de santé',
   '/rdv': 'Rendez-vous',
   '/opportunites': 'Opportunités',

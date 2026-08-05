@@ -1,11 +1,21 @@
 import {
   JourSemaine,
   ModeJoursConsultation,
+  StatutProfessionnel,
   TypeCas,
   UniteCas,
   type JoursConsultation,
   type PotentielCas,
 } from '@/types';
+
+export const STATUT_CONFIG: Record<StatutProfessionnel, { color: string; bg: string; label: string }> = {
+  [StatutProfessionnel.PNA]: { color: '#E65100', bg: '#FFF3E0', label: 'Non affecté' },
+  [StatutProfessionnel.ST]: { color: '#2E7D32', bg: '#E8F5E9', label: 'ST' },
+  [StatutProfessionnel.T1]: { color: '#1565C0', bg: '#E3F2FD', label: 'T1' },
+  [StatutProfessionnel.T2]: { color: '#6A1B9A', bg: '#F3E5F5', label: 'T2' },
+  [StatutProfessionnel.T3]: { color: '#9E9E9E', bg: '#F5F5F5', label: 'T3' },
+  [StatutProfessionnel.PERDU]: { color: '#C62828', bg: '#FFEBEE', label: 'Perdu' },
+};
 
 export const JOUR_LABELS: Record<JourSemaine, string> = {
   [JourSemaine.LUN]: 'Lun',

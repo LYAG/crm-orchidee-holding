@@ -311,7 +311,7 @@ export function DashboardAdmin({ user }: Props) {
                     {kpi.professionnelsNonAttribuesSup30j > 1 ? 's' : ''} PNA non attribué
                     {kpi.professionnelsNonAttribuesSup30j > 1 ? 's' : ''} depuis plus de 30 jours
                   </span>
-                  <Link href="/prospects">
+                  <Link href="/professionnels">
                     <Button size="small" type="link" style={{ fontWeight: 600, padding: 0 }}>
                       Voir →
                     </Button>

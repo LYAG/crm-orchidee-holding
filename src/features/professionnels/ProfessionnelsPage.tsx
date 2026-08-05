@@ -1,22 +1,24 @@
 'use client';
 
-import { PhoneOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PhoneOutlined, PlusOutlined, UploadOutlined, UserAddOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Avatar, Button, Space, Tag, Tooltip } from 'antd';
+import { App, Avatar, Button, Space, Tag, Tooltip } from 'antd';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, utilisateurService, zoneService } from '@/services';
 import type { Centre, GesteRealise, ProfessionnelSante, Specialite, Utilisateur, Zone } from '@/types';
-import { JourSemaine } from '@/types';
+import { JourSemaine, StatutProfessionnel } from '@/types';
+import { AttributionModal } from './AttributionModal';
 import { ProfessionnelDrawer } from './ProfessionnelDrawer';
 import { ProfessionnelFormModal } from './ProfessionnelFormModal';
-import { JOUR_LABELS, formatJoursConsultation, formatPotentielCas } from './utils';
+import { JOUR_LABELS, STATUT_CONFIG, formatJoursConsultation, formatPotentielCas } from './utils';
 
 export function ProfessionnelsPage() {
   const { user } = useAuth();
+  const { message, modal } = App.useApp();
   const actionRef = useRef<ActionType | undefined>(undefined);
 
   const [centres, setCentres] = useState<Centre[]>([]);
@@ -28,6 +30,8 @@ export function ProfessionnelsPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selected, setSelected] = useState<ProfessionnelSante | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [attributionTarget, setAttributionTarget] = useState<ProfessionnelSante | null>(null);
+  const [attributionOpen, setAttributionOpen] = useState(false);
 
   useEffect(() => {
     professionnelService.getCentres().then(setCentres).catch(() => {});
@@ -141,6 +145,93 @@ export function ProfessionnelsPage() {
         return g ? <span style={{ fontSize: 12, color: '#123832' }}>{g.date}</span> : <span style={{ color: '#C7DAD5' }}>—</span>;
       },
     },
+    {
+      title: 'Statut',
+      dataIndex: 'statut',
+      valueEnum: Object.fromEntries(
+        Object.values(StatutProfessionnel).map((s) => [s, { text: STATUT_CONFIG[s].label }]),
+      ),
+      render: (_, p) => {
+        const cfg = STATUT_CONFIG[p.statut];
+        return (
+          <Tag color={cfg.color} style={{ background: cfg.bg, borderColor: cfg.bg, borderRadius: 6 }}>
+            {cfg.label}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      search: false,
+      render: (_, p) => {
+        const { centre } = centreEtZone(p.centreId);
+        const peutSAttribuer =
+          role === UserRole.DELEGUE &&
+          p.statut === StatutProfessionnel.PNA &&
+          !!centre &&
+          (currentUser.zoneIds ?? []).includes(centre.zoneId);
+        const peutAttribuer =
+          (role === UserRole.MANAGER || role === UserRole.ADMIN) && p.statut === StatutProfessionnel.PNA;
+
+        return (
+          <Space size={4} onClick={(e) => e.stopPropagation()}>
+            {peutSAttribuer && (
+              <Button
+                size="small"
+                type="link"
+                onClick={async () => {
+                  try {
+                    await professionnelService.sAutoAttribuer(p.id, currentUser.id);
+                    message.success('Professionnel attribué.');
+                    actionRef.current?.reload();
+                  } catch (err) {
+                    message.error(err instanceof Error ? err.message : "Erreur lors de l'attribution.");
+                  }
+                }}
+              >
+                M&apos;attribuer
+              </Button>
+            )}
+            {peutAttribuer && (
+              <Tooltip title="Attribuer à un délégué">
+                <Button
+                  size="small"
+                  icon={<UserAddOutlined />}
+                  onClick={() => {
+                    setAttributionTarget(p);
+                    setAttributionOpen(true);
+                  }}
+                />
+              </Tooltip>
+            )}
+            {role === UserRole.ADMIN && (
+              <Tooltip title={p.aDejaEuContact ? 'Suppression impossible : un RDV a déjà eu lieu.' : 'Supprimer'}>
+                <Button
+                  size="small"
+                  danger
+                  icon={<DeleteOutlined />}
+                  disabled={p.aDejaEuContact}
+                  onClick={() => {
+                    modal.confirm({
+                      title: 'Supprimer ce professionnel ?',
+                      content: `${p.nom} ${p.prenom ?? ''} sera définitivement supprimé.`,
+                      okText: 'Supprimer',
+                      okButtonProps: { danger: true },
+                      onOk: async () => {
+                        await professionnelService.deleteProfessionnel(p.id);
+                        message.success('Professionnel supprimé.');
+                        actionRef.current?.reload();
+                      },
+                    });
+                  }}
+                />
+              </Tooltip>
+            )}
+          </Space>
+        );
+      },
+    },
   ];
 
   if (role !== UserRole.DELEGUE) {
@@ -208,6 +299,14 @@ export function ProfessionnelsPage() {
         open={createOpen}
         onOpenChange={setCreateOpen}
         defaultDelegueId={role === UserRole.DELEGUE ? user.id : undefined}
+        onSuccess={() => actionRef.current?.reload()}
+      />
+
+      <AttributionModal
+        open={attributionOpen}
+        onOpenChange={setAttributionOpen}
+        professionnel={attributionTarget}
+        delegues={delegues}
         onSuccess={() => actionRef.current?.reload()}
       />
     </PageContainer>

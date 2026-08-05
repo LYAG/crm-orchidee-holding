@@ -66,8 +66,8 @@ export function HeaderNotifications({ user }: Props) {
             icon: <TeamOutlined />,
             type: 'warning',
             title: `${kpi.professionnelsNonAttribuesSup30j} PNA non attribué${kpi.professionnelsNonAttribuesSup30j > 1 ? 's' : ''} > 30 j`,
-            description: 'Ces prospects attendent une affectation à un délégué.',
-            link: '/prospects',
+            description: 'Ces professionnels attendent une affectation à un délégué.',
+            link: '/professionnels',
           });
         }
       }
