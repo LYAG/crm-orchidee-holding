@@ -1,8 +1,9 @@
 ﻿import type { ReportingService } from '@/services/api/ReportingService';
 import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport } from '@/types';
-import { OpportuniteEtape, ProspectStatut, QualificationTransformation } from '@/types';
+import { OpportuniteEtape, QualificationTransformation, StatutProfessionnel } from '@/types';
 import { delay } from './_utils';
-import { opportunites, prospects, qualifications, rendezvous, utilisateurs } from './data';
+import { opportunites, qualifications, rendezvous, utilisateurs } from './data';
+import { centres, professionnels } from './professionnelsData';
 
 function now() {
   return new Date().toISOString();
@@ -91,14 +92,14 @@ export class ReportingServiceMock implements ReportingService {
 
   async getKpiAdmin(_periode?: PeriodeRapport): Promise<KpiAdmin> {
     await delay();
-    const doublonsEnAttente = 1; // cf. data.ts
+    const doublonsEnAttente = 0;
 
     const maintenant = new Date();
     const seuil = new Date(maintenant);
     seuil.setDate(seuil.getDate() - 30);
-    const professionnelsNonAttribuesSup30j = prospects.filter(
+    const professionnelsNonAttribuesSup30j = professionnels.filter(
       (p) =>
-        p.statut === ProspectStatut.PNA && new Date(p.dateCreation) < seuil,
+        p.statut === StatutProfessionnel.PNA && new Date(p.dateCreation) < seuil,
     ).length;
 
     const pipelineTotal = opportunites
