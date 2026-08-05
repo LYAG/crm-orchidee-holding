@@ -287,7 +287,7 @@ export function RdvPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
   const [editingRdv, setEditingRdv] = useState<RendezVous | null>(null);
-  const [formPrefill, setFormPrefill] = useState<{ prospectId?: string; dateHeure?: string } | undefined>();
+  const [formPrefill, setFormPrefill] = useState<{ professionnelId?: string; dateHeure?: string } | undefined>();
   const [detailOpen, setDetailOpen] = useState(false);
   const [annulationOpen, setAnnulationOpen] = useState(false);
 
@@ -324,8 +324,8 @@ export function RdvPage() {
       return;
     }
     setContactsLoading(true);
-    prospectService
-      .getAll({ delegueId })
+    professionnelService
+      .getProfessionnels({ delegueId })
       .then(setContacts)
       .catch(() => {})
       .finally(() => setContactsLoading(false));
@@ -334,19 +334,19 @@ export function RdvPage() {
   const activeDelegueId = isDelegue ? user.id : (selectedDelegueId ?? user.id);
   const selectedDelegue = delegues.find((d) => d.id === selectedDelegueId) ?? null;
 
-  function openNewForm(pf?: { prospectId?: string; dateHeure?: string }) {
+  function openNewForm(pf?: { professionnelId?: string; dateHeure?: string }) {
     setEditingRdv(null);
     setFormPrefill(pf);
     setFormKey((k) => k + 1);
     setFormOpen(true);
   }
 
-  function handleDropProspect(prospectId: string, dateTime: Dayjs) {
+  function handleDropProfessionnel(professionnelId: string, dateTime: Dayjs) {
     // Vue semaine : dateTime a déjà l'heure du créneau. Vue mois : heure = 0:00 → défaut 9h.
     const final = (dateTime.hour() === 0 && dateTime.minute() === 0)
       ? dateTime.hour(9).minute(0)
       : dateTime;
-    openNewForm({ prospectId, dateHeure: final.second(0).millisecond(0).toISOString() });
+    openNewForm({ professionnelId, dateHeure: final.second(0).millisecond(0).toISOString() });
   }
 
   return (
@@ -389,7 +389,7 @@ export function RdvPage() {
 
         {/* ── Panel 2 : contacts du délégué sélectionné ── */}
         <ContactsPanel
-          prospects={contacts}
+          professionnels={contacts}
           selectedDelegue={isDelegue ? (user as unknown as Utilisateur) : selectedDelegue}
           loading={contactsLoading}
         />
@@ -401,7 +401,7 @@ export function RdvPage() {
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
             onSelectRdv={(rdv) => { setSelectedRdv(rdv); setDetailOpen(true); }}
-            onDropProspect={handleDropProspect}
+            onDropProfessionnel={handleDropProfessionnel}
           />
         </div>
       </div>
