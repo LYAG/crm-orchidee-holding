@@ -7,7 +7,6 @@ import {
   FileTextOutlined,
   GiftOutlined,
   MedicineBoxOutlined,
-  MergeCellsOutlined,
   PlayCircleOutlined,
   SafetyCertificateOutlined,
   SettingOutlined,
@@ -63,12 +62,6 @@ const allRoutes: MenuRoute[] = [
     name: 'Reporting équipe',
     icon: <BarChartOutlined />,
     roles: ['MANAGER', 'ADMIN'],
-  },
-  {
-    path: '/doublons',
-    name: 'Gestion des doublons',
-    icon: <MergeCellsOutlined />,
-    roles: ['ADMIN'],
   },
   {
     path: '/validations',
@@ -148,7 +141,6 @@ export const PAGE_TITLES: Record<string, string> = {
   '/opportunites': 'Opportunités',
   '/supports': 'Supports commerciaux',
   '/reporting': 'Reporting équipe',
-  '/doublons': 'Gestion des doublons',
   '/validations': 'File de validation',
   '/professionnels/import': 'Import professionnels de santé',
   '/utilisateurs': 'Utilisateurs & Zones',

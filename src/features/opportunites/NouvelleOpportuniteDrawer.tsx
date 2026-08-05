@@ -10,9 +10,9 @@ import { App } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
-import { opportuniteService, prospectService, utilisateurService } from '@/services';
-import { OpportuniteEtape, ProspectStatut } from '@/types';
-import type { Opportunite, Prospect, Utilisateur } from '@/types';
+import { opportuniteService, professionnelService, utilisateurService } from '@/services';
+import { OpportuniteEtape, StatutProfessionnel } from '@/types';
+import type { Opportunite, ProfessionnelSante, Utilisateur } from '@/types';
 
 interface Props {
   open: boolean;
@@ -24,7 +24,7 @@ export function NouvelleOpportuniteDrawer({ open, onOpenChange, onSuccess }: Pro
   const { user } = useAuth();
   const { message } = App.useApp();
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
-  const [prospects, setProspects] = useState<Prospect[]>([]);
+  const [professionnels, setProfessionnels] = useState<ProfessionnelSante[]>([]);
   const [selectedDelegueId, setSelectedDelegueId] = useState<string | undefined>(
     user?.role === UserRole.DELEGUE ? user.id : undefined,
   );
@@ -53,9 +53,9 @@ export function NouvelleOpportuniteDrawer({ open, onOpenChange, onSuccess }: Pro
 
   useEffect(() => {
     if (!selectedDelegueId) return;
-    prospectService
-      .getAll({ delegueId: selectedDelegueId })
-      .then((p) => setProspects(p.filter((pr) => pr.statut !== ProspectStatut.CLIENT)))
+    professionnelService
+      .getProfessionnels({ delegueId: selectedDelegueId })
+      .then((p) => setProfessionnels(p.filter((pr) => pr.statut !== StatutProfessionnel.PERDU)))
       .catch(() => {});
   }, [selectedDelegueId]);
 
@@ -72,7 +72,7 @@ export function NouvelleOpportuniteDrawer({ open, onOpenChange, onSuccess }: Pro
       onFinish={async (values) => {
         try {
           const created = await opportuniteService.create({
-            prospectId: values.prospectId,
+            professionnelId: values.professionnelId,
             delegueId: isDelegue ? user.id : values.delegueId,
             titre: values.titre,
             montantEstime: values.montantEstime,
@@ -103,14 +103,14 @@ export function NouvelleOpportuniteDrawer({ open, onOpenChange, onSuccess }: Pro
       )}
 
       <ProFormSelect
-        name="prospectId"
-        label="Prospect"
-        rules={[{ required: true, message: 'Sélectionnez un prospect.' }]}
-        options={prospects.map((p) => ({
+        name="professionnelId"
+        label="Professionnel de santé"
+        rules={[{ required: true, message: 'Sélectionnez un professionnel de santé.' }]}
+        options={professionnels.map((p) => ({
           value: p.id,
-          label: `${p.nom} ${p.prenom ?? ''} — ${p.entreprise}`,
+          label: `${p.titre ? p.titre + ' ' : ''}${p.nom} ${p.prenom ?? ''}`,
         }))}
-        placeholder="Sélectionner un prospect"
+        placeholder="Sélectionner un professionnel de santé"
       />
 
       <ProFormText

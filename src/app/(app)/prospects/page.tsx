@@ -1,5 +1,5 @@
-﻿import { ProspectsPage } from '@/features/prospects/ProspectsPage';
+﻿import { ProfessionnelsPage } from '@/features/professionnels/ProfessionnelsPage';
 
 export default function Page() {
-  return <ProspectsPage />;
+  return <ProfessionnelsPage />;
 }

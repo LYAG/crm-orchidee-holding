@@ -152,14 +152,14 @@ export const gestesMarketing: GesteMarketing[] = [
 
 // ─── Professionnels de santé ──────────────────────────────────────────────────
 
-export const professionnels: ProfessionnelSante[] = [
+const baseProfessionnels: Array<Omit<ProfessionnelSante, 'statut' | 'categorie'>> = [
   {
     id: 'pro-1', nom: 'Kouassi', prenom: 'Affoué', titre: TitreProfessionnel.DR,
     centreId: 'centre-1', specialiteIds: ['spe-cpn', 'spe-sa'], telephones: ['0708123456'],
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MER, JourSemaine.JEU] },
     potentielCas: { min: 2, max: 3, unite: UniteCas.JOUR, typeCas: TypeCas.CAS },
     delegueId: 'delegue-1', actif: true, aDejaEuContact: true,
-    createdAt: '2026-01-15', updatedAt: '2026-01-15',
+    dateCreation: '2026-01-15',
   },
   {
     id: 'pro-2', nom: 'Yao', prenom: 'Marie', titre: TitreProfessionnel.SF,
@@ -167,7 +167,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: 2 },
     potentielCas: { min: 2, unite: UniteCas.JOUR, typeCas: TypeCas.ACCOUCHEMENT },
     delegueId: 'delegue-1', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-15', updatedAt: '2026-01-15',
+    dateCreation: '2026-01-15',
   },
   {
     id: 'pro-3', nom: 'Diabaté', prenom: 'Ibrahim', titre: TitreProfessionnel.M,
@@ -175,7 +175,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MAR, JourSemaine.MER, JourSemaine.JEU, JourSemaine.VEN] },
     potentielCas: { min: 4, unite: UniteCas.SEMAINE, typeCas: TypeCas.CAS, estMinimum: true },
     delegueId: 'delegue-1', actif: true, aDejaEuContact: true,
-    createdAt: '2026-01-16', updatedAt: '2026-01-16',
+    dateCreation: '2026-01-16',
   },
   {
     id: 'pro-4', nom: 'Seka', prenom: 'Christelle', titre: TitreProfessionnel.MME,
@@ -183,7 +183,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.MAR, JourSemaine.JEU] },
     potentielCas: { min: 3, max: 5, unite: UniteCas.SEMAINE, typeCas: TypeCas.CONSULTATION },
     delegueId: 'delegue-1', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-16', updatedAt: '2026-01-16',
+    dateCreation: '2026-01-16',
   },
   {
     id: 'pro-5', nom: 'Yebe', prenom: 'Solange', titre: TitreProfessionnel.SF,
@@ -191,7 +191,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: 3 },
     potentielCas: { min: 1, max: 2, unite: UniteCas.JOUR, typeCas: TypeCas.ACCOUCHEMENT },
     delegueId: 'delegue-1', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-17', updatedAt: '2026-01-17',
+    dateCreation: '2026-01-17',
   },
   {
     id: 'pro-6', nom: 'Bakayoko', prenom: 'Souleymane', titre: TitreProfessionnel.DR,
@@ -199,7 +199,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MAR, JourSemaine.MER, JourSemaine.JEU, JourSemaine.VEN, JourSemaine.SAM] },
     potentielCas: { min: 8, max: 12, unite: UniteCas.JOUR, typeCas: TypeCas.CONSULTATION },
     delegueId: 'delegue-1', actif: true, aDejaEuContact: true,
-    createdAt: '2026-01-18', updatedAt: '2026-01-18',
+    dateCreation: '2026-01-18',
   },
   {
     id: 'pro-7', nom: 'Koffi', prenom: 'Régine', titre: TitreProfessionnel.DR,
@@ -207,7 +207,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MER, JourSemaine.VEN] },
     potentielCas: { min: 5, max: 8, unite: UniteCas.JOUR, typeCas: TypeCas.CONSULTATION },
     delegueId: 'delegue-1', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-18', updatedAt: '2026-01-18',
+    dateCreation: '2026-01-18',
   },
   {
     id: 'pro-8', nom: 'Ouattara', prenom: 'Awa', titre: TitreProfessionnel.MAJOR,
@@ -215,7 +215,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: 6 },
     potentielCas: { min: 3, unite: UniteCas.JOUR, typeCas: TypeCas.CAS, estMinimum: true },
     delegueId: 'delegue-1', actif: true, aDejaEuContact: true,
-    createdAt: '2026-01-19', updatedAt: '2026-01-19',
+    dateCreation: '2026-01-19',
   },
   {
     id: 'pro-9', nom: 'N\'Dri', prenom: 'Patrick', titre: TitreProfessionnel.DR,
@@ -223,7 +223,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.MAR, JourSemaine.JEU] },
     potentielCas: { min: 2, max: 4, unite: UniteCas.JOUR, typeCas: TypeCas.CONSULTATION },
     delegueId: 'delegue-2', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-20', updatedAt: '2026-01-20',
+    dateCreation: '2026-01-20',
   },
   {
     id: 'pro-10', nom: 'Aka', prenom: 'Josiane', titre: TitreProfessionnel.SF,
@@ -231,7 +231,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MAR, JourSemaine.MER] },
     potentielCas: { min: 4, max: 6, unite: UniteCas.SEMAINE, typeCas: TypeCas.CONSULTATION },
     delegueId: 'delegue-2', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-20', updatedAt: '2026-01-20',
+    dateCreation: '2026-01-20',
   },
   {
     id: 'pro-11', nom: 'Fofana', prenom: 'Mariam', titre: TitreProfessionnel.MME,
@@ -239,7 +239,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.JEU, JourSemaine.SAM] },
     potentielCas: { min: 2, unite: UniteCas.JOUR, typeCas: TypeCas.CAS },
     delegueId: 'delegue-2', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-21', updatedAt: '2026-01-21',
+    dateCreation: '2026-01-21',
   },
   {
     id: 'pro-12', nom: 'Touré', prenom: 'Bakary', titre: TitreProfessionnel.M,
@@ -247,7 +247,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: 2 },
     potentielCas: { min: 6, max: 10, unite: UniteCas.SEMAINE, typeCas: TypeCas.CAS },
     delegueId: 'delegue-2', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-21', updatedAt: '2026-01-21',
+    dateCreation: '2026-01-21',
   },
   {
     id: 'pro-13', nom: 'Coulibaly', prenom: 'Fatim', titre: TitreProfessionnel.SF,
@@ -255,7 +255,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.MAR, JourSemaine.MER, JourSemaine.VEN] },
     potentielCas: { min: 1, max: 3, unite: UniteCas.JOUR, typeCas: TypeCas.ACCOUCHEMENT },
     delegueId: 'delegue-2', actif: true, aDejaEuContact: true,
-    createdAt: '2026-01-22', updatedAt: '2026-01-22',
+    dateCreation: '2026-01-22',
   },
   {
     id: 'pro-14', nom: 'Kone', prenom: 'Salimata', titre: TitreProfessionnel.DR,
@@ -263,7 +263,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MAR, JourSemaine.MER, JourSemaine.JEU, JourSemaine.VEN] },
     potentielCas: { min: 10, unite: UniteCas.JOUR, typeCas: TypeCas.CONSULTATION, estMinimum: true },
     delegueId: 'delegue-2', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-22', updatedAt: '2026-01-22',
+    dateCreation: '2026-01-22',
   },
   {
     id: 'pro-15', nom: 'Gbagbo', prenom: 'Henriette', titre: TitreProfessionnel.MME,
@@ -271,7 +271,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: 4 },
     potentielCas: { min: 3, max: 5, unite: UniteCas.JOUR, typeCas: TypeCas.CAS },
     delegueId: 'delegue-2', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-23', updatedAt: '2026-01-23',
+    dateCreation: '2026-01-23',
   },
   {
     id: 'pro-16', nom: 'Silué', prenom: 'Karim', titre: TitreProfessionnel.DR,
@@ -279,7 +279,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MER, JourSemaine.VEN] },
     potentielCas: { min: 6, max: 9, unite: UniteCas.JOUR, typeCas: TypeCas.CONSULTATION },
     delegueId: 'delegue-3', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-24', updatedAt: '2026-01-24',
+    dateCreation: '2026-01-24',
   },
   {
     id: 'pro-17', nom: 'Bamba', prenom: 'Nafissatou', titre: TitreProfessionnel.SF,
@@ -287,7 +287,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.MAR, JourSemaine.JEU, JourSemaine.SAM] },
     potentielCas: { min: 2, max: 4, unite: UniteCas.JOUR, typeCas: TypeCas.CAS },
     delegueId: 'delegue-3', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-24', updatedAt: '2026-01-24',
+    dateCreation: '2026-01-24',
   },
   {
     id: 'pro-18', nom: 'Zadi', prenom: 'Landry', titre: TitreProfessionnel.M,
@@ -295,7 +295,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: 5 },
     potentielCas: { min: 4, unite: UniteCas.SEMAINE, typeCas: TypeCas.CAS, estMinimum: true },
     delegueId: 'delegue-3', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-25', updatedAt: '2026-01-25',
+    dateCreation: '2026-01-25',
   },
   {
     id: 'pro-19', nom: 'Kra', prenom: 'Adjoua Béatrice', titre: TitreProfessionnel.DR,
@@ -303,7 +303,7 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MAR, JourSemaine.JEU] },
     potentielCas: { min: 5, max: 7, unite: UniteCas.JOUR, typeCas: TypeCas.CONSULTATION },
     delegueId: 'delegue-4', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-26', updatedAt: '2026-01-26',
+    dateCreation: '2026-01-26',
   },
   {
     id: 'pro-20', nom: 'Doumbia', prenom: 'Sekou', titre: TitreProfessionnel.MAJOR,
@@ -311,9 +311,24 @@ export const professionnels: ProfessionnelSante[] = [
     joursConsultation: { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: 3 },
     potentielCas: { min: 3, unite: UniteCas.JOUR, typeCas: TypeCas.CAS },
     delegueId: 'delegue-4', actif: true, aDejaEuContact: false,
-    createdAt: '2026-01-26', updatedAt: '2026-01-26',
+    dateCreation: '2026-01-26',
+  },
+  {
+    id: 'pro-21', nom: 'Kouamé', prenom: 'Olivier', titre: TitreProfessionnel.DR,
+    centreId: 'centre-8', specialiteIds: ['spe-mg'], telephones: ['0766778899'],
+    joursConsultation: { mode: ModeJoursConsultation.JOURS_EXPLICITES, jours: [JourSemaine.LUN, JourSemaine.MAR, JourSemaine.MER] },
+    potentielCas: { min: 4, max: 6, unite: UniteCas.JOUR, typeCas: TypeCas.CONSULTATION },
+    delegueId: 'delegue-5', actif: true, aDejaEuContact: true,
+    dateCreation: '2026-03-01',
   },
 ];
+
+/** Enrichit les fiches de base avec statut (classification ST/T1/T2/T3) et catégorie d'établissement. */
+export const professionnels: ProfessionnelSante[] = baseProfessionnels.map((p) => ({
+  ...p,
+  categorie: categorieDefaut(p.titre!, p.specialiteIds),
+  statut: p.aDejaEuContact ? StatutProfessionnel.ST : StatutProfessionnel.T3,
+}));
 
 // ─── Gestes réalisés (historique) ─────────────────────────────────────────────
 

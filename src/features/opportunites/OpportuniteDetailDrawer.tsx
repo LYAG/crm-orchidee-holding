@@ -32,7 +32,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { opportuniteService, rdvService } from '@/services';
 import { DevisStatut, OpportuniteEtape } from '@/types';
-import type { Devis, Opportunite, Prospect, RendezVous, Utilisateur } from '@/types';
+import type { Devis, Opportunite, ProfessionnelSante, RendezVous, Utilisateur } from '@/types';
 import { DEVIS_STATUT_CONFIG, ETAPE_MAP, ETAPES_CONFIG } from './constants';
 
 const { Text, Title } = Typography;
@@ -40,7 +40,7 @@ const { Text, Title } = Typography;
 interface Props {
   open: boolean;
   opportunite: Opportunite | null;
-  prospectMap: Record<string, Prospect>;
+  professionnelMap: Record<string, ProfessionnelSante>;
   utilisateurMap: Record<string, Utilisateur>;
   onClose: () => void;
   onUpdate: (updated: Opportunite) => void;

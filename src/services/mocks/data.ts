@@ -1,13 +1,10 @@
 import { UserRole } from '@/lib/constants';
 import {
   DevisStatut,
-  DoublonAction,
   MetriquePresentation,
   Opportunite,
   OpportuniteEtape,
   ParametresApp,
-  ProspectCategorie,
-  ProspectStatut,
   QualificationOpportunite,
   QualificationProductif,
   QualificationRDV,
@@ -17,9 +14,7 @@ import {
   SupportType,
 } from '@/types';
 import type {
-  DoublonDetecte,
   PermissionModule,
-  Prospect,
   RoleDefinition,
   SupportCommercial,
   Utilisateur,
@@ -118,230 +113,6 @@ export const mockCredentials: Record<string, string> = {
   'am.bamba@orchidee-holding.ci': 'delegue2026',
   'm.ouattara@orchidee-holding.ci': 'delegue2026',
 };
-
-// ─── Prospects ────────────────────────────────────────────────────────────────
-
-export const prospects: Prospect[] = [
-  // PNA — Zone Abidjan (3)
-  {
-    id: 'prospect-1',
-    nom: 'Kobenan',
-    prenom: 'Paul',
-    entreprise: 'Cabinet Médical Techno-Nord',
-    email: 'p.kobenan@cabinetmednord.ci',
-    telephone: '07 08 12 34 56',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.PNA,
-    categorie: ProspectCategorie.MEDECIN,
-    dateCreation: '2026-05-10',
-    aEuRdv: false,
-  },
-  {
-    id: 'prospect-2',
-    nom: 'Sanogo',
-    prenom: 'Aïssata',
-    entreprise: 'Pharmacie Abidjan Nord',
-    email: 'a.sanogo@pharmabnord.ci',
-    telephone: '05 46 78 90 12',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.PNA,
-    categorie: ProspectCategorie.PHARMACIE,
-    dateCreation: '2026-05-15',
-    aEuRdv: false,
-  },
-  {
-    id: 'prospect-3',
-    nom: 'Fofana',
-    prenom: 'Brahima',
-    entreprise: 'Centre de Soins Fofana & Associés',
-    email: 'b.fofana@soinsfa.ci',
-    telephone: '01 23 45 67 89',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.PNA,
-    categorie: ProspectCategorie.INFIRMIER,
-    dateCreation: '2026-06-01',
-    aEuRdv: false,
-  },
-  // Affectés à Kouassi N'Guessan — Zone Abidjan (4)
-  {
-    id: 'prospect-4',
-    nom: 'Konan',
-    prenom: 'Awa',
-    entreprise: 'Cabinet Médical du Plateau',
-    email: 'a.konan@cabmedplateau.ci',
-    telephone: '07 11 22 33 44',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.MEDECIN,
-    delegueId: 'delegue-1',
-    dateCreation: '2026-04-20',
-    dernierContact: '2026-06-10',
-    aEuRdv: true,
-  },
-  {
-    id: 'prospect-5',
-    nom: 'Assoa',
-    prenom: 'Jean-Baptiste',
-    entreprise: 'Pharmacie Lagunaire Express',
-    email: 'jb.assoa@pharmalagune.ci',
-    telephone: '07 55 66 77 88',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.PHARMACIE,
-    delegueId: 'delegue-1',
-    dateCreation: '2026-04-25',
-    dernierContact: '2026-06-12',
-    aEuRdv: true,
-  },
-  {
-    id: 'prospect-6',
-    nom: 'Coulibaly',
-    prenom: 'Mariam',
-    entreprise: 'Clinique Sainte-Thérèse du Plateau',
-    email: 'm.coulibaly@cliniqsttherese.ci',
-    telephone: '05 88 99 00 11',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.INFIRMIER,
-    delegueId: 'delegue-1',
-    dateCreation: '2026-05-02',
-    aEuRdv: false,
-  },
-  {
-    id: 'prospect-7',
-    nom: 'Diby',
-    prenom: 'Honoré',
-    entreprise: 'Centre Médical et Chirurgical HDI',
-    email: 'h.diby@cmchdi.ci',
-    telephone: '07 12 34 56 78',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.MEDECIN,
-    delegueId: 'delegue-1',
-    dateCreation: '2026-05-20',
-    aEuRdv: false,
-  },
-  // Affectés à Adjoua Traoré — Zone Abidjan (2)
-  {
-    id: 'prospect-8',
-    nom: 'Assoumou',
-    prenom: 'Clémence',
-    entreprise: 'Pharmacie de Cocody',
-    email: 'c.assoumou@pharmacie-cocody.ci',
-    telephone: '05 23 45 67 89',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.PHARMACIE,
-    delegueId: 'delegue-2',
-    dateCreation: '2026-04-15',
-    dernierContact: '2026-06-05',
-    aEuRdv: true,
-  },
-  {
-    id: 'prospect-9',
-    nom: 'Yao',
-    prenom: 'Firmin',
-    entreprise: 'Polyclinique Abidjan Nord',
-    email: 'f.yao@polyclinicabn.ci',
-    telephone: '07 34 56 78 90',
-    zoneId: 'zone-1',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.INFIRMIER,
-    delegueId: 'delegue-2',
-    dateCreation: '2026-05-08',
-    aEuRdv: false,
-  },
-  // Affectés à Adama Diallo — Zone Bouaké (3)
-  {
-    id: 'prospect-10',
-    nom: 'Bamba',
-    prenom: 'Stéphane',
-    entreprise: 'Cabinet Médical Centre CI',
-    email: 's.bamba@cabmedcentre.ci',
-    telephone: '05 11 22 33 44',
-    zoneId: 'zone-2',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.MEDECIN,
-    delegueId: 'delegue-3',
-    dateCreation: '2026-04-10',
-    dernierContact: '2026-06-08',
-    aEuRdv: true,
-  },
-  {
-    id: 'prospect-11',
-    nom: 'Gnaoré',
-    prenom: 'Laure',
-    entreprise: 'Pharmacie Savane Centre',
-    email: 'l.gnaore@pharmasavane.ci',
-    telephone: '07 44 55 66 77',
-    zoneId: 'zone-2',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.PHARMACIE,
-    delegueId: 'delegue-3',
-    dateCreation: '2026-04-28',
-    aEuRdv: false,
-  },
-  {
-    id: 'prospect-12',
-    nom: 'Kobenan',
-    prenom: 'Bruno',
-    entreprise: 'Centre Médical de Bouaké',
-    email: 'b.kobenan@centremedical-bke.ci',
-    telephone: '01 77 88 99 00',
-    zoneId: 'zone-2',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.MEDECIN,
-    delegueId: 'delegue-3',
-    dateCreation: '2026-05-18',
-    aEuRdv: false,
-  },
-  // Affectés à Aminata Bamba — Zone San-Pédro (2)
-  {
-    id: 'prospect-13',
-    nom: 'Dosso',
-    prenom: 'Cécile',
-    entreprise: 'Pharmacie du Port San-Pédro',
-    email: 'c.dosso@pharmaport-sp.ci',
-    telephone: '07 11 22 33 55',
-    zoneId: 'zone-3',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.PHARMACIE,
-    delegueId: 'delegue-4',
-    dateCreation: '2026-04-05',
-    dernierContact: '2026-06-15',
-    aEuRdv: true,
-  },
-  {
-    id: 'prospect-14',
-    nom: 'Touré',
-    prenom: 'Yannick',
-    entreprise: 'Clinique Palmier d\'Or',
-    email: 'y.toure@cliniquepalmier.ci',
-    telephone: '05 33 44 55 66',
-    zoneId: 'zone-3',
-    statut: ProspectStatut.AFFECTE,
-    categorie: ProspectCategorie.INFIRMIER,
-    delegueId: 'delegue-4',
-    dateCreation: '2026-05-12',
-    aEuRdv: false,
-  },
-  // CLIENT (transformé)
-  {
-    id: 'prospect-15',
-    nom: 'Kouamé',
-    prenom: 'Olivier',
-    entreprise: 'Centre Médical Kouamé & Associés',
-    email: 'o.kouame@cmka.ci',
-    telephone: '07 66 77 88 99',
-    zoneId: 'zone-3',
-    statut: ProspectStatut.CLIENT,
-    categorie: ProspectCategorie.MEDECIN,
-    delegueId: 'delegue-5',
-    dateCreation: '2026-03-01',
-    dernierContact: '2026-06-20',
-    aEuRdv: true,
-  },
-];
 
 // ─── Supports commerciaux ─────────────────────────────────────────────────────
 
@@ -480,13 +251,6 @@ export const permissionModules: PermissionModule[] = [
     },
   },
   {
-    id: 'perm-doublons',
-    module: 'Gestion des doublons',
-    icon: 'MergeCellsOutlined',
-    access: { DELEGUE: 'none', MANAGER: 'none', ADMIN: 'full' },
-    labels: { ADMIN: 'Fusion & suppression' },
-  },
-  {
     id: 'perm-utilisateurs',
     module: 'Utilisateurs & Zones',
     icon: 'UsergroupAddOutlined',
@@ -508,7 +272,7 @@ export const rendezvous: RendezVous[] = [
   // Passés — Kouassi N'Guessan
   {
     id: 'rdv-1',
-    prospectId: 'prospect-4',
+    professionnelId: 'pro-1',
     delegueId: 'delegue-1',
     supportId: 'support-1',
     dateHeure: '2026-06-10T10:00:00',
@@ -520,7 +284,7 @@ export const rendezvous: RendezVous[] = [
   },
   {
     id: 'rdv-2',
-    prospectId: 'prospect-5',
+    professionnelId: 'pro-2',
     delegueId: 'delegue-1',
     supportId: 'support-2',
     dateHeure: '2026-06-12T14:00:00',
@@ -532,7 +296,7 @@ export const rendezvous: RendezVous[] = [
   },
   {
     id: 'rdv-3',
-    prospectId: 'prospect-8',
+    professionnelId: 'pro-9',
     delegueId: 'delegue-2',
     supportId: 'support-3',
     dateHeure: '2026-06-05T09:30:00',
@@ -544,7 +308,7 @@ export const rendezvous: RendezVous[] = [
   },
   {
     id: 'rdv-4',
-    prospectId: 'prospect-10',
+    professionnelId: 'pro-16',
     delegueId: 'delegue-3',
     supportId: 'support-1',
     dateHeure: '2026-06-08T11:00:00',
@@ -555,7 +319,7 @@ export const rendezvous: RendezVous[] = [
   },
   {
     id: 'rdv-5',
-    prospectId: 'prospect-13',
+    professionnelId: 'pro-19',
     delegueId: 'delegue-4',
     supportId: 'support-2',
     dateHeure: '2026-06-15T16:00:00',
@@ -567,7 +331,7 @@ export const rendezvous: RendezVous[] = [
   // Annulé
   {
     id: 'rdv-6',
-    prospectId: 'prospect-5',
+    professionnelId: 'pro-2',
     delegueId: 'delegue-1',
     supportId: 'support-3',
     dateHeure: '2026-06-18T10:00:00',
@@ -580,7 +344,7 @@ export const rendezvous: RendezVous[] = [
   // À venir — Kouassi N'Guessan
   {
     id: 'rdv-7',
-    prospectId: 'prospect-4',
+    professionnelId: 'pro-1',
     delegueId: 'delegue-1',
     supportId: 'support-2',
     dateHeure: '2026-07-03T10:00:00',
@@ -592,7 +356,7 @@ export const rendezvous: RendezVous[] = [
   // À venir — Adjoua Traoré
   {
     id: 'rdv-8',
-    prospectId: 'prospect-9',
+    professionnelId: 'pro-10',
     delegueId: 'delegue-2',
     supportId: 'support-1',
     dateHeure: '2026-07-04T14:30:00',
@@ -604,7 +368,7 @@ export const rendezvous: RendezVous[] = [
   // À venir — Aminata Bamba
   {
     id: 'rdv-9',
-    prospectId: 'prospect-14',
+    professionnelId: 'pro-20',
     delegueId: 'delegue-4',
     supportId: 'support-3',
     dateHeure: '2026-07-07T09:00:00',
@@ -616,7 +380,7 @@ export const rendezvous: RendezVous[] = [
   // RDV du prospect-15 (CLIENT transformé) — Moussa Ouattara
   {
     id: 'rdv-10',
-    prospectId: 'prospect-15',
+    professionnelId: 'pro-21',
     delegueId: 'delegue-5',
     supportId: 'support-1',
     dateHeure: '2026-06-20T11:00:00',
@@ -726,7 +490,7 @@ export const metriques: MetriquePresentation[] = [
 export const opportunites: Opportunite[] = [
   {
     id: 'opp-1',
-    prospectId: 'prospect-5',
+    professionnelId: 'pro-2',
     delegueId: 'delegue-1',
     titre: 'Contrat gestion flotte logistique — Transport Lagunaire',
     montantEstime: 15000,
@@ -756,7 +520,7 @@ export const opportunites: Opportunite[] = [
   },
   {
     id: 'opp-2',
-    prospectId: 'prospect-13',
+    professionnelId: 'pro-19',
     delegueId: 'delegue-4',
     titre: 'Prestation conseil logistique portuaire — Port Logistics San-Pédro',
     montantEstime: 8500,
@@ -770,7 +534,7 @@ export const opportunites: Opportunite[] = [
   },
   {
     id: 'opp-3',
-    prospectId: 'prospect-10',
+    professionnelId: 'pro-16',
     delegueId: 'delegue-3',
     titre: 'Partenariat énergie renouvelable — Énergie Savane CI',
     montantEstime: 20000,
@@ -791,7 +555,7 @@ export const opportunites: Opportunite[] = [
   },
   {
     id: 'opp-4',
-    prospectId: 'prospect-15',
+    professionnelId: 'pro-21',
     delegueId: 'delegue-5',
     titre: 'Contrat cadre annuel — Kouamé & Frères',
     montantEstime: 25000,
@@ -811,23 +575,5 @@ export const opportunites: Opportunite[] = [
     notes: [],
     dateDerniereMaj: '2026-06-20',
     dateCreation: '2026-06-20',
-  },
-];
-
-// ─── Doublons mockés ─────────────────────────────────────────────────────────
-
-export const doublons: DoublonDetecte[] = [
-  {
-    id: 'doublon-1',
-    prospectExistant: prospects[0], // Kobenan Paul
-    nouvelleEntree: {
-      nom: 'Kobenan',
-      prenom: 'Paul',
-      entreprise: 'Techno Ivoire SARL',
-      email: 'paul.kobenan@technoivoire.ci',
-      telephone: '07 08 12 34 56',
-      zoneId: 'zone-1',
-    },
-    statut: DoublonAction.EN_ATTENTE,
   },
 ];
