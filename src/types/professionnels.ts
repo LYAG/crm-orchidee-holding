@@ -31,6 +31,9 @@ export interface Specialite {
 }
 
 // ─── Professionnel de santé ────────────────────────────────────────────────────
+// Entité unique : ce qui était historiquement appelé "Prospect" est en réalité
+// un professionnel de santé (médecin, sage-femme, infirmier, pharmacie…) suivi
+// par un délégué, rattaché à un centre lui-même rattaché à une zone.
 
 export enum TitreProfessionnel {
   DR = 'DR',
@@ -86,6 +89,35 @@ export interface PotentielCas {
   estMinimum?: boolean;
 }
 
+export enum StatutProfessionnel {
+  PNA = 'PNA',
+  ST = 'ST',
+  T1 = 'T1',
+  T2 = 'T2',
+  T3 = 'T3',
+  PERDU = 'PERDU',
+}
+
+export enum CategorieEtablissement {
+  MEDECIN = 'MEDECIN',
+  INFIRMIER = 'INFIRMIER',
+  PHARMACIE = 'PHARMACIE',
+}
+
+export type ClassificationProfessionnel =
+  | StatutProfessionnel.ST
+  | StatutProfessionnel.T1
+  | StatutProfessionnel.T2
+  | StatutProfessionnel.T3;
+
+/** ST = potentiel + prescrit, T1 = potentiel sans prescription, T2 = prescrit sans potentiel, T3 = ni l'un ni l'autre. */
+export function calculerClassification(potentiel: boolean, prescrit: boolean): ClassificationProfessionnel {
+  if (potentiel && prescrit) return StatutProfessionnel.ST;
+  if (potentiel && !prescrit) return StatutProfessionnel.T1;
+  if (!potentiel && prescrit) return StatutProfessionnel.T2;
+  return StatutProfessionnel.T3;
+}
+
 export interface ProfessionnelSante {
   id: string;
   nom: string;
@@ -96,16 +128,23 @@ export interface ProfessionnelSante {
   specialiteIds: string[];
   /** plusieurs numéros possibles */
   telephones: string[];
+  email?: string;
+  adresse?: string;
+  categorie?: CategorieEtablissement;
   joursConsultation: JoursConsultation;
   potentielCas?: PotentielCas;
-  /** le délégué qui le suit */
-  delegueId: string;
+  statut: StatutProfessionnel;
+  classificationDemandee?: ClassificationProfessionnel;
+  classificationDemandeeLe?: string;
+  /** le délégué qui le suit ; absent tant que non affecté (statut PNA) */
+  delegueId?: string;
+  dateCreation: string;
+  dernierContact?: string;
+  motifPerdu?: string;
   observations?: string;
   actif: boolean;
-  /** verrouille modification/suppression par le délégué, même règle que aEuRdv sur Prospect */
+  /** verrouille modification/suppression par le délégué dès qu'un RDV a eu lieu */
   aDejaEuContact: boolean;
-  createdAt: string;
-  updatedAt: string;
 }
 
 // ─── Geste marketing (référentiel dynamique) ──────────────────────────────────
@@ -156,5 +195,6 @@ export interface FiltresProfessionnel {
   jourConsultation?: JourSemaine;
   delegueId?: string;
   zoneId?: string;
+  statut?: StatutProfessionnel;
   recherche?: string;
 }

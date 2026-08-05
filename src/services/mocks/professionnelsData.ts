@@ -1,4 +1,5 @@
 import {
+  CategorieEtablissement,
   CategorieGeste,
   type Centre,
   type GesteMarketing,
@@ -8,11 +9,19 @@ import {
   ModeJoursConsultation,
   type ProfessionnelSante,
   type Specialite,
+  StatutProfessionnel,
   TitreProfessionnel,
   TypeCas,
   TypeCentre,
   UniteCas,
 } from '@/types';
+
+/** Devine une catégorie d'établissement à partir du titre/des spécialités (mock uniquement — champ saisi manuellement en production). */
+function categorieDefaut(titre: TitreProfessionnel, specialiteIds: string[]): CategorieEtablissement {
+  if (titre === TitreProfessionnel.DR) return CategorieEtablissement.MEDECIN;
+  if (specialiteIds.includes('spe-ide')) return CategorieEtablissement.INFIRMIER;
+  return CategorieEtablissement.INFIRMIER;
+}
 
 // ─── Centres de santé ─────────────────────────────────────────────────────────
 // Réutilise les zones existantes (zone-1 Abidjan, zone-2 Bouaké, zone-3 San-Pédro).

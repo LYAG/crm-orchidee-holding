@@ -28,66 +28,6 @@ export interface Utilisateur {
   delegueIds?: string[];
 }
 
-// ─── Prospect ────────────────────────────────────────────────────────────────
-
-export enum ProspectStatut {
-  PNA = 'PNA',
-  AFFECTE = 'AFFECTE',
-  CLIENT = 'CLIENT',
-}
-
-export enum ProspectCategorie {
-  MEDECIN = 'MEDECIN',
-  INFIRMIER = 'INFIRMIER',
-  PHARMACIE = 'PHARMACIE',
-}
-
-export interface Prospect {
-  id: string;
-  nom: string;
-  prenom?: string;
-  entreprise: string;
-  email?: string;
-  telephone?: string;
-  adresse?: string;
-  zoneId: string;
-  statut: ProspectStatut;
-  categorie?: ProspectCategorie;
-  delegueId?: string;
-  dateCreation: string;
-  dernierContact?: string;
-  aEuRdv: boolean;
-  notes?: string;
-}
-
-// ─── Import Excel ─────────────────────────────────────────────────────────────
-
-export enum DoublonAction {
-  EN_ATTENTE = 'EN_ATTENTE',
-  FUSIONNE = 'FUSIONNE',
-  IGNORE = 'IGNORE',
-  INTEGRE = 'INTEGRE',
-}
-
-export interface DoublonDetecte {
-  id: string;
-  prospectExistant: Prospect;
-  nouvelleEntree: Partial<Prospect>;
-  statut: DoublonAction;
-}
-
-export interface ErreurImport {
-  ligne: number;
-  message: string;
-}
-
-export interface ImportResult {
-  totalLignes: number;
-  lignesValides: number;
-  doublons: DoublonDetecte[];
-  erreurs: ErreurImport[];
-}
-
 // ─── Support commercial ───────────────────────────────────────────────────────
 
 export enum SupportType {
@@ -161,9 +101,7 @@ export enum RdvStatut {
 
 export interface RendezVous {
   id: string;
-  /** RDV avec un prospect ou avec un professionnel de santé (l'un des deux, jamais les deux) */
-  prospectId?: string;
-  professionnelId?: string;
+  professionnelId: string;
   delegueId: string;
   supportId: string;
   dateHeure: string;
@@ -260,7 +198,7 @@ export interface NoteOpportunite {
 
 export interface Opportunite {
   id: string;
-  prospectId: string;
+  professionnelId: string;
   delegueId: string;
   titre: string;
   montantEstime: number;
@@ -300,23 +238,15 @@ export interface KpiManager {
 
 export interface KpiAdmin {
   doublonsEnAttente: number;
-  prospectsNonAttribuesSup30j: number;
+  professionnelsNonAttribuesSup30j: number;
   pipelineTotal: number;
   tauxTransformationGlobal: number;
 }
 
 // ─── Filtres génériques ───────────────────────────────────────────────────────
 
-export interface FiltresProspect {
-  zoneId?: string;
-  statut?: ProspectStatut;
-  delegueId?: string;
-  recherche?: string;
-}
-
 export interface FiltresRdv {
   delegueId?: string;
-  prospectId?: string;
   professionnelId?: string;
   statut?: RdvStatut;
   dateDebut?: string;

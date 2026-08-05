@@ -20,13 +20,8 @@ export type UpdateSpecialiteDto = Partial<Omit<Specialite, 'id'>>;
 export type CreateGesteMarketingDto = Omit<GesteMarketing, 'id'>;
 export type UpdateGesteMarketingDto = Partial<Omit<GesteMarketing, 'id'>>;
 
-export type CreateProfessionnelDto = Omit<
-  ProfessionnelSante,
-  'id' | 'createdAt' | 'updatedAt' | 'aDejaEuContact'
->;
-export type UpdateProfessionnelDto = Partial<
-  Omit<ProfessionnelSante, 'id' | 'createdAt' | 'updatedAt' | 'aDejaEuContact'>
->;
+export type CreateProfessionnelDto = Omit<ProfessionnelSante, 'id' | 'dateCreation' | 'aDejaEuContact'>;
+export type UpdateProfessionnelDto = Partial<Omit<ProfessionnelSante, 'id' | 'dateCreation' | 'aDejaEuContact'>>;
 
 export type CreateGesteRealiseDto = Omit<GesteRealise, 'id'>;
 
@@ -69,6 +64,8 @@ export interface ProfessionnelService {
   deleteProfessionnel(id: string): Promise<void>;
   /** Verrouille la fiche pour le délégué (règle aDejaEuContact), appelé à la planification d'un RDV. */
   marquerContactEffectue(id: string): Promise<ProfessionnelSante>;
+  attribuerAuDelegue(professionnelId: string, delegueId: string): Promise<ProfessionnelSante>;
+  sAutoAttribuer(professionnelId: string, delegueId: string): Promise<ProfessionnelSante>;
 
   // Gestes réalisés (historique)
   getGestesRealises(professionnelId?: string): Promise<GesteRealise[]>;

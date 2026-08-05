@@ -22,7 +22,7 @@ import type {
   ProfessionnelSante,
   Specialite,
 } from '@/types';
-import { StatutDemandeValidation } from '@/types';
+import { StatutDemandeValidation, StatutProfessionnel } from '@/types';
 import { deepClone, delay, generateId, notFound } from './_utils';
 import {
   centres as mockCentres,
@@ -200,6 +200,7 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     if (filtres?.centreId) result = result.filter((p) => p.centreId === filtres.centreId);
     if (filtres?.specialiteId) result = result.filter((p) => p.specialiteIds.includes(filtres.specialiteId!));
     if (filtres?.delegueId) result = result.filter((p) => p.delegueId === filtres.delegueId);
+    if (filtres?.statut) result = result.filter((p) => p.statut === filtres.statut);
     if (filtres?.jourConsultation) {
       result = result.filter((p) => p.joursConsultation.jours?.includes(filtres.jourConsultation!));
     }
@@ -239,8 +240,7 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
       ...data,
       id: generateId('pro'),
       aDejaEuContact: false,
-      createdAt: today(),
-      updatedAt: today(),
+      dateCreation: today(),
     };
     professionnels.push(professionnel);
     return professionnel;
@@ -250,7 +250,7 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     await delay();
     const idx = professionnels.findIndex((p) => p.id === id);
     if (idx < 0) notFound('Professionnel de santé', id);
-    professionnels[idx] = { ...professionnels[idx], ...data, updatedAt: today() };
+    professionnels[idx] = { ...professionnels[idx], ...data };
     return professionnels[idx];
   }
 
@@ -265,8 +265,21 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     await delay();
     const idx = professionnels.findIndex((p) => p.id === id);
     if (idx < 0) notFound('Professionnel de santé', id);
-    professionnels[idx] = { ...professionnels[idx], aDejaEuContact: true, updatedAt: today() };
+    professionnels[idx] = { ...professionnels[idx], aDejaEuContact: true };
     return professionnels[idx];
+  }
+
+  async attribuerAuDelegue(professionnelId: string, delegueId: string): Promise<ProfessionnelSante> {
+    await delay();
+    const idx = professionnels.findIndex((p) => p.id === professionnelId);
+    if (idx < 0) notFound('Professionnel de santé', professionnelId);
+    // Classification par défaut à l'attribution : potentiel/prescription inconnus tant que le premier RDV n'a pas eu lieu.
+    professionnels[idx] = { ...professionnels[idx], delegueId, statut: StatutProfessionnel.T3 };
+    return professionnels[idx];
+  }
+
+  async sAutoAttribuer(professionnelId: string, delegueId: string): Promise<ProfessionnelSante> {
+    return this.attribuerAuDelegue(professionnelId, delegueId);
   }
 
   // ── Gestes réalisés ──────────────────────────────────────────────────────

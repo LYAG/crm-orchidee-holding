@@ -10,7 +10,6 @@
 import type { AuthService } from './api/AuthService';
 import type { OpportuniteService } from './api/OpportuniteService';
 import type { ProfessionnelService } from './api/ProfessionnelService';
-import type { ProspectService } from './api/ProspectService';
 import type { QualificationService } from './api/QualificationService';
 import type { ReportingService } from './api/ReportingService';
 import type { RdvService } from './api/RdvService';
@@ -25,7 +24,6 @@ function loadMocks() {
   const { AuthServiceMock } = require('./mocks/AuthServiceMock');
   const { OpportuniteServiceMock } = require('./mocks/OpportuniteServiceMock');
   const { ProfessionnelServiceMock } = require('./mocks/ProfessionnelServiceMock');
-  const { ProspectServiceMock } = require('./mocks/ProspectServiceMock');
   const { QualificationServiceMock } = require('./mocks/QualificationServiceMock');
   const { ReportingServiceMock } = require('./mocks/ReportingServiceMock');
   const { RdvServiceMock } = require('./mocks/RdvServiceMock');
@@ -36,7 +34,6 @@ function loadMocks() {
 
   return {
     authService: new AuthServiceMock() as AuthService,
-    prospectService: new ProspectServiceMock() as ProspectService,
     rdvService: new RdvServiceMock() as RdvService,
     roleService: new RoleServiceMock() as RoleService,
     supportService: new SupportServiceMock() as SupportService,
@@ -59,7 +56,6 @@ function loadReal(): ReturnType<typeof loadMocks> {
 const services = useMocks ? loadMocks() : loadReal();
 
 export const authService = services.authService;
-export const prospectService = services.prospectService;
 export const rdvService = services.rdvService;
 export const roleService = services.roleService;
 export const supportService = services.supportService;
