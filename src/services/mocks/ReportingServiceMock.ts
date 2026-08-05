@@ -117,14 +117,17 @@ export class ReportingServiceMock implements ReportingService {
 
   async exporterCsv(filtres?: { zoneId?: string; delegueId?: string; periode?: PeriodeRapport }): Promise<string> {
     await delay(400);
-    let data = [...prospects];
-    if (filtres?.zoneId) data = data.filter((p) => p.zoneId === filtres.zoneId);
+    let data = [...professionnels];
+    if (filtres?.zoneId) {
+      const centreIds = centres.filter((c) => c.zoneId === filtres.zoneId).map((c) => c.id);
+      data = data.filter((p) => centreIds.includes(p.centreId));
+    }
     if (filtres?.delegueId) data = data.filter((p) => p.delegueId === filtres.delegueId);
 
-    const header = 'id,nom,prenom,entreprise,zone,statut,delegueId,dateCreation';
+    const header = 'id,nom,prenom,centreId,statut,delegueId,dateCreation';
     const rows = data.map(
       (p) =>
-        `${p.id},"${p.nom}","${p.prenom ?? ''}","${p.entreprise}",${p.zoneId},${p.statut},${p.delegueId ?? ''},${p.dateCreation}`,
+        `${p.id},"${p.nom}","${p.prenom ?? ''}",${p.centreId},${p.statut},${p.delegueId ?? ''},${p.dateCreation}`,
     );
     return [header, ...rows].join('\n');
   }
