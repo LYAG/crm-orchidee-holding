@@ -60,12 +60,12 @@ export function HeaderNotifications({ user }: Props) {
           });
         }
 
-        if (kpi.prospectsNonAttribuesSup30j > 0) {
+        if (kpi.professionnelsNonAttribuesSup30j > 0) {
           items.push({
             key: 'pna',
             icon: <TeamOutlined />,
             type: 'warning',
-            title: `${kpi.prospectsNonAttribuesSup30j} PNA non attribué${kpi.prospectsNonAttribuesSup30j > 1 ? 's' : ''} > 30 j`,
+            title: `${kpi.professionnelsNonAttribuesSup30j} PNA non attribué${kpi.professionnelsNonAttribuesSup30j > 1 ? 's' : ''} > 30 j`,
             description: 'Ces prospects attendent une affectation à un délégué.',
             link: '/prospects',
           });

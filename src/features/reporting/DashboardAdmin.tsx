@@ -298,7 +298,7 @@ export function DashboardAdmin({ user }: Props) {
               }
             />
           )}
-          {kpi.prospectsNonAttribuesSup30j > 0 && (
+          {kpi.professionnelsNonAttribuesSup30j > 0 && (
             <Alert
               type="info"
               icon={<AlertOutlined />}
@@ -307,9 +307,9 @@ export function DashboardAdmin({ user }: Props) {
               title={
                 <Space>
                   <span>
-                    <strong>{kpi.prospectsNonAttribuesSup30j}</strong> prospect
-                    {kpi.prospectsNonAttribuesSup30j > 1 ? 's' : ''} PNA non attribué
-                    {kpi.prospectsNonAttribuesSup30j > 1 ? 's' : ''} depuis plus de 30 jours
+                    <strong>{kpi.professionnelsNonAttribuesSup30j}</strong> prospect
+                    {kpi.professionnelsNonAttribuesSup30j > 1 ? 's' : ''} PNA non attribué
+                    {kpi.professionnelsNonAttribuesSup30j > 1 ? 's' : ''} depuis plus de 30 jours
                   </span>
                   <Link href="/prospects">
                     <Button size="small" type="link" style={{ fontWeight: 600, padding: 0 }}>
@@ -320,7 +320,7 @@ export function DashboardAdmin({ user }: Props) {
               }
             />
           )}
-          {kpi.doublonsEnAttente === 0 && kpi.prospectsNonAttribuesSup30j === 0 && (
+          {kpi.doublonsEnAttente === 0 && kpi.professionnelsNonAttribuesSup30j === 0 && (
             <Alert
               type="success"
               icon={<CheckCircleOutlined />}
@@ -350,7 +350,7 @@ export function DashboardAdmin({ user }: Props) {
             loading={loading}
             icon={<UserOutlined />}
             label="Prospects PNA > 30 jours"
-            value={kpi?.prospectsNonAttribuesSup30j ?? 0}
+            value={kpi?.professionnelsNonAttribuesSup30j ?? 0}
             accent="#6A1B9A"
             bg="#F3E5F5"
             alert

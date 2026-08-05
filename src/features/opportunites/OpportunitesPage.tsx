@@ -51,12 +51,12 @@ export function OpportunitesPage() {
       const opps = await opportuniteService.getAll(filtres);
       setAllOpps(opps);
 
-      // Build prospect map
-      const pIds = [...new Set(opps.map((o) => o.prospectId))];
-      const pList = await Promise.all(pIds.map((id) => prospectService.getById(id).catch(() => null)));
-      const pm: Record<string, Prospect> = {};
+      // Build professionnel map
+      const pIds = [...new Set(opps.map((o) => o.professionnelId))];
+      const pList = await Promise.all(pIds.map((id) => professionnelService.getProfessionnelById(id).catch(() => null)));
+      const pm: Record<string, ProfessionnelSante> = {};
       pList.forEach((p) => { if (p) pm[p.id] = p; });
-      setProspectMap(pm);
+      setProfessionnelMap(pm);
     } catch {
       message.error('Erreur lors du chargement des opportunités.');
     } finally {
@@ -86,7 +86,7 @@ export function OpportunitesPage() {
       let updated: Opportunite;
       if (etape === OpportuniteEtape.GAGNEE) {
         updated = await opportuniteService.marquerGagnee(oppId);
-        message.success('Opportunité gagnée — prospect passé en statut Client.');
+        message.success('Opportunité gagnée.');
       } else if (etape === OpportuniteEtape.PERDUE) {
         // Can't easily prompt for motif here; open detail instead
         setSelectedOpp(allOpps.find((o) => o.id === oppId) ?? null);
@@ -120,11 +120,11 @@ export function OpportunitesPage() {
       ),
     },
     {
-      title: 'Prospect',
-      key: 'prospect',
+      title: 'Professionnel de santé',
+      key: 'professionnel',
       render: (_, opp) => {
-        const p = prospectMap[opp.prospectId];
-        return p ? `${p.nom} — ${p.entreprise}` : '—';
+        const p = professionnelMap[opp.professionnelId];
+        return p ? `${p.titre ? p.titre + ' ' : ''}${p.nom} ${p.prenom ?? ''}` : '—';
       },
     },
     {
@@ -228,7 +228,7 @@ export function OpportunitesPage() {
       {viewMode === 'kanban' ? (
         <OpportuniteKanban
           opportunites={allOpps}
-          prospectMap={prospectMap}
+          professionnelMap={professionnelMap}
           utilisateurMap={utilisateurMap}
           onSelect={(opp) => { setSelectedOpp(opp); setDetailOpen(true); }}
           onEtapeChange={handleEtapeChange}
@@ -249,7 +249,7 @@ export function OpportunitesPage() {
       <OpportuniteDetailDrawer
         open={detailOpen}
         opportunite={selectedOpp}
-        prospectMap={prospectMap}
+        professionnelMap={professionnelMap}
         utilisateurMap={utilisateurMap}
         onClose={() => setDetailOpen(false)}
         onUpdate={handleUpdate}

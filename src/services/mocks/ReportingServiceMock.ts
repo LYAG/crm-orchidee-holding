@@ -1,4 +1,4 @@
-import type { ReportingService } from '@/services/api/ReportingService';
+﻿import type { ReportingService } from '@/services/api/ReportingService';
 import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport } from '@/types';
 import { OpportuniteEtape, ProspectStatut, QualificationTransformation } from '@/types';
 import { delay } from './_utils';
@@ -96,7 +96,7 @@ export class ReportingServiceMock implements ReportingService {
     const maintenant = new Date();
     const seuil = new Date(maintenant);
     seuil.setDate(seuil.getDate() - 30);
-    const prospectsNonAttribuesSup30j = prospects.filter(
+    const professionnelsNonAttribuesSup30j = prospects.filter(
       (p) =>
         p.statut === ProspectStatut.PNA && new Date(p.dateCreation) < seuil,
     ).length;
@@ -111,7 +111,7 @@ export class ReportingServiceMock implements ReportingService {
     ).length;
     const tauxTransformationGlobal = rdvRealises > 0 ? transformes / rdvRealises : 0;
 
-    return { doublonsEnAttente, prospectsNonAttribuesSup30j, pipelineTotal, tauxTransformationGlobal };
+    return { doublonsEnAttente, professionnelsNonAttribuesSup30j, pipelineTotal, tauxTransformationGlobal };
   }
 
   async exporterCsv(filtres?: { zoneId?: string; delegueId?: string; periode?: PeriodeRapport }): Promise<string> {
