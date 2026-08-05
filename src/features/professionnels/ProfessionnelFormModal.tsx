@@ -13,7 +13,7 @@ import { App, Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import { professionnelService, zoneService } from '@/services';
 import type { Centre, JoursConsultation, PotentielCas, Specialite, Zone } from '@/types';
-import { JourSemaine, ModeJoursConsultation, TitreProfessionnel, TypeCas, UniteCas } from '@/types';
+import { JourSemaine, ModeJoursConsultation, StatutProfessionnel, TitreProfessionnel, TypeCas, UniteCas } from '@/types';
 
 const TITRE_OPTIONS = Object.values(TitreProfessionnel).map((t) => ({ value: t, label: t }));
 const JOUR_OPTIONS = Object.values(JourSemaine).map((j) => ({ value: j, label: j }));
@@ -102,6 +102,7 @@ export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, o
         delegueId: defaultDelegueId,
         observations: values.observations,
         actif: true,
+        statut: StatutProfessionnel.T3,
       });
       message.success('Professionnel créé.');
       onSuccess();

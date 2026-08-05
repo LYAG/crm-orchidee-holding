@@ -122,7 +122,7 @@ export function SuiviProfessionnelsTab() {
       result = result.filter((p) => p.delegueId === currentUser.id);
     } else if (isManager) {
       const mesDelegues = new Set(delegues.map((d) => d.id));
-      result = result.filter((p) => mesDelegues.has(p.delegueId));
+      result = result.filter((p) => !!p.delegueId && mesDelegues.has(p.delegueId));
     }
     if (filterDelegueId) result = result.filter((p) => p.delegueId === filterDelegueId);
     if (filterSpecialiteId) result = result.filter((p) => p.specialiteIds.includes(filterSpecialiteId));

@@ -1,6 +1,6 @@
 import type { CreateProfessionnelDto } from '@/services/api/ProfessionnelService';
 import { professionnelService } from '@/services';
-import { JourSemaine, ModeJoursConsultation, TypeDemandeValidation } from '@/types';
+import { JourSemaine, ModeJoursConsultation, StatutProfessionnel, TypeDemandeValidation } from '@/types';
 import type { JourTournee, JourTourneeKey, JoursConsultation } from '@/types';
 import type { ProfessionnelAImporter } from './types';
 
@@ -41,6 +41,7 @@ async function construireDto(ligne: ProfessionnelAImporter, delegueId: string): 
     delegueId,
     observations: observationsFinales(ligne),
     actif: true,
+    statut: StatutProfessionnel.T3,
   };
 }
 

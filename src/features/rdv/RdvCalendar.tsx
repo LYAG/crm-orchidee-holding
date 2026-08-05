@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
   CalendarOutlined,
@@ -317,13 +317,13 @@ function CalendarTopBar({
 /* ── Colonne jour (semaine / jour) ───────────────────────────────────────── */
 
 function DayColumn({
-  day, rdvList, isToday, onSelectRdv, onDropProspect,
+  day, rdvList, isToday, onSelectRdv, onDropProfessionnel,
 }: {
   day: Dayjs;
   rdvList: RendezVous[];
   isToday: boolean;
   onSelectRdv: (rdv: RendezVous) => void;
-  onDropProspect?: (prospectId: string, dateTime: Dayjs) => void;
+  onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
 }) {
   const [dragSlot, setDragSlot] = useState<number | null>(null);
   const colRef = useRef<HTMLDivElement>(null);
@@ -365,7 +365,7 @@ function DayColumn({
         e.preventDefault();
         const pid = e.dataTransfer.getData('text/plain');
         setDragSlot(null);
-        if (pid && onDropProspect) onDropProspect(pid, timeFromY(e.clientY));
+        if (pid && onDropProfessionnel) onDropProfessionnel(pid, timeFromY(e.clientY));
       }}
     >
       {/* Lignes de grille */}
@@ -423,13 +423,13 @@ function DayColumn({
 /* ── Vue Semaine / Jour ──────────────────────────────────────────────────── */
 
 function WeekView({
-  weekStart, numDays, rdvList, onSelectRdv, onDropProspect,
+  weekStart, numDays, rdvList, onSelectRdv, onDropProfessionnel,
 }: {
   weekStart: Dayjs;
   numDays: number;
   rdvList: RendezVous[];
   onSelectRdv: (rdv: RendezVous) => void;
-  onDropProspect?: (prospectId: string, dateTime: Dayjs) => void;
+  onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
 }) {
   const now = dayjs();
   const days = Array.from({ length: numDays }, (_, i) => weekStart.add(i, 'day'));
@@ -527,7 +527,7 @@ function WeekView({
                 rdvList={rdvList}
                 isToday={day.isSame(now, 'day')}
                 onSelectRdv={onSelectRdv}
-                onDropProspect={onDropProspect}
+                onDropProfessionnel={onDropProfessionnel}
               />
             ))}
 
@@ -561,14 +561,14 @@ function WeekView({
 const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
 function MonthGrid({
-  calendarDate, rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProspect,
+  calendarDate, rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProfessionnel,
 }: {
   calendarDate: Dayjs;
   rdvList: RendezVous[];
   selectedDate: Dayjs | null;
   onSelectDate: (d: Dayjs) => void;
   onSelectRdv: (rdv: RendezVous) => void;
-  onDropProspect?: (prospectId: string, dateTime: Dayjs) => void;
+  onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
 }) {
   const [dragKey, setDragKey] = useState<string | null>(null);
   const startOfGrid = getMonday(calendarDate.startOf('month'));
@@ -613,7 +613,7 @@ function MonthGrid({
                 e.preventDefault();
                 setDragKey(null);
                 const pid = e.dataTransfer.getData('text/plain');
-                if (pid && onDropProspect) onDropProspect(pid, day);
+                if (pid && onDropProfessionnel) onDropProfessionnel(pid, day);
               }}
               style={{
                 minHeight: 90,
@@ -707,10 +707,10 @@ interface Props {
   selectedDate: Dayjs | null;
   onSelectDate: (date: Dayjs) => void;
   onSelectRdv: (rdv: RendezVous) => void;
-  onDropProspect?: (prospectId: string, dateTime: Dayjs) => void;
+  onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
 }
 
-export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProspect }: Props) {
+export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProfessionnel }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('semaine');
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
 
@@ -737,7 +737,7 @@ export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, 
               selectedDate={selectedDate}
               onSelectDate={onSelectDate}
               onSelectRdv={onSelectRdv}
-              onDropProspect={onDropProspect}
+              onDropProfessionnel={onDropProfessionnel}
             />
           </ProCard>
         </div>
@@ -762,7 +762,7 @@ export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, 
           numDays={numDays}
           rdvList={rdvList}
           onSelectRdv={onSelectRdv}
-          onDropProspect={onDropProspect}
+          onDropProfessionnel={onDropProfessionnel}
         />
       </div>
     </ProCard>

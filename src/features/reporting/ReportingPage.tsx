@@ -28,30 +28,33 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
 import {
-  prospectService,
+  professionnelService,
   rdvService,
   reportingService,
   utilisateurService,
   zoneService,
 } from '@/services';
-import { ProspectStatut, RdvStatut } from '@/types';
-import type { Prospect, RendezVous, Utilisateur, Zone } from '@/types';
+import { RdvStatut, StatutProfessionnel } from '@/types';
+import type { Centre, ProfessionnelSante, RendezVous, Utilisateur, Zone } from '@/types';
 import { SuiviProfessionnelsTab } from './SuiviProfessionnelsTab';
 
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
-interface ProspectRow {
-  prospect: Prospect;
+interface ProfessionnelRow {
+  professionnel: ProfessionnelSante;
   rdvCount: number;
   rdvRealises: number;
   qualifieCount: number;
 }
 
-const STATUT_CONFIG: Record<ProspectStatut, { color: string; bg: string; label: string }> = {
-  [ProspectStatut.PNA]: { color: '#E65100', bg: '#FFF3E0', label: 'Non affecté' },
-  [ProspectStatut.AFFECTE]: { color: '#1565C0', bg: '#E3F2FD', label: 'Affecté' },
-  [ProspectStatut.CLIENT]: { color: '#2E7D32', bg: '#E8F5E9', label: 'Client' },
+const STATUT_CONFIG: Record<StatutProfessionnel, { color: string; bg: string; label: string }> = {
+  [StatutProfessionnel.PNA]: { color: '#E65100', bg: '#FFF3E0', label: 'Non affecté' },
+  [StatutProfessionnel.ST]: { color: '#2E7D32', bg: '#E8F5E9', label: 'ST' },
+  [StatutProfessionnel.T1]: { color: '#1565C0', bg: '#E3F2FD', label: 'T1' },
+  [StatutProfessionnel.T2]: { color: '#6A1B9A', bg: '#F3E5F5', label: 'T2' },
+  [StatutProfessionnel.T3]: { color: '#9E9E9E', bg: '#F5F5F5', label: 'T3' },
+  [StatutProfessionnel.PERDU]: { color: '#C62828', bg: '#FFEBEE', label: 'Perdu' },
 };
 
 /* ── Mini KPI ────────────────────────────────────────────────────────────── */
@@ -129,17 +132,18 @@ export function ReportingPage() {
   const { message } = App.useApp();
 
   const [zones, setZones] = useState<Zone[]>([]);
+  const [centres, setCentres] = useState<Centre[]>([]);
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
   const [filterZoneId, setFilterZoneId] = useState<string | undefined>();
   const [filterDelegueId, setFilterDelegueId] = useState<string | undefined>();
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
 
-  const [rows, setRows] = useState<ProspectRow[]>([]);
+  const [rows, setRows] = useState<ProfessionnelRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   const [summaryStats, setSummaryStats] = useState({
-    totalProspects: 0,
+    totalProfessionnels: 0,
     totalRdv: 0,
     rdvRealises: 0,
   });
@@ -151,6 +155,7 @@ export function ReportingPage() {
 
   useEffect(() => {
     zoneService.getAll().then(setZones).catch(() => {});
+    professionnelService.getCentres().then(setCentres).catch(() => {});
     const fn =
       currentUser.role === UserRole.MANAGER
         ? utilisateurService.getDeleguesByManager(currentUser.id)
@@ -167,17 +172,17 @@ export function ReportingPage() {
   async function load() {
     setLoading(true);
     try {
-      const allProspects = await prospectService.getAll({
+      const allProfessionnels = await professionnelService.getProfessionnels({
         zoneId: filterZoneId,
         delegueId: filterDelegueId,
       });
 
       const filtered =
         currentUser.role === UserRole.MANAGER
-          ? allProspects.filter(
+          ? allProfessionnels.filter(
               (p) => p.delegueId && delegues.some((d) => d.id === p.delegueId),
             )
-          : allProspects;
+          : allProfessionnels;
 
       const allRdv = await rdvService.getAll({
         delegueId:
@@ -187,21 +192,21 @@ export function ReportingPage() {
         dateFin: dateRange?.[1].format('YYYY-MM-DD'),
       });
 
-      const prospectRows: ProspectRow[] = filtered.map((p) => {
-        const pRdv = allRdv.filter((r) => r.prospectId === p.id);
+      const professionnelRows: ProfessionnelRow[] = filtered.map((p) => {
+        const pRdv = allRdv.filter((r) => r.professionnelId === p.id);
         const realises = pRdv.filter((r) => r.statut === RdvStatut.REALISE);
         const qualifies = realises.filter((r) => r.qualifie);
         return {
-          prospect: p,
+          professionnel: p,
           rdvCount: pRdv.length,
           rdvRealises: realises.length,
           qualifieCount: qualifies.length,
         };
       });
 
-      setRows(prospectRows);
+      setRows(professionnelRows);
       setSummaryStats({
-        totalProspects: filtered.length,
+        totalProfessionnels: filtered.length,
         totalRdv: allRdv.length,
         rdvRealises: allRdv.filter((r) => r.statut === RdvStatut.REALISE).length,
       });
@@ -246,30 +251,33 @@ export function ReportingPage() {
 
   const columns = [
     {
-      title: 'Prospect',
+      title: 'Professionnel de santé',
       key: 'nom',
-      render: (_: unknown, row: ProspectRow) => (
+      render: (_: unknown, row: ProfessionnelRow) => (
         <div>
           <Text strong style={{ color: '#123832' }}>
-            {row.prospect.nom} {row.prospect.prenom ?? ''}
+            {row.professionnel.titre ? `${row.professionnel.titre} ` : ''}
+            {row.professionnel.nom} {row.professionnel.prenom ?? ''}
           </Text>
           <Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
-            {row.prospect.entreprise}
+            {centres.find((c) => c.id === row.professionnel.centreId)?.nom ?? row.professionnel.centreId}
           </Text>
         </div>
       ),
     },
     {
       title: 'Zone',
-      dataIndex: ['prospect', 'zoneId'],
       key: 'zone',
-      render: (zoneId: string) => zones.find((z) => z.id === zoneId)?.nom ?? zoneId,
+      render: (_: unknown, row: ProfessionnelRow) => {
+        const centre = centres.find((c) => c.id === row.professionnel.centreId);
+        return zones.find((z) => z.id === centre?.zoneId)?.nom ?? '—';
+      },
     },
     {
       title: 'Statut',
       key: 'statut',
-      render: (_: unknown, row: ProspectRow) => {
-        const cfg = STATUT_CONFIG[row.prospect.statut];
+      render: (_: unknown, row: ProfessionnelRow) => {
+        const cfg = STATUT_CONFIG[row.professionnel.statut];
         return (
           <div
             style={{
@@ -292,19 +300,19 @@ export function ReportingPage() {
       title: 'RDV total',
       dataIndex: 'rdvCount',
       key: 'rdvCount',
-      sorter: (a: ProspectRow, b: ProspectRow) => a.rdvCount - b.rdvCount,
+      sorter: (a: ProfessionnelRow, b: ProfessionnelRow) => a.rdvCount - b.rdvCount,
     },
     {
       title: 'RDV réalisés',
       dataIndex: 'rdvRealises',
       key: 'rdvRealises',
-      sorter: (a: ProspectRow, b: ProspectRow) => a.rdvRealises - b.rdvRealises,
+      sorter: (a: ProfessionnelRow, b: ProfessionnelRow) => a.rdvRealises - b.rdvRealises,
     },
     {
       title: 'Qualifiés',
       dataIndex: 'qualifieCount',
       key: 'qualifieCount',
-      render: (v: number, row: ProspectRow) => (
+      render: (v: number, row: ProfessionnelRow) => (
         <div
           style={{
             display: 'inline-flex',
@@ -325,7 +333,7 @@ export function ReportingPage() {
     },
   ];
 
-  const prospectsTab = (
+  const professionnelsTab = (
     <>
       {/* ── Filtres ── */}
       <ProCard
@@ -386,8 +394,8 @@ export function ReportingPage() {
           <MiniKpi
             loading={loading}
             icon={<UserOutlined />}
-            label="Prospects filtrés"
-            value={summaryStats.totalProspects}
+            label="Professionnels filtrés"
+            value={summaryStats.totalProfessionnels}
             accent="#0F6E52"
             bg="#E8F5E9"
           />
@@ -427,10 +435,10 @@ export function ReportingPage() {
 
       {/* ── Table ── */}
       <ProCard bordered style={{ borderRadius: 12 }} bodyStyle={{ padding: 0 }}>
-        <Table<ProspectRow>
+        <Table<ProfessionnelRow>
           dataSource={rows}
           columns={columns}
-          rowKey={(r) => r.prospect.id}
+          rowKey={(r) => r.professionnel.id}
           loading={loading}
           pagination={{ pageSize: 15, showSizeChanger: true }}
           size="middle"
@@ -456,8 +464,8 @@ export function ReportingPage() {
       <Tabs
         defaultActiveKey="prospects"
         items={[
-          { key: 'prospects', label: 'Prospects', children: prospectsTab },
-          { key: 'professionnels', label: 'Suivi Professionnels', children: <SuiviProfessionnelsTab /> },
+          { key: 'professionnels', label: 'Professionnels', children: professionnelsTab },
+          { key: 'suivi', label: 'Suivi Professionnels', children: <SuiviProfessionnelsTab /> },
         ]}
       />
     </PageContainer>

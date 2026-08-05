@@ -190,7 +190,7 @@ function OppCard({
 
 export function OpportuniteKanban({
   opportunites,
-  prospectMap,
+  professionnelMap,
   onSelect,
   onEtapeChange,
 }: Props) {

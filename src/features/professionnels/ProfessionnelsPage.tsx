@@ -168,7 +168,7 @@ export function ProfessionnelsPage() {
       data = data.filter((p) => p.delegueId === currentUser.id);
     } else if (role === UserRole.MANAGER) {
       const myDelegueIds = currentUser.delegueIds ?? [];
-      data = data.filter((p) => myDelegueIds.includes(p.delegueId));
+      data = data.filter((p) => !!p.delegueId && myDelegueIds.includes(p.delegueId));
     }
 
     return { data, success: true, total: data.length };
