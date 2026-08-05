@@ -10,5 +10,5 @@ export interface RdvService {
   annuler(id: string, motif: string): Promise<RendezVous>;
 
   getByDelegue(delegueId: string, filtres?: FiltresRdv): Promise<RendezVous[]>;
-  getByProspect(prospectId: string): Promise<RendezVous[]>;
+  getByProfessionnel(professionnelId: string): Promise<RendezVous[]>;
 }

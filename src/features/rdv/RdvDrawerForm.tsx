@@ -9,8 +9,8 @@ import {
 } from '@ant-design/pro-components';
 import { message } from 'antd';
 import { useEffect, useState } from 'react';
-import { prospectService, rdvService, supportService } from '@/services';
-import type { Prospect, RendezVous, SupportCommercial } from '@/types';
+import { professionnelService, rdvService, supportService } from '@/services';
+import type { ProfessionnelSante, RendezVous, SupportCommercial } from '@/types';
 
 interface Props {
   open: boolean;
@@ -18,21 +18,21 @@ interface Props {
   rdv?: RendezVous | null;
   delegueId: string;
   onSuccess: () => void;
-  prefill?: { prospectId?: string; dateHeure?: string };
+  prefill?: { professionnelId?: string; dateHeure?: string };
 }
 
 export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, prefill }: Props) {
   const isEdit = !!rdv;
-  const [prospects, setProspects] = useState<Prospect[]>([]);
+  const [professionnels, setProfessionnels] = useState<ProfessionnelSante[]>([]);
   const [supports, setSupports] = useState<SupportCommercial[]>([]);
 
   useEffect(() => {
     if (!open) return;
     Promise.all([
-      prospectService.getAll({ delegueId }),
+      professionnelService.getProfessionnels({ delegueId }),
       supportService.getAll(),
     ])
-      .then(([p, s]) => { setProspects(p); setSupports(s); })
+      .then(([p, s]) => { setProfessionnels(p); setSupports(s); })
       .catch(() => {});
   }, [open, delegueId]);
 
@@ -48,7 +48,7 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, p
         message.success('Rendez-vous mis à jour.');
       } else {
         await rdvService.create({
-          prospectId: values.prospectId as string,
+          professionnelId: values.professionnelId as string,
           delegueId,
           supportId: values.supportId as string,
           dateHeure: values.dateHeure as string,
@@ -74,7 +74,7 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, p
       initialValues={
         rdv
           ? {
-              prospectId: rdv.prospectId,
+              professionnelId: rdv.professionnelId,
               dateHeure: rdv.dateHeure,
               dureeMinutes: rdv.dureeMinutes,
               supportId: rdv.supportId,
@@ -86,13 +86,13 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, p
       width={480}
     >
       <ProFormSelect
-        name="prospectId"
-        label="Prospect"
+        name="professionnelId"
+        label="Professionnel de santé"
         disabled={isEdit}
-        rules={[{ required: true, message: 'Sélectionnez un prospect.' }]}
-        options={prospects.map((p) => ({
+        rules={[{ required: true, message: 'Sélectionnez un professionnel de santé.' }]}
+        options={professionnels.map((p) => ({
           value: p.id,
-          label: `${p.nom} ${p.prenom ?? ''} — ${p.entreprise}`,
+          label: `${p.titre ? p.titre + ' ' : ''}${p.nom} ${p.prenom ?? ''}`,
         }))}
         showSearch
         fieldProps={{ optionFilterProp: 'label' }}

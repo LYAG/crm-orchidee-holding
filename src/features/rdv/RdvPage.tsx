@@ -12,9 +12,9 @@ import 'dayjs/locale/fr';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
-import { prospectService, rdvService, utilisateurService } from '@/services';
-import type { Prospect, RendezVous, Utilisateur } from '@/types';
-import { ProspectCategorie } from '@/types';
+import { professionnelService, rdvService, utilisateurService } from '@/services';
+import type { ProfessionnelSante, RendezVous, Utilisateur } from '@/types';
+import { CategorieEtablissement } from '@/types';
 import { AnnulationModal } from './AnnulationModal';
 import { RdvCalendar } from './RdvCalendar';
 import { RdvDetailDrawer } from './RdvDetailDrawer';
@@ -26,20 +26,20 @@ const { Text } = Typography;
 
 /* ── Config catégorie prospect ───────────────────────────────────────────── */
 
-const CAT_CONFIG: Record<ProspectCategorie, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
-  [ProspectCategorie.MEDECIN]: {
+const CAT_CONFIG: Record<CategorieEtablissement, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
+  [CategorieEtablissement.MEDECIN]: {
     label: 'Médecins',
     color: '#1565C0',
     bg: '#E3F2FD',
     icon: <MedicineBoxOutlined />,
   },
-  [ProspectCategorie.INFIRMIER]: {
+  [CategorieEtablissement.INFIRMIER]: {
     label: 'Infirmiers',
     color: '#6A1B9A',
     bg: '#F3E5F5',
     icon: <MedicineBoxOutlined />,
   },
-  [ProspectCategorie.PHARMACIE]: {
+  [CategorieEtablissement.PHARMACIE]: {
     label: 'Pharmacies',
     color: '#2E7D32',
     bg: '#E8F5E9',
@@ -47,10 +47,10 @@ const CAT_CONFIG: Record<ProspectCategorie, { label: string; color: string; bg: 
   },
 };
 
-const CAT_ORDER: ProspectCategorie[] = [
-  ProspectCategorie.MEDECIN,
-  ProspectCategorie.INFIRMIER,
-  ProspectCategorie.PHARMACIE,
+const CAT_ORDER: CategorieEtablissement[] = [
+  CategorieEtablissement.MEDECIN,
+  CategorieEtablissement.INFIRMIER,
+  CategorieEtablissement.PHARMACIE,
 ];
 
 /* ── Panel délégués ──────────────────────────────────────────────────────── */
@@ -140,20 +140,20 @@ function DeleguePanel({
 /* ── Panel contacts ──────────────────────────────────────────────────────── */
 
 function ContactsPanel({
-  prospects,
+  professionnels,
   selectedDelegue,
   loading,
 }: {
-  prospects: Prospect[];
+  professionnels: ProfessionnelSante[];
   selectedDelegue: Utilisateur | null;
   loading: boolean;
 }) {
-  const grouped = CAT_ORDER.reduce<Record<string, Prospect[]>>((acc, cat) => {
-    acc[cat] = prospects.filter((p) => p.categorie === cat);
+  const grouped = CAT_ORDER.reduce<Record<string, ProfessionnelSante[]>>((acc, cat) => {
+    acc[cat] = professionnels.filter((p) => p.categorie === cat);
     return acc;
   }, {});
 
-  const hasAny = prospects.length > 0;
+  const hasAny = professionnels.length > 0;
 
   return (
     <div
@@ -195,7 +195,7 @@ function ContactsPanel({
           <Text style={{ fontSize: 11, color: '#C7DAD5', display: 'block', textAlign: 'center', padding: '16px 0' }}>
             Chargement…
           </Text>
-        ) : !selectedDelegue && prospects.length === 0 ? (
+        ) : !selectedDelegue && professionnels.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={<Text style={{ fontSize: 11, color: '#C7DAD5' }}>Sélectionnez un délégué</Text>}
@@ -248,10 +248,10 @@ function ContactsPanel({
                     onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     <Text style={{ fontWeight: 600, fontSize: 11, color: '#123832', lineHeight: 1.3 }}>
-                      {p.prenom} {p.nom}
+                      {p.titre ? `${p.titre} ` : ''}{p.nom} {p.prenom ?? ''}
                     </Text>
                     <Text style={{ fontSize: 10, color: '#8FB0A8', lineHeight: 1.3, marginTop: 1 }}>
-                      {p.entreprise}
+                      {p.telephones[0] ?? ''}
                     </Text>
                   </div>
                 ))}
@@ -280,7 +280,7 @@ export function RdvPage() {
   const [rdvList, setRdvList] = useState<RendezVous[]>([]);
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
   const [selectedDelegueId, setSelectedDelegueId] = useState<string | null>(null);
-  const [contacts, setContacts] = useState<Prospect[]>([]);
+  const [contacts, setContacts] = useState<ProfessionnelSante[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedRdv, setSelectedRdv] = useState<RendezVous | null>(null);

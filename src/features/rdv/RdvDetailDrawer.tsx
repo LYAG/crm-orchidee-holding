@@ -3,8 +3,8 @@
 import { Button, Descriptions, Drawer, Space, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { prospectService, supportService } from '@/services';
-import type { Prospect, RendezVous, SupportCommercial } from '@/types';
+import { professionnelService, supportService } from '@/services';
+import type { ProfessionnelSante, RendezVous, SupportCommercial } from '@/types';
 import { RdvStatut } from '@/types';
 
 const { Text } = Typography;
@@ -33,16 +33,16 @@ interface Props {
 
 export function RdvDetailDrawer({ open, onClose, rdv, onEdit, onAnnuler }: Props) {
   const router = useRouter();
-  const [prospect, setProspect] = useState<Prospect | null>(null);
+  const [professionnel, setProfessionnel] = useState<ProfessionnelSante | null>(null);
   const [support, setSupport] = useState<SupportCommercial | null>(null);
 
   useEffect(() => {
     if (!rdv || !open) return;
     Promise.all([
-      rdv.prospectId ? prospectService.getById(rdv.prospectId) : Promise.resolve(null),
+      professionnelService.getProfessionnelById(rdv.professionnelId),
       supportService.getById(rdv.supportId),
     ])
-      .then(([p, s]) => { setProspect(p); setSupport(s); })
+      .then(([p, s]) => { setProfessionnel(p); setSupport(s); })
       .catch(() => {});
   }, [rdv, open]);
 
@@ -83,8 +83,8 @@ export function RdvDetailDrawer({ open, onClose, rdv, onEdit, onAnnuler }: Props
           <Descriptions.Item label="Durée">
             {rdv.dureeMinutes} min
           </Descriptions.Item>
-          <Descriptions.Item label="Prospect">
-            {prospect ? `${prospect.nom} ${prospect.prenom ?? ''} — ${prospect.entreprise}` : '—'}
+          <Descriptions.Item label="Professionnel de santé">
+            {professionnel ? `${professionnel.titre ? professionnel.titre + ' ' : ''}${professionnel.nom} ${professionnel.prenom ?? ''}` : '—'}
           </Descriptions.Item>
           <Descriptions.Item label="Support">
             {support ? `${support.titre} (${support.nombreSlides} slides)` : '—'}

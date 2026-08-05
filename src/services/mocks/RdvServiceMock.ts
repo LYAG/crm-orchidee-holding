@@ -10,7 +10,6 @@ export class RdvServiceMock implements RdvService {
     await delay();
     let result = [...rendezvous];
     if (filtres?.delegueId) result = result.filter((r) => r.delegueId === filtres.delegueId);
-    if (filtres?.prospectId) result = result.filter((r) => r.prospectId === filtres.prospectId);
     if (filtres?.professionnelId) result = result.filter((r) => r.professionnelId === filtres.professionnelId);
     if (filtres?.statut) result = result.filter((r) => r.statut === filtres.statut);
     if (filtres?.dateDebut) result = result.filter((r) => r.dateHeure >= filtres.dateDebut!);
@@ -62,7 +61,7 @@ export class RdvServiceMock implements RdvService {
     return this.getAll({ ...filtres, delegueId });
   }
 
-  async getByProspect(prospectId: string): Promise<RendezVous[]> {
-    return this.getAll({ prospectId });
+  async getByProfessionnel(professionnelId: string): Promise<RendezVous[]> {
+    return this.getAll({ professionnelId });
   }
 }

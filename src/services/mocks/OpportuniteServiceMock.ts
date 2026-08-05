@@ -1,12 +1,12 @@
 import type { OpportuniteService } from '@/services/api/OpportuniteService';
 import type { Devis, FiltresOpportunite, NoteOpportunite, Opportunite } from '@/types';
-import { OpportuniteEtape, ProspectStatut } from '@/types';
+import { OpportuniteEtape, StatutProfessionnel } from '@/types';
 import { deepClone, delay, generateId, notFound } from './_utils';
 import { opportunites as mockOpportunites } from './data';
-import { ProspectServiceMock } from './ProspectServiceMock';
+import { ProfessionnelServiceMock } from './ProfessionnelServiceMock';
 
 const opportunites: Opportunite[] = deepClone(mockOpportunites);
-const prospectService = new ProspectServiceMock();
+const professionnelService = new ProfessionnelServiceMock();
 
 export class OpportuniteServiceMock implements OpportuniteService {
   async getAll(filtres?: FiltresOpportunite): Promise<Opportunite[]> {
@@ -58,7 +58,7 @@ export class OpportuniteServiceMock implements OpportuniteService {
   async marquerGagnee(id: string): Promise<Opportunite> {
     await delay();
     const opp = await this.update(id, { etape: OpportuniteEtape.GAGNEE, probabilite: 100 });
-    await prospectService.update(opp.prospectId, { statut: ProspectStatut.CLIENT });
+    await professionnelService.updateProfessionnel(opp.professionnelId, { statut: StatutProfessionnel.ST });
     return opp;
   }
 

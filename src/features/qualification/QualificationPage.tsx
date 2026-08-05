@@ -26,7 +26,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
-import { prospectService, qualificationService, rdvService } from '@/services';
+import { professionnelService, qualificationService, rdvService } from '@/services';
 import {
   MotifNonProductif,
   QualificationOpportunite,
@@ -34,7 +34,7 @@ import {
   QualificationTransformation,
   RdvStatut,
 } from '@/types';
-import type { Prospect, QualificationRDV, RendezVous } from '@/types';
+import type { ProfessionnelSante, QualificationRDV, RendezVous } from '@/types';
 import { QualificationFormFields } from './QualificationForm';
 import { QualificationReadOnly } from './QualificationReadOnly';
 
@@ -62,7 +62,7 @@ export function QualificationPage() {
   const [form] = Form.useForm();
 
   const [rdv, setRdv] = useState<RendezVous | null>(null);
-  const [prospect, setProspect] = useState<Prospect | null>(null);
+  const [professionnel, setProfessionnel] = useState<ProfessionnelSante | null>(null);
   const [existingQual, setExistingQual] = useState<QualificationRDV | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -77,9 +77,9 @@ export function QualificationPage() {
       .then(async ([r, q]) => {
         setRdv(r);
         setExistingQual(q);
-        if (r.prospectId) {
-          const p = await prospectService.getById(r.prospectId);
-          setProspect(p);
+        if (r.professionnelId) {
+          const p = await professionnelService.getProfessionnelById(r.professionnelId);
+          setProfessionnel(p);
         }
       })
       .catch(() => {})
@@ -309,12 +309,12 @@ export function QualificationPage() {
                     letterSpacing: '0.06em',
                   }}
                 >
-                  Prospect / Entreprise
+                  Professionnel de santé
                 </Text>
               </div>
               <Text strong style={{ color: '#123832', fontSize: 14 }}>
-                {prospect
-                  ? `${prospect.nom} ${prospect.prenom ?? ''} — ${prospect.entreprise}`
+                {professionnel
+                  ? `${professionnel.titre ? professionnel.titre + ' ' : ''}${professionnel.nom} ${professionnel.prenom ?? ''}`
                   : '—'}
               </Text>
             </div>
