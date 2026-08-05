@@ -49,7 +49,7 @@ interface Props {
 export function OpportuniteDetailDrawer({
   open,
   opportunite: opp,
-  prospectMap,
+  professionnelMap,
   utilisateurMap,
   onClose,
   onUpdate,
@@ -77,7 +77,7 @@ export function OpportuniteDetailDrawer({
   if (!opp) return null;
 
   const currentOpp = opp; // capture for closures
-  const prospect = prospectMap[opp.prospectId];
+  const professionnel = professionnelMap[opp.professionnelId];
   const delegue = utilisateurMap[opp.delegueId];
   const etapeConfig = ETAPE_MAP[opp.etape];
   const isClosed =
@@ -86,12 +86,12 @@ export function OpportuniteDetailDrawer({
   async function handleMarquerGagnee() {
     Modal.confirm({
       title: 'Marquer comme gagnée ?',
-      content: 'Le prospect deviendra client. Cette action ne peut pas être annulée.',
+      content: 'Cette action ne peut pas être annulée.',
       okText: 'Confirmer',
       onOk: async () => {
         try {
           const updated = await opportuniteService.marquerGagnee(currentOpp.id);
-          message.success('Opportunité gagnée — prospect passé en statut Client.');
+          message.success('Opportunité gagnée.');
           onUpdate(updated);
         } catch {
           message.error('Erreur lors de la mise à jour.');
@@ -261,8 +261,8 @@ export function OpportuniteDetailDrawer({
       <Space direction="vertical" style={{ width: '100%' }} size="large">
         {/* KPI row */}
         <Descriptions column={2} size="small">
-          <Descriptions.Item label="Prospect">
-            {prospect ? `${prospect.nom} ${prospect.prenom ?? ''} — ${prospect.entreprise}` : '—'}
+          <Descriptions.Item label="Professionnel de santé">
+            {professionnel ? `${professionnel.titre ? professionnel.titre + ' ' : ''}${professionnel.nom} ${professionnel.prenom ?? ''}` : '—'}
           </Descriptions.Item>
           <Descriptions.Item label="Délégué">
             {delegue ? `${delegue.prenom} ${delegue.nom}` : '—'}

@@ -7,9 +7,9 @@ import { App, Button, Progress, Radio, Select, Space, Tag } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
-import { opportuniteService, prospectService, utilisateurService } from '@/services';
+import { opportuniteService, professionnelService, utilisateurService } from '@/services';
 import { OpportuniteEtape } from '@/types';
-import type { Opportunite, Prospect, Utilisateur } from '@/types';
+import type { Opportunite, ProfessionnelSante, Utilisateur } from '@/types';
 import { ETAPE_MAP, ETAPES_CONFIG } from './constants';
 import { NouvelleOpportuniteDrawer } from './NouvelleOpportuniteDrawer';
 import { OpportuniteDetailDrawer } from './OpportuniteDetailDrawer';
@@ -24,7 +24,7 @@ export function OpportunitesPage() {
 
   const [viewMode, setViewMode] = useState<ViewMode>('kanban');
   const [allOpps, setAllOpps] = useState<Opportunite[]>([]);
-  const [prospectMap, setProspectMap] = useState<Record<string, Prospect>>({});
+  const [professionnelMap, setProfessionnelMap] = useState<Record<string, ProfessionnelSante>>({});
   const [utilisateurMap, setUtilisateurMap] = useState<Record<string, Utilisateur>>({});
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
   const [filterDelegueId, setFilterDelegueId] = useState<string | undefined>();

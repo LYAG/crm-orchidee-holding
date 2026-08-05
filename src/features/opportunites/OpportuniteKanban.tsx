@@ -9,14 +9,14 @@ import {
 import { Progress, Typography } from 'antd';
 import { useState } from 'react';
 import { OpportuniteEtape } from '@/types';
-import type { Opportunite, Prospect, Utilisateur } from '@/types';
+import type { Opportunite, ProfessionnelSante, Utilisateur } from '@/types';
 import { ETAPES_CONFIG } from './constants';
 
 const { Text } = Typography;
 
 interface Props {
   opportunites: Opportunite[];
-  prospectMap: Record<string, Prospect>;
+  professionnelMap: Record<string, ProfessionnelSante>;
   utilisateurMap: Record<string, Utilisateur>;
   onSelect: (opp: Opportunite) => void;
   onEtapeChange: (oppId: string, etape: OpportuniteEtape) => void;
@@ -26,7 +26,7 @@ interface Props {
 
 function OppCard({
   opp,
-  prospect,
+  professionnel,
   color,
   isDragging,
   onDragStart,
@@ -34,7 +34,7 @@ function OppCard({
   onClick,
 }: {
   opp: Opportunite;
-  prospect?: Prospect;
+  professionnel?: ProfessionnelSante;
   color: string;
   isDragging: boolean;
   onDragStart: (e: React.DragEvent) => void;
@@ -100,13 +100,14 @@ function OppCard({
         {opp.titre.length > 42 ? `${opp.titre.slice(0, 39)}…` : opp.titre}
       </Text>
 
-      {/* Entreprise */}
-      {prospect && (
+      {/* Centre / établissement */}
+      {professionnel && (
         <Text
           type="secondary"
           style={{ fontSize: 11, display: 'block', marginBottom: 8 }}
         >
-          {prospect.entreprise}
+          {professionnel.titre ? `${professionnel.titre} ` : ''}
+          {professionnel.nom} {professionnel.prenom ?? ''}
         </Text>
       )}
 
@@ -342,7 +343,7 @@ export function OpportuniteKanban({
                 <OppCard
                   key={opp.id}
                   opp={opp}
-                  prospect={prospectMap[opp.prospectId]}
+                  professionnel={professionnelMap[opp.professionnelId]}
                   color={color}
                   isDragging={draggingId === opp.id}
                   onDragStart={(e) => handleDragStart(e, opp.id)}
