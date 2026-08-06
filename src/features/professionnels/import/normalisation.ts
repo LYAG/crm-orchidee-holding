@@ -111,7 +111,7 @@ export interface ResultatGestes {
 
 export function mapperGestes(brut: string, referentiel: GesteMarketing[]): ResultatGestes {
   const tokens = brut
-    .split(/[;,]/)
+    .split(/[/,;]/)
     .map((t) => normaliserTexte(t))
     .filter(Boolean)
     .map((t) => SYNONYMES_GESTE[t] ?? t);
@@ -221,6 +221,13 @@ export function parserJoursConsultation(brut: string): JoursConsultation | null 
   const frequence = majuscule.match(/(\d+)(?:\s*(?:A|À)\s*(\d+))?\s*FOIS\s*\/?\s*SEM/);
   if (frequence) {
     const freq = Number(frequence[2] ?? frequence[1]);
+    return { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: freq };
+  }
+
+  // "2/ SEM", "3-4/ SEM" : fréquence implicite (sans le mot "FOIS")
+  const frequenceImplicite = majuscule.match(/^(\d+)(?:\s*[-–—]\s*(\d+))?\s*\/\s*SEM/);
+  if (frequenceImplicite) {
+    const freq = Number(frequenceImplicite[2] ?? frequenceImplicite[1]);
     return { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: freq };
   }
 

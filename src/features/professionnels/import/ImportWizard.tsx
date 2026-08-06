@@ -78,7 +78,10 @@ export function ImportWizard() {
     setFile(f);
     setChargement(true);
     try {
-      const noms = await listerFeuilles(f);
+      const noms = await listerFeuillesImportables(f);
+      if (noms.length === 0) {
+        message.error("Aucune feuille exploitable trouvée dans ce fichier (en-tête JOUR/CENTRE introuvable).");
+      }
       setFeuilles(noms);
       setFeuilleChoisie(noms[0] ?? null);
     } catch (err) {
@@ -107,7 +110,9 @@ export function ImportWizard() {
 
   async function handleNormaliser() {
     if (!zoneId) {
-      message.error("Aucune zone associée à votre profil délégué.");
+      message.error(
+        estGestionnaire ? 'Sélectionnez un délégué avant de lancer la normalisation.' : 'Aucune zone associée à votre profil délégué.',
+      );
       return;
     }
     setChargement(true);
@@ -143,10 +148,10 @@ export function ImportWizard() {
   }
 
   async function handleSoumettre() {
-    if (!user) return;
+    if (!user || !delegueId || !zoneId) return;
     setSoumission(true);
     try {
-      const res = await soumettreImport(lignes, user.id);
+      const res = await soumettreImport(lignes, delegueId, zoneId);
       setResultat(res);
       setStep(3);
     } catch (err) {
@@ -253,7 +258,26 @@ export function ImportWizard() {
             showIcon
             message="Format attendu : colonnes JOUR, CENTRE, SPECIALITE, NOM ET PRENOM, NUMERO, JRS/CONS, NBRE DE CAS, ACTION, OBSERVATION."
           />
-          <Dragger accept=".xlsx,.xls" beforeUpload={handleFileSelected} showUploadList={false} disabled={chargement}>
+          {estGestionnaire && (
+            <Space direction="vertical">
+              <Text strong>Délégué concerné par ce fichier</Text>
+              <Select
+                style={{ width: 280 }}
+                placeholder="Sélectionner un délégué"
+                value={delegueChoisiId}
+                onChange={setDelegueChoisiId}
+                options={delegues.map((d) => ({ value: d.id, label: `${d.prenom} ${d.nom}` }))}
+              />
+              {delegueChoisiId && !zoneId && (
+                <Alert type="warning" showIcon message="Ce délégué n'a aucune zone associée — l'import ne pourra pas être lancé." />
+              )}
+            </Space>
+          )}
+          <Dragger
+            accept=".xlsx,.xls"
+            beforeUpload={handleFileSelected}
+            showUploadList={false}
+            disabled={chargement || (estGestionnaire && !delegueChoisiId)}>
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
@@ -334,6 +358,7 @@ export function ImportWizard() {
             <Space direction="vertical">
               <span>{resultat.creees} fiche(s) créée(s)</span>
               <span>{resultat.miseAJour} fiche(s) mise(s) à jour</span>
+              <span>{resultat.centresCrees} nouveau(x) centre(s) créé(s)</span>
               <span>{resultat.ignorees} ligne(s) ignorée(s)</span>
               <span>{resultat.demandesValidation} demande(s) envoyée(s) à l'administrateur</span>
             </Space>

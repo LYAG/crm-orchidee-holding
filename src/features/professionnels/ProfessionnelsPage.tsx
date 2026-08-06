@@ -280,11 +280,9 @@ export function ProfessionnelsPage() {
               Nouveau professionnel
             </Button>
           </Tooltip>,
-          role === UserRole.DELEGUE && (
-            <Link key="import" href="/professionnels/import">
-              <Button icon={<UploadOutlined />}>Importer Excel</Button>
-            </Link>
-          ),
+          <Link key="import" href="/professionnels/import">
+            <Button icon={<UploadOutlined />}>Importer Excel</Button>
+          </Link>,
         ].filter(Boolean)}
       />
 
