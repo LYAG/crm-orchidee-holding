@@ -114,7 +114,7 @@ export function mapperGestes(brut: string, referentiel: GesteMarketing[]): Resul
     .split(/[/,;]/)
     .map((t) => normaliserTexte(t))
     .filter(Boolean)
-    .map((t) => SYNONYMES_GESTE[t] ?? t);
+    .map((t) => normaliserTexte(SYNONYMES_GESTE[t] ?? t));
 
   const gesteIds: string[] = [];
   const inconnus: string[] = [];
