@@ -235,11 +235,24 @@ export interface KpiManager {
   tauxTransformationGlobal: number;
 }
 
+export interface TopDelegue {
+  delegueId: string;
+  nom: string;
+  tauxTransformation: number;
+  nbRdv: number;
+}
+
 export interface KpiAdmin {
   doublonsEnAttente: number;
   professionnelsNonAttribuesSup30j: number;
   pipelineTotal: number;
   tauxTransformationGlobal: number;
+  rdvRealises: number;
+  /** RDV réalisés + RDV encore à réaliser (planifiés/en cours) — hors annulés. */
+  rdvTotal: number;
+  conversionsT3VersT2: number;
+  conversionsT2VersT3: number;
+  topDelegues: TopDelegue[];
 }
 
 // ─── Filtres génériques ───────────────────────────────────────────────────────

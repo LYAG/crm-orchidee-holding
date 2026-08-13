@@ -1,9 +1,9 @@
 ﻿import type { ReportingService } from '@/services/api/ReportingService';
-import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport } from '@/types';
-import { OpportuniteEtape, QualificationTransformation, StatutProfessionnel } from '@/types';
+import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport, TopDelegue } from '@/types';
+import { OpportuniteEtape, QualificationTransformation, RdvStatut, StatutProfessionnel } from '@/types';
 import { delay } from './_utils';
 import { opportunites, qualifications, rendezvous, utilisateurs } from './data';
-import { centres, professionnels } from './professionnelsData';
+import { centres, historiqueChangementsStatut, professionnels } from './professionnelsData';
 
 function now() {
   return new Date().toISOString();
@@ -109,13 +109,49 @@ export class ReportingServiceMock implements ReportingService {
       .filter((o) => ![OpportuniteEtape.GAGNEE, OpportuniteEtape.PERDUE].includes(o.etape))
       .reduce((sum, o) => sum + o.montantEstime, 0);
 
-    const rdvRealises = rendezvous.filter((r) => r.statut === 'REALISE').length;
+    const rdvRealises = rendezvous.filter((r) => r.statut === RdvStatut.REALISE).length;
+    const rdvTotal = rendezvous.filter((r) => r.statut !== RdvStatut.ANNULE).length;
     const transformes = qualifications.filter(
       (q) => q.transformation === QualificationTransformation.TRANSFORME_CLIENT,
     ).length;
     const tauxTransformationGlobal = rdvRealises > 0 ? transformes / rdvRealises : 0;
 
-    return { doublonsEnAttente, professionnelsNonAttribuesSup30j, pipelineTotal, tauxTransformationGlobal };
+    const conversionsT3VersT2 = historiqueChangementsStatut.filter(
+      (h) => h.statutAvant === StatutProfessionnel.T3 && h.statutApres === StatutProfessionnel.T2,
+    ).length;
+    const conversionsT2VersT3 = historiqueChangementsStatut.filter(
+      (h) => h.statutAvant === StatutProfessionnel.T2 && h.statutApres === StatutProfessionnel.T3,
+    ).length;
+
+    const delegueIds = utilisateurs.filter((u) => u.role === 'DELEGUE').map((u) => u.id);
+    const topDelegues: TopDelegue[] = (
+      await Promise.all(
+        delegueIds.map(async (id) => {
+          const user = utilisateurs.find((u) => u.id === id);
+          const kpi = await this.getKpiDelegue(id);
+          return {
+            delegueId: id,
+            nom: user ? `${user.prenom} ${user.nom}` : id,
+            tauxTransformation: kpi.tauxTransformation,
+            nbRdv: rendezvous.filter((r) => r.delegueId === id).length,
+          };
+        }),
+      )
+    )
+      .sort((a, b) => b.tauxTransformation - a.tauxTransformation || b.nbRdv - a.nbRdv)
+      .slice(0, 5);
+
+    return {
+      doublonsEnAttente,
+      professionnelsNonAttribuesSup30j,
+      pipelineTotal,
+      tauxTransformationGlobal,
+      rdvRealises,
+      rdvTotal,
+      conversionsT3VersT2,
+      conversionsT2VersT3,
+      topDelegues,
+    };
   }
 
   async exporterCsv(filtres?: { zoneId?: string; delegueId?: string; periode?: PeriodeRapport }): Promise<string> {

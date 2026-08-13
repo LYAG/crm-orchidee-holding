@@ -4,13 +4,15 @@ import {
   AlertOutlined,
   ArrowRightOutlined,
   BarChartOutlined,
+  CalendarOutlined,
   CheckCircleOutlined,
   MergeCellsOutlined,
   RiseOutlined,
   SettingOutlined,
+  SwapOutlined,
   TeamOutlined,
+  TrophyOutlined,
   UserOutlined,
-  WalletOutlined,
   WarningOutlined,
 } from '@ant-design/icons';
 import { PageContainer, ProCard } from '@ant-design/pro-components';
@@ -359,11 +361,10 @@ export function DashboardAdmin({ user }: Props) {
         <Col xs={24} sm={12} lg={6}>
           <KpiCard
             loading={loading}
-            icon={<WalletOutlined />}
-            label="Pipeline total (toutes zones)"
-            value={kpi?.pipelineTotal ?? 0}
-            suffix="€"
-            formatter={(v) => v.toLocaleString('fr-FR')}
+            icon={<CalendarOutlined />}
+            label={`RDV réalisés : ${kpi?.rdvRealises ?? 0} / ${kpi?.rdvTotal ?? 0}`}
+            value={kpi && kpi.rdvTotal > 0 ? Math.round((kpi.rdvRealises / kpi.rdvTotal) * 100) : 0}
+            suffix="%"
             accent="#0F6E52"
             bg="#E8F5E9"
           />
@@ -378,6 +379,108 @@ export function DashboardAdmin({ user }: Props) {
             accent="#1565C0"
             bg="#E3F2FD"
           />
+        </Col>
+      </Row>
+
+      {/* ── Conversions & Top délégués ── */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
+        <Col xs={24} lg={9}>
+          <ProCard
+            title="Conversions de classification"
+            bordered
+            headerBordered
+            style={{ borderRadius: 12, height: '100%' }}
+            bodyStyle={{ padding: 20 }}
+          >
+            {loading ? (
+              <Skeleton active paragraph={{ rows: 1 }} />
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 12 }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 30, fontWeight: 800, color: '#1565C0', lineHeight: 1 }}>
+                    {kpi?.conversionsT3VersT2 ?? 0}
+                  </div>
+                  <Text type="secondary" style={{ fontSize: 12, marginTop: 6, display: 'block' }}>
+                    T3 → T2
+                  </Text>
+                </div>
+                <SwapOutlined style={{ fontSize: 18, color: '#8FB0A8' }} />
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 30, fontWeight: 800, color: '#E65100', lineHeight: 1 }}>
+                    {kpi?.conversionsT2VersT3 ?? 0}
+                  </div>
+                  <Text type="secondary" style={{ fontSize: 12, marginTop: 6, display: 'block' }}>
+                    T2 → T3
+                  </Text>
+                </div>
+              </div>
+            )}
+          </ProCard>
+        </Col>
+        <Col xs={24} lg={15}>
+          <ProCard
+            title={
+              <Space size={6}>
+                <TrophyOutlined style={{ color: '#E65100' }} />
+                <span>Top 5 délégués</span>
+              </Space>
+            }
+            bordered
+            headerBordered
+            style={{ borderRadius: 12, height: '100%' }}
+            bodyStyle={{ padding: 20 }}
+          >
+            {loading ? (
+              <Skeleton active paragraph={{ rows: 4 }} />
+            ) : kpi && kpi.topDelegues.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {kpi.topDelegues.map((d, i) => (
+                  <div key={d.delegueId} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: '50%',
+                        background: i === 0 ? '#FEF3C7' : '#F0F4F2',
+                        color: i === 0 ? '#B45309' : '#5C8079',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {i + 1}
+                    </div>
+                    <Text strong style={{ fontSize: 13, color: '#123832', flex: 1 }}>
+                      {d.nom}
+                    </Text>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {d.nbRdv} RDV
+                    </Text>
+                    <Tag
+                      style={{
+                        background: '#E8F5E9',
+                        color: '#0F6E52',
+                        border: 'none',
+                        fontWeight: 600,
+                        borderRadius: 6,
+                        minWidth: 48,
+                        textAlign: 'center',
+                      }}
+                    >
+                      {Math.round(d.tauxTransformation * 100)}%
+                    </Tag>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Text type="secondary" style={{ fontSize: 13 }}>
+                Aucune activité de délégué à classer pour le moment.
+              </Text>
+            )}
+          </ProCard>
         </Col>
       </Row>
 

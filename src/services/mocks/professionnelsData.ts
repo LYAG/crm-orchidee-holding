@@ -4,6 +4,7 @@ import {
   type Centre,
   type GesteMarketing,
   type GesteRealise,
+  type HistoriqueChangementStatut,
   type JourTournee,
   JourSemaine,
   ModeJoursConsultation,
@@ -329,6 +330,12 @@ export const professionnels: ProfessionnelSante[] = baseProfessionnels.map((p) =
   categorie: categorieDefaut(p.titre!, p.specialiteIds),
   statut: p.aDejaEuContact ? StatutProfessionnel.ST : StatutProfessionnel.T3,
 }));
+
+// ─── Historique des changements de classification ─────────────────────────────
+// Alimenté par ProfessionnelServiceMock à chaque changement de `statut` — vide au
+// démarrage, se remplit au fil des attributions/qualifications qui reclassent un
+// professionnel (ex : T3 → T2 lors d'une première prescription constatée).
+export const historiqueChangementsStatut: HistoriqueChangementStatut[] = [];
 
 // ─── Gestes réalisés (historique) ─────────────────────────────────────────────
 

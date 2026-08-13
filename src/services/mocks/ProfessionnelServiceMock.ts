@@ -28,6 +28,9 @@ import {
   centres as mockCentres,
   gestesMarketing as mockGestesMarketing,
   gestesRealises as mockGestesRealises,
+  // Partagé (non cloné) avec ReportingServiceMock, qui lit ce même tableau
+  // pour calculer les conversions T3↔T2 en temps réel dans la session.
+  historiqueChangementsStatut,
   joursTournee as mockJoursTournee,
   professionnels as mockProfessionnels,
   specialites as mockSpecialites,
@@ -40,6 +43,22 @@ const professionnels: ProfessionnelSante[] = deepClone(mockProfessionnels);
 const gestesRealises: GesteRealise[] = deepClone(mockGestesRealises);
 const joursTournee: JourTournee[] = deepClone(mockJoursTournee);
 const demandesValidation: DemandeValidation[] = [];
+
+function enregistrerChangementStatut(
+  professionnel: ProfessionnelSante,
+  statutAvant: StatutProfessionnel,
+  statutApres: StatutProfessionnel,
+): void {
+  if (statutAvant === statutApres) return;
+  historiqueChangementsStatut.push({
+    id: generateId('hst'),
+    professionnelId: professionnel.id,
+    delegueId: professionnel.delegueId,
+    statutAvant,
+    statutApres,
+    date: today(),
+  });
+}
 
 /** Normalise pour rapprochement flou : majuscules, sans ponctuation, sans espaces multiples. */
 function normaliser(texte: string): string {
@@ -250,7 +269,9 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     await delay();
     const idx = professionnels.findIndex((p) => p.id === id);
     if (idx < 0) notFound('Professionnel de santé', id);
+    const statutAvant = professionnels[idx].statut;
     professionnels[idx] = { ...professionnels[idx], ...data };
+    if (data.statut) enregistrerChangementStatut(professionnels[idx], statutAvant, data.statut);
     return professionnels[idx];
   }
 
@@ -273,8 +294,10 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     await delay();
     const idx = professionnels.findIndex((p) => p.id === professionnelId);
     if (idx < 0) notFound('Professionnel de santé', professionnelId);
+    const statutAvant = professionnels[idx].statut;
     // Classification par défaut à l'attribution : potentiel/prescription inconnus tant que le premier RDV n'a pas eu lieu.
     professionnels[idx] = { ...professionnels[idx], delegueId, statut: StatutProfessionnel.T3 };
+    enregistrerChangementStatut(professionnels[idx], statutAvant, StatutProfessionnel.T3);
     return professionnels[idx];
   }
 

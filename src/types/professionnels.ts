@@ -147,6 +147,17 @@ export interface ProfessionnelSante {
   aDejaEuContact: boolean;
 }
 
+// ─── Historique des changements de classification ─────────────────────────────
+
+export interface HistoriqueChangementStatut {
+  id: string;
+  professionnelId: string;
+  delegueId?: string;
+  statutAvant: StatutProfessionnel;
+  statutApres: StatutProfessionnel;
+  date: string;
+}
+
 // ─── Geste marketing (référentiel dynamique) ──────────────────────────────────
 
 export enum CategorieGeste {
