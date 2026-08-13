@@ -7,6 +7,7 @@ import {
   App,
   Button,
   Descriptions,
+  Progress,
   Result,
   Select,
   Space,
@@ -17,7 +18,7 @@ import {
   Upload,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, utilisateurService } from '@/services';
@@ -36,6 +37,14 @@ const STATUT_TAG: Record<ProfessionnelAImporter['statut'], { color: string; labe
   A_VERIFIER: { color: 'orange', label: 'À vérifier' },
   DOUBLON: { color: 'red', label: 'Doublon détecté' },
 };
+
+function formatDuree(secondes: number): string {
+  if (secondes < 5) return 'quelques secondes';
+  if (secondes < 60) return `${secondes} s`;
+  const min = Math.floor(secondes / 60);
+  const rest = secondes % 60;
+  return rest > 0 ? `${min} min ${rest} s` : `${min} min`;
+}
 
 export function ImportWizard() {
   const { user } = useAuth();
@@ -63,6 +72,8 @@ export function ImportWizard() {
   // Étape 4
   const [resultat, setResultat] = useState<ResultatSoumission | null>(null);
   const [soumission, setSoumission] = useState(false);
+  const [progression, setProgression] = useState<{ traitees: number; total: number } | null>(null);
+  const debutSoumissionRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (estGestionnaire) {
@@ -150,14 +161,29 @@ export function ImportWizard() {
   async function handleSoumettre() {
     if (!user || !delegueId || !zoneId) return;
     setSoumission(true);
+    setProgression({ traitees: 0, total: lignes.length });
+    debutSoumissionRef.current = Date.now();
     try {
-      const res = await soumettreImport(lignes, delegueId, zoneId);
+      const res = await soumettreImport(lignes, delegueId, zoneId, (traitees, total) => {
+        setProgression({ traitees, total });
+      });
       setResultat(res);
       setStep(3);
     } catch (err) {
       message.error(err instanceof Error ? err.message : "Erreur lors de l'intégration.");
     } finally {
       setSoumission(false);
+      setProgression(null);
+      debutSoumissionRef.current = null;
+    }
+  }
+
+  let etaSecondes: number | null = null;
+  if (progression && progression.traitees > 0 && debutSoumissionRef.current) {
+    const restantes = progression.total - progression.traitees;
+    if (restantes > 0) {
+      const msParLigne = (Date.now() - debutSoumissionRef.current) / progression.traitees;
+      etaSecondes = Math.max(0, Math.round((msParLigne * restantes) / 1000));
     }
   }
 
@@ -230,6 +256,7 @@ export function ImportWizard() {
             size="small"
             style={{ width: 160 }}
             value={l.actionDoublon}
+            disabled={soumission}
             onChange={(v) => setActionDoublon(l.cle, v)}
             options={[
               { value: 'IGNORER', label: 'Ignorer' },
@@ -344,9 +371,23 @@ export function ImportWizard() {
             scroll={{ x: true }}
           />
 
-          <Button type="primary" loading={soumission} onClick={handleSoumettre}>
-            Soumettre l'import
-          </Button>
+          {soumission && progression ? (
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Progress
+                percent={Math.round((progression.traitees / progression.total) * 100)}
+                status="active"
+              />
+              <Text type="secondary">
+                {progression.traitees} / {progression.total} ligne{progression.total > 1 ? 's' : ''} importée
+                {progression.traitees > 1 ? 's' : ''}
+                {etaSecondes !== null ? ` · encore environ ${formatDuree(etaSecondes)}` : ''}
+              </Text>
+            </Space>
+          ) : (
+            <Button type="primary" loading={soumission} onClick={handleSoumettre} disabled={lignes.length === 0}>
+              Soumettre l'import
+            </Button>
+          )}
         </Space>
       )}
 

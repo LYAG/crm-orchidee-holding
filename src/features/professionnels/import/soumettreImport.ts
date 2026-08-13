@@ -12,6 +12,9 @@ export interface ResultatSoumission {
   centresCrees: number;
 }
 
+/** Appelé après chaque ligne traitée, pour piloter une barre de progression. */
+export type ProgressionSoumission = (lignesTraitees: number, totalLignes: number) => void;
+
 function joursConsultationFinal(ligne: ProfessionnelAImporter): JoursConsultation {
   if (ligne.joursConsultation) return ligne.joursConsultation;
   return {
@@ -46,106 +49,128 @@ async function construireDto(ligne: ProfessionnelAImporter, delegueId: string): 
   };
 }
 
+interface ContexteSoumission {
+  delegueId: string;
+  zoneId: string;
+  resultat: ResultatSoumission;
+  centresCreesParNom: Map<string, string>;
+  planningParJour: Map<JourTourneeKey, Set<string>>;
+}
+
+async function traiterLigne(ligne: ProfessionnelAImporter, ctx: ContexteSoumission): Promise<void> {
+  const { delegueId, zoneId, resultat, centresCreesParNom, planningParJour } = ctx;
+
+  // Centre inconnu : on le crée directement dans la zone du délégué pour ne pas
+  // bloquer l'import, tout en gardant une trace (demande de validation informative).
+  if (ligne.centreACreer && !ligne.centreId) {
+    const clef = ligne.centreBrut.trim().toUpperCase();
+    let centreId = centresCreesParNom.get(clef);
+    if (!centreId) {
+      const centre = await professionnelService.createCentre({ nom: ligne.centreBrut.trim(), zoneId, actif: true });
+      centreId = centre.id;
+      centresCreesParNom.set(clef, centreId);
+      resultat.centresCrees++;
+      await professionnelService.creerDemandeValidation({
+        type: TypeDemandeValidation.NOUVEAU_CENTRE,
+        delegueId,
+        libelle: `Nouveau centre créé à l'import : "${ligne.centreBrut}"`,
+        donnees: { nom: ligne.centreBrut, zoneId, actif: true },
+      });
+    }
+    ligne.centreId = centreId;
+  }
+
+  if (ligne.jourTournee && ligne.jourTournee !== JourSemaine.DIM && ligne.centreId) {
+    const jourTournee = ligne.jourTournee as JourTourneeKey;
+    if (!planningParJour.has(jourTournee)) planningParJour.set(jourTournee, new Set());
+    planningParJour.get(jourTournee)!.add(ligne.centreId);
+  }
+
+  for (const code of ligne.specialitesInconnues) {
+    await professionnelService.creerDemandeValidation({
+      type: TypeDemandeValidation.NOUVELLE_SPECIALITE,
+      delegueId,
+      libelle: `Nouvelle spécialité proposée : "${code}" (ligne ${ligne.ligneExcel})`,
+      donnees: { code, libelle: code, actif: true },
+    });
+    resultat.demandesValidation++;
+  }
+  for (const geste of ligne.gestesInconnus) {
+    await professionnelService.creerDemandeValidation({
+      type: TypeDemandeValidation.NOUVEAU_GESTE,
+      delegueId,
+      libelle: `Nouveau geste proposé : "${geste}" (ligne ${ligne.ligneExcel})`,
+      donnees: { libelle: geste, actif: true },
+    });
+    resultat.demandesValidation++;
+  }
+
+  if (ligne.statut === 'DOUBLON') {
+    if (ligne.actionDoublon === 'IGNORER' || !ligne.actionDoublon) {
+      resultat.ignorees++;
+      return;
+    }
+    if (ligne.actionDoublon === 'REMPLACER' && ligne.doublonProfessionnelId) {
+      const dto = await construireDto(ligne, delegueId);
+      if (dto) {
+        await professionnelService.updateProfessionnel(ligne.doublonProfessionnelId, dto);
+        resultat.miseAJour++;
+      }
+      return;
+    }
+    if (ligne.actionDoublon === 'CREER_QUAND_MEME') {
+      const dto = await construireDto(ligne, delegueId);
+      if (dto) {
+        await professionnelService.creerDemandeValidation({
+          type: TypeDemandeValidation.DOUBLON_PROFESSIONNEL,
+          delegueId,
+          libelle: `Création malgré doublon : "${ligne.nom}" (ligne ${ligne.ligneExcel})`,
+          donnees: dto,
+          professionnelExistantId: ligne.doublonProfessionnelId,
+        });
+        resultat.demandesValidation++;
+      }
+      return;
+    }
+  }
+
+  const dto = await construireDto(ligne, delegueId);
+  if (dto) {
+    await professionnelService.importerProfessionnel(dto);
+    resultat.creees++;
+  } else {
+    resultat.ignorees++;
+  }
+}
+
 export async function soumettreImport(
   lignes: ProfessionnelAImporter[],
   delegueId: string,
   zoneId: string,
+  onProgress?: ProgressionSoumission,
 ): Promise<ResultatSoumission> {
-  const resultat: ResultatSoumission = { creees: 0, miseAJour: 0, ignorees: 0, demandesValidation: 0, centresCrees: 0 };
-  // Un seul centre créé par nom rencontré dans le lot, réutilisé pour les lignes suivantes.
-  const centresCreesParNom = new Map<string, string>();
-  const planningParJour = new Map<JourTourneeKey, Set<string>>();
+  const ctx: ContexteSoumission = {
+    delegueId,
+    zoneId,
+    resultat: { creees: 0, miseAJour: 0, ignorees: 0, demandesValidation: 0, centresCrees: 0 },
+    // Un seul centre créé par nom rencontré dans le lot, réutilisé pour les lignes suivantes.
+    centresCreesParNom: new Map<string, string>(),
+    planningParJour: new Map<JourTourneeKey, Set<string>>(),
+  };
 
+  let traitees = 0;
   for (const ligne of lignes) {
-    // Centre inconnu : on le crée directement dans la zone du délégué pour ne pas
-    // bloquer l'import, tout en gardant une trace (demande de validation informative).
-    if (ligne.centreACreer && !ligne.centreId) {
-      const clef = ligne.centreBrut.trim().toUpperCase();
-      let centreId = centresCreesParNom.get(clef);
-      if (!centreId) {
-        const centre = await professionnelService.createCentre({ nom: ligne.centreBrut.trim(), zoneId, actif: true });
-        centreId = centre.id;
-        centresCreesParNom.set(clef, centreId);
-        resultat.centresCrees++;
-        await professionnelService.creerDemandeValidation({
-          type: TypeDemandeValidation.NOUVEAU_CENTRE,
-          delegueId,
-          libelle: `Nouveau centre créé à l'import : "${ligne.centreBrut}"`,
-          donnees: { nom: ligne.centreBrut, zoneId, actif: true },
-        });
-      }
-      ligne.centreId = centreId;
-    }
-
-    if (ligne.jourTournee && ligne.jourTournee !== JourSemaine.DIM && ligne.centreId) {
-      const jourTournee = ligne.jourTournee as JourTourneeKey;
-      if (!planningParJour.has(jourTournee)) planningParJour.set(jourTournee, new Set());
-      planningParJour.get(jourTournee)!.add(ligne.centreId);
-    }
-
-    for (const code of ligne.specialitesInconnues) {
-      await professionnelService.creerDemandeValidation({
-        type: TypeDemandeValidation.NOUVELLE_SPECIALITE,
-        delegueId,
-        libelle: `Nouvelle spécialité proposée : "${code}" (ligne ${ligne.ligneExcel})`,
-        donnees: { code, libelle: code, actif: true },
-      });
-      resultat.demandesValidation++;
-    }
-    for (const geste of ligne.gestesInconnus) {
-      await professionnelService.creerDemandeValidation({
-        type: TypeDemandeValidation.NOUVEAU_GESTE,
-        delegueId,
-        libelle: `Nouveau geste proposé : "${geste}" (ligne ${ligne.ligneExcel})`,
-        donnees: { libelle: geste, actif: true },
-      });
-      resultat.demandesValidation++;
-    }
-
-    if (ligne.statut === 'DOUBLON') {
-      if (ligne.actionDoublon === 'IGNORER' || !ligne.actionDoublon) {
-        resultat.ignorees++;
-        continue;
-      }
-      if (ligne.actionDoublon === 'REMPLACER' && ligne.doublonProfessionnelId) {
-        const dto = await construireDto(ligne, delegueId);
-        if (dto) {
-          await professionnelService.updateProfessionnel(ligne.doublonProfessionnelId, dto);
-          resultat.miseAJour++;
-        }
-        continue;
-      }
-      if (ligne.actionDoublon === 'CREER_QUAND_MEME') {
-        const dto = await construireDto(ligne, delegueId);
-        if (dto) {
-          await professionnelService.creerDemandeValidation({
-            type: TypeDemandeValidation.DOUBLON_PROFESSIONNEL,
-            delegueId,
-            libelle: `Création malgré doublon : "${ligne.nom}" (ligne ${ligne.ligneExcel})`,
-            donnees: dto,
-            professionnelExistantId: ligne.doublonProfessionnelId,
-          });
-          resultat.demandesValidation++;
-        }
-        continue;
-      }
-    }
-
-    const dto = await construireDto(ligne, delegueId);
-    if (dto) {
-      await professionnelService.importerProfessionnel(dto);
-      resultat.creees++;
-    } else {
-      resultat.ignorees++;
-    }
+    await traiterLigne(ligne, ctx);
+    traitees++;
+    onProgress?.(traitees, lignes.length);
   }
 
   const planningsExistants: JourTournee[] = await professionnelService.getJourneesTournee(delegueId);
-  for (const [jour, centreIds] of planningParJour.entries()) {
+  for (const [jour, centreIds] of ctx.planningParJour.entries()) {
     const existant = planningsExistants.find((p) => p.jour === jour);
     const fusion = new Set([...(existant?.centreIds ?? []), ...centreIds]);
     await professionnelService.saveJourTournee({ delegueId, jour, centreIds: [...fusion] });
   }
 
-  return resultat;
+  return ctx.resultat;
 }
