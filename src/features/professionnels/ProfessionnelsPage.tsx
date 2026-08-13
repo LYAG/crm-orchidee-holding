@@ -37,7 +37,11 @@ export function ProfessionnelsPage() {
     professionnelService.getCentres().then(setCentres).catch(() => {});
     zoneService.getAll().then(setZones).catch(() => {});
     professionnelService.getSpecialites().then(setSpecialites).catch(() => {});
-    utilisateurService.getByRole(UserRole.DELEGUE).then(setDelegues).catch(() => {});
+    if (user?.role === UserRole.MANAGER) {
+      utilisateurService.getDeleguesByManager(user.id).then(setDelegues).catch(() => {});
+    } else {
+      utilisateurService.getByRole(UserRole.DELEGUE).then(setDelegues).catch(() => {});
+    }
     professionnelService.getGestesRealises().then((gestes) => {
       const map: Record<string, GesteRealise> = {};
       gestes.forEach((g) => {
@@ -47,7 +51,7 @@ export function ProfessionnelsPage() {
       });
       setDernierGesteMap(map);
     });
-  }, []);
+  }, [user?.role, user?.id]);
 
   if (!user) return null;
   const currentUser = user;
@@ -258,7 +262,8 @@ export function ProfessionnelsPage() {
     if (role === UserRole.DELEGUE) {
       data = data.filter((p) => p.delegueId === currentUser.id);
     } else if (role === UserRole.MANAGER) {
-      const myDelegueIds = currentUser.delegueIds ?? [];
+      const monEquipe = await utilisateurService.getDeleguesByManager(currentUser.id);
+      const myDelegueIds = monEquipe.map((d) => d.id);
       data = data.filter((p) => !!p.delegueId && myDelegueIds.includes(p.delegueId));
     }
 
@@ -297,6 +302,7 @@ export function ProfessionnelsPage() {
         open={createOpen}
         onOpenChange={setCreateOpen}
         defaultDelegueId={role === UserRole.DELEGUE ? user.id : undefined}
+        delegues={role !== UserRole.DELEGUE ? delegues : undefined}
         onSuccess={() => actionRef.current?.reload()}
       />
 

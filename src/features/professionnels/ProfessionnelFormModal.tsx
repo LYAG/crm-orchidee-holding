@@ -11,8 +11,8 @@ import {
 } from '@ant-design/pro-components';
 import { App, Modal } from 'antd';
 import { useEffect, useState } from 'react';
-import { professionnelService, zoneService } from '@/services';
-import type { Centre, JoursConsultation, PotentielCas, Specialite, Zone } from '@/types';
+import { professionnelService } from '@/services';
+import type { Centre, JoursConsultation, PotentielCas, Specialite, Utilisateur } from '@/types';
 import { JourSemaine, ModeJoursConsultation, StatutProfessionnel, TitreProfessionnel, TypeCas, UniteCas } from '@/types';
 
 const TITRE_OPTIONS = Object.values(TitreProfessionnel).map((t) => ({ value: t, label: t }));
@@ -24,6 +24,8 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultDelegueId?: string;
+  /** Fourni quand le créateur n'est pas lui-même délégué (Manager/Admin) : liste parmi laquelle choisir. */
+  delegues?: Utilisateur[];
   onSuccess: () => void;
 }
 
@@ -33,6 +35,7 @@ interface FormValues {
   titre?: TitreProfessionnel;
   telephones: { numero: string }[];
   observations?: string;
+  delegueId?: string;
   centreId: string;
   specialiteIds: string[];
   mode: ModeJoursConsultation;
@@ -45,7 +48,7 @@ interface FormValues {
   estMinimum?: boolean;
 }
 
-export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, onSuccess }: Props) {
+export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, delegues, onSuccess }: Props) {
   const { message, modal } = App.useApp();
   const [centres, setCentres] = useState<Centre[]>([]);
   const [specialites, setSpecialites] = useState<Specialite[]>([]);
@@ -58,8 +61,9 @@ export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, o
   }, [open]);
 
   async function handleFinish(values: FormValues) {
-    if (!defaultDelegueId) {
-      message.error('Aucun délégué courant identifié.');
+    const delegueId = defaultDelegueId ?? values.delegueId;
+    if (!delegueId) {
+      message.error('Sélectionnez un délégué pour cette fiche.');
       return false;
     }
 
@@ -99,7 +103,7 @@ export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, o
         telephones: (values.telephones ?? []).map((t) => t.numero).filter(Boolean),
         joursConsultation,
         potentielCas,
-        delegueId: defaultDelegueId,
+        delegueId,
         observations: values.observations,
         actif: true,
         statut: StatutProfessionnel.T3,
@@ -128,6 +132,15 @@ export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, o
         formProps={{ initialValues: { mode: ModeJoursConsultation.JOURS_EXPLICITES, unite: UniteCas.JOUR, typeCas: TypeCas.CAS } }}
       >
         <StepsForm.StepForm name="identite" title="Identité">
+          {!defaultDelegueId && (
+            <ProFormSelect
+              name="delegueId"
+              label="Délégué"
+              placeholder="Associer à un délégué de votre équipe"
+              rules={[{ required: true, message: 'Sélectionnez un délégué.' }]}
+              options={(delegues ?? []).map((d) => ({ value: d.id, label: `${d.prenom} ${d.nom}` }))}
+            />
+          )}
           <ProFormText name="nom" label="Nom" rules={[{ required: true, message: 'Obligatoire.' }]} />
           <ProFormText name="prenom" label="Prénom" />
           <ProFormSelect name="titre" label="Titre" options={TITRE_OPTIONS} />
