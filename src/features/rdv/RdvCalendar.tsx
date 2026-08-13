@@ -13,11 +13,23 @@ import { ProCard } from '@ant-design/pro-components';
 import { Button, Empty, Tag, Typography } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import { useRef, useState } from 'react';
-import type { RendezVous } from '@/types';
+import { useMemo, useRef, useState } from 'react';
+import type { RendezVous, Utilisateur } from '@/types';
 import { RdvStatut } from '@/types';
 
 const { Text } = Typography;
+
+/* ── Couleurs par délégué (identification visuelle en vue équipe) ──────────── */
+
+const DELEGUE_COLORS = ['#1565C0', '#6A1B9A', '#E65100', '#2E7D32', '#C62828', '#00838F', '#4E342E', '#AD1457'];
+
+function nomCourtDelegue(d: Utilisateur): string {
+  return `${d.prenom} ${d.nom[0]}.`;
+}
+
+function initiales(d: Utilisateur): string {
+  return `${d.prenom[0] ?? ''}${d.nom[0] ?? ''}`.toUpperCase();
+}
 
 /* ── Constantes grille ───────────────────────────────────────────────────── */
 
@@ -44,6 +56,12 @@ const LEGEND = [
 ];
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
+
+function couleurDelegue(delegueId: string): string {
+  let hash = 0;
+  for (let i = 0; i < delegueId.length; i++) hash = (hash * 31 + delegueId.charCodeAt(i)) >>> 0;
+  return DELEGUE_COLORS[hash % DELEGUE_COLORS.length];
+}
 
 interface RdvConfig { bg: string; color: string; label: string; icon: React.ReactNode }
 
@@ -112,14 +130,16 @@ function computeLayout(events: RendezVous[]): Map<string, { left: number; width:
 /* ── EventBlock — vue semaine / jour ─────────────────────────────────────── */
 
 function EventBlock({
-  rdv, top, height, left, width, onClick,
+  rdv, top, height, left, width, onClick, delegue,
 }: {
   rdv: RendezVous; top: number; height: number;
   left: number; width: number; onClick: () => void;
+  delegue?: Utilisateur;
 }) {
   const cfg = getRdvConfig(rdv);
   const end = dayjs(rdv.dateHeure).add(rdv.dureeMinutes, 'minute').format('HH:mm');
   const compact = height < 42;
+  const dColor = delegue ? couleurDelegue(delegue.id) : undefined;
 
   return (
     <div
@@ -148,9 +168,19 @@ function EventBlock({
       onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 3px 10px rgba(0,0,0,0.18)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.1)'; }}
     >
-      <div style={{ fontSize: 11, fontWeight: 700, color: cfg.color, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {hhmm(rdv.dateHeure)} – {end}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        {delegue && (
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: dColor, flexShrink: 0 }} />
+        )}
+        <div style={{ fontSize: 11, fontWeight: 700, color: cfg.color, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {hhmm(rdv.dateHeure)} – {end}
+        </div>
       </div>
+      {delegue && !compact && (
+        <div style={{ fontSize: 10, fontWeight: 700, color: dColor, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 1 }}>
+          {nomCourtDelegue(delegue)}
+        </div>
+      )}
       {!compact && (
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginTop: 2, background: `${cfg.color}20`, borderRadius: 3, paddingLeft: 5, paddingRight: 5, paddingTop: 1, paddingBottom: 1 }}>
           <span style={{ color: cfg.color, fontSize: 9 }}>●</span>
@@ -163,11 +193,12 @@ function EventBlock({
 
 /* ── EventPill — vue mois ────────────────────────────────────────────────── */
 
-function EventPill({ rdv, onClick }: { rdv: RendezVous; onClick: () => void }) {
+function EventPill({ rdv, onClick, delegue }: { rdv: RendezVous; onClick: () => void; delegue?: Utilisateur }) {
   const cfg = getRdvConfig(rdv);
   return (
     <div
       onClick={(e) => { e.stopPropagation(); onClick(); }}
+      title={delegue ? nomCourtDelegue(delegue) : undefined}
       style={{
         display: 'flex', alignItems: 'center', gap: 4,
         background: cfg.bg, borderRadius: 4,
@@ -182,13 +213,16 @@ function EventPill({ rdv, onClick }: { rdv: RendezVous; onClick: () => void }) {
     >
       <span style={{ color: cfg.color, fontSize: 8 }}>●</span>
       {hhmm(rdv.dateHeure)}
+      {delegue && (
+        <span style={{ color: couleurDelegue(delegue.id), fontWeight: 700 }}>· {initiales(delegue)}</span>
+      )}
     </div>
   );
 }
 
 /* ── RdvCard — panneau agenda (mois) ─────────────────────────────────────── */
 
-function RdvCard({ rdv, onClick }: { rdv: RendezVous; onClick: () => void }) {
+function RdvCard({ rdv, onClick, delegue }: { rdv: RendezVous; onClick: () => void; delegue?: Utilisateur }) {
   const cfg = getRdvConfig(rdv);
   return (
     <div
@@ -211,8 +245,15 @@ function RdvCard({ rdv, onClick }: { rdv: RendezVous; onClick: () => void }) {
           {hhmm(rdv.dateHeure)}
           <span style={{ fontWeight: 400, color: '#8FB0A8', fontSize: 11, marginLeft: 5 }}>· {rdv.dureeMinutes} min</span>
         </div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', marginTop: 4, background: `${cfg.color}16`, color: cfg.color, borderRadius: 4, paddingTop: 1, paddingBottom: 1, paddingLeft: 6, paddingRight: 6, fontSize: 10, fontWeight: 700 }}>
-          {cfg.label}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' as const }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: `${cfg.color}16`, color: cfg.color, borderRadius: 4, paddingTop: 1, paddingBottom: 1, paddingLeft: 6, paddingRight: 6, fontSize: 10, fontWeight: 700 }}>
+            {cfg.label}
+          </div>
+          {delegue && (
+            <div style={{ display: 'inline-flex', alignItems: 'center', background: `${couleurDelegue(delegue.id)}16`, color: couleurDelegue(delegue.id), borderRadius: 4, paddingTop: 1, paddingBottom: 1, paddingLeft: 6, paddingRight: 6, fontSize: 10, fontWeight: 700 }}>
+              {nomCourtDelegue(delegue)}
+            </div>
+          )}
         </div>
       </div>
       <RightOutlined style={{ color: '#C7DAD5', fontSize: 10, flexShrink: 0 }} />
@@ -317,13 +358,14 @@ function CalendarTopBar({
 /* ── Colonne jour (semaine / jour) ───────────────────────────────────────── */
 
 function DayColumn({
-  day, rdvList, isToday, onSelectRdv, onDropProfessionnel,
+  day, rdvList, isToday, onSelectRdv, onDropProfessionnel, deleguesParId,
 }: {
   day: Dayjs;
   rdvList: RendezVous[];
   isToday: boolean;
   onSelectRdv: (rdv: RendezVous) => void;
   onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
+  deleguesParId?: Record<string, Utilisateur>;
 }) {
   const [dragSlot, setDragSlot] = useState<number | null>(null);
   const colRef = useRef<HTMLDivElement>(null);
@@ -413,6 +455,7 @@ function DayColumn({
             left={left}
             width={width}
             onClick={() => onSelectRdv(rdv)}
+            delegue={deleguesParId?.[rdv.delegueId]}
           />
         );
       })}
@@ -423,13 +466,14 @@ function DayColumn({
 /* ── Vue Semaine / Jour ──────────────────────────────────────────────────── */
 
 function WeekView({
-  weekStart, numDays, rdvList, onSelectRdv, onDropProfessionnel,
+  weekStart, numDays, rdvList, onSelectRdv, onDropProfessionnel, deleguesParId,
 }: {
   weekStart: Dayjs;
   numDays: number;
   rdvList: RendezVous[];
   onSelectRdv: (rdv: RendezVous) => void;
   onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
+  deleguesParId?: Record<string, Utilisateur>;
 }) {
   const now = dayjs();
   const days = Array.from({ length: numDays }, (_, i) => weekStart.add(i, 'day'));
@@ -528,6 +572,7 @@ function WeekView({
                 isToday={day.isSame(now, 'day')}
                 onSelectRdv={onSelectRdv}
                 onDropProfessionnel={onDropProfessionnel}
+                deleguesParId={deleguesParId}
               />
             ))}
 
@@ -561,7 +606,7 @@ function WeekView({
 const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
 function MonthGrid({
-  calendarDate, rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProfessionnel,
+  calendarDate, rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProfessionnel, deleguesParId,
 }: {
   calendarDate: Dayjs;
   rdvList: RendezVous[];
@@ -569,6 +614,7 @@ function MonthGrid({
   onSelectDate: (d: Dayjs) => void;
   onSelectRdv: (rdv: RendezVous) => void;
   onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
+  deleguesParId?: Record<string, Utilisateur>;
 }) {
   const [dragKey, setDragKey] = useState<string | null>(null);
   const startOfGrid = getMonday(calendarDate.startOf('month'));
@@ -638,7 +684,7 @@ function MonthGrid({
                 </div>
               </div>
               {rdvs.slice(0, 2).map((rdv) => (
-                <EventPill key={rdv.id} rdv={rdv} onClick={() => onSelectRdv(rdv)} />
+                <EventPill key={rdv.id} rdv={rdv} onClick={() => onSelectRdv(rdv)} delegue={deleguesParId?.[rdv.delegueId]} />
               ))}
               {rdvs.length > 2 && (
                 <div style={{ fontSize: 10, color: '#8FB0A8', fontWeight: 600, paddingLeft: 4 }}>+{rdvs.length - 2}</div>
@@ -655,11 +701,12 @@ function MonthGrid({
 /* ── Panneau agenda (mois) ───────────────────────────────────────────────── */
 
 function AgendaPanel({
-  selectedDate, rdvDuJour, onSelectRdv,
+  selectedDate, rdvDuJour, onSelectRdv, deleguesParId,
 }: {
   selectedDate: Dayjs | null;
   rdvDuJour: RendezVous[];
   onSelectRdv: (rdv: RendezVous) => void;
+  deleguesParId?: Record<string, Utilisateur>;
 }) {
   return (
     <div style={{ width: 270, flexShrink: 0 }}>
@@ -692,7 +739,7 @@ function AgendaPanel({
           {!selectedDate || rdvDuJour.length === 0 ? (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<Text style={{ fontSize: 12, color: '#C7DAD5' }}>{selectedDate ? 'Aucun rendez-vous' : 'Cliquez sur une date'}</Text>} style={{ margin: '16px 0' }} />
           ) : (
-            rdvDuJour.map((rdv) => <RdvCard key={rdv.id} rdv={rdv} onClick={() => onSelectRdv(rdv)} />)
+            rdvDuJour.map((rdv) => <RdvCard key={rdv.id} rdv={rdv} onClick={() => onSelectRdv(rdv)} delegue={deleguesParId?.[rdv.delegueId]} />)
           )}
         </div>
       </ProCard>
@@ -708,11 +755,18 @@ interface Props {
   onSelectDate: (date: Dayjs) => void;
   onSelectRdv: (rdv: RendezVous) => void;
   onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
+  /** Fourni en contexte Manager/Admin : permet d'identifier le délégué de chaque RDV sur le calendrier. */
+  delegues?: Utilisateur[];
 }
 
-export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProfessionnel }: Props) {
+export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProfessionnel, delegues }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('semaine');
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
+
+  const deleguesParId = useMemo(() => {
+    if (!delegues || delegues.length === 0) return undefined;
+    return Object.fromEntries(delegues.map((d) => [d.id, d]));
+  }, [delegues]);
 
   const weekStart = getMonday(currentDate);
 
@@ -738,10 +792,11 @@ export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, 
               onSelectDate={onSelectDate}
               onSelectRdv={onSelectRdv}
               onDropProfessionnel={onDropProfessionnel}
+              deleguesParId={deleguesParId}
             />
           </ProCard>
         </div>
-        <AgendaPanel selectedDate={selectedDate} rdvDuJour={rdvDuJour} onSelectRdv={onSelectRdv} />
+        <AgendaPanel selectedDate={selectedDate} rdvDuJour={rdvDuJour} onSelectRdv={onSelectRdv} deleguesParId={deleguesParId} />
       </div>
     );
   }
@@ -763,6 +818,7 @@ export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, 
           rdvList={rdvList}
           onSelectRdv={onSelectRdv}
           onDropProfessionnel={onDropProfessionnel}
+          deleguesParId={deleguesParId}
         />
       </div>
     </ProCard>

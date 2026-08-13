@@ -6,7 +6,7 @@ import {
   TeamOutlined,
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Empty, Tag, Typography } from 'antd';
+import { Button, Empty, Tag, Tooltip, Typography } from 'antd';
 import dayjs, { type Dayjs } from 'dayjs';
 import 'dayjs/locale/fr';
 import { useCallback, useEffect, useState } from 'react';
@@ -331,10 +331,13 @@ export function RdvPage() {
       .finally(() => setContactsLoading(false));
   }, [isDelegue, user.id, selectedDelegueId]);
 
-  const activeDelegueId = isDelegue ? user.id : (selectedDelegueId ?? user.id);
+  // Un manager/admin n'est pas lui-même un délégué : tant qu'il n'en a pas choisi un
+  // dans le panneau, il n'y a pas de délégué "actif" pour créer un RDV.
+  const activeDelegueId = isDelegue ? user.id : selectedDelegueId ?? undefined;
   const selectedDelegue = delegues.find((d) => d.id === selectedDelegueId) ?? null;
 
   function openNewForm(pf?: { professionnelId?: string; dateHeure?: string }) {
+    if (!activeDelegueId) return;
     setEditingRdv(null);
     setFormPrefill(pf);
     setFormKey((k) => k + 1);
@@ -366,14 +369,16 @@ export function RdvPage() {
         </Tag>
       }
       extra={[
-        <Button
-          key="create"
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => openNewForm()}
-        >
-          Nouveau RDV
-        </Button>,
+        <Tooltip key="create" title={!activeDelegueId ? 'Sélectionnez un délégué dans le panneau pour créer un RDV' : undefined}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            disabled={!activeDelegueId}
+            onClick={() => openNewForm()}
+          >
+            Nouveau RDV
+          </Button>
+        </Tooltip>,
       ]}
     >
       <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
@@ -402,6 +407,7 @@ export function RdvPage() {
             onSelectDate={setSelectedDate}
             onSelectRdv={(rdv) => { setSelectedRdv(rdv); setDetailOpen(true); }}
             onDropProfessionnel={handleDropProfessionnel}
+            delegues={!isDelegue ? delegues : undefined}
           />
         </div>
       </div>
@@ -414,7 +420,7 @@ export function RdvPage() {
           if (!open) setFormPrefill(undefined);
         }}
         rdv={editingRdv}
-        delegueId={activeDelegueId}
+        delegueId={editingRdv?.delegueId ?? activeDelegueId ?? ''}
         onSuccess={() => { load(); setFormOpen(false); setFormPrefill(undefined); }}
         prefill={formPrefill}
       />

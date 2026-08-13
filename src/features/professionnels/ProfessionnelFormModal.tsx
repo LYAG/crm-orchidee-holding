@@ -120,7 +120,7 @@ export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, o
       open={open}
       onCancel={() => onOpenChange(false)}
       footer={null}
-      width={640}
+      width={860}
       destroyOnClose
     >
       <StepsForm<FormValues>
