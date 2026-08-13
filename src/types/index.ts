@@ -21,11 +21,10 @@ export interface Utilisateur {
   nom: string;
   prenom: string;
   role: UserRole;
-  /** DELEGUE uniquement */
+  /** DELEGUE : zones couvertes. MANAGER : zones supervisées (l'équipe = les délégués de ces zones). */
   zoneIds?: string[];
+  /** DELEGUE uniquement */
   managerId?: string;
-  /** MANAGER uniquement */
-  delegueIds?: string[];
 }
 
 // ─── Support commercial ───────────────────────────────────────────────────────

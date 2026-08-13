@@ -60,7 +60,6 @@ interface UtilisateurFormValues {
   role: UserRole;
   zoneIds?: string[];
   managerId?: string;
-  delegueIds?: string[];
 }
 
 function UtilisateurModal({
@@ -93,7 +92,6 @@ function UtilisateurModal({
           role: editing.role as UserRole,
           zoneIds: editing.zoneIds,
           managerId: editing.managerId,
-          delegueIds: editing.delegueIds,
         });
         setRole(editing.role as UserRole);
       } else {
@@ -112,9 +110,9 @@ function UtilisateurModal({
         nom: values.nom,
         email: values.email,
         role: values.role,
-        zoneIds: values.role === UserRole.DELEGUE ? values.zoneIds : undefined,
+        zoneIds:
+          values.role === UserRole.DELEGUE || values.role === UserRole.MANAGER ? values.zoneIds : undefined,
         managerId: values.role === UserRole.DELEGUE ? values.managerId : undefined,
-        delegueIds: values.role === UserRole.MANAGER ? (values.delegueIds ?? []) : undefined,
       };
       if (editing) {
         await utilisateurService.update(editing.id, data);
@@ -133,9 +131,6 @@ function UtilisateurModal({
   }
 
   const managers = utilisateurs.filter((u) => u.role === UserRole.MANAGER);
-  const delegues = utilisateurs.filter(
-    (u) => u.role === UserRole.DELEGUE && (editing ? u.id !== editing.id : true),
-  );
 
   return (
     <Modal
@@ -199,7 +194,7 @@ function UtilisateurModal({
             placeholder="Sélectionner un rôle"
             onChange={(v) => {
               setRole(v as UserRole);
-              form.setFieldsValue({ zoneIds: undefined, managerId: undefined, delegueIds: undefined });
+              form.setFieldsValue({ zoneIds: undefined, managerId: undefined });
             }}
             options={Object.entries(USER_ROLE_LABELS).map(([v, l]) => ({ value: v, label: l }))}
           />
@@ -228,14 +223,15 @@ function UtilisateurModal({
         )}
 
         {role === UserRole.MANAGER && (
-          <Form.Item name="delegueIds" label="Délégués de l&apos;équipe">
+          <Form.Item
+            name="zoneIds"
+            label="Zone(s) supervisée(s)"
+            extra="Le manager hérite automatiquement de tous les délégués rattachés à ces zones."
+          >
             <Select
               mode="multiple"
-              placeholder="Sélectionner des délégués"
-              options={delegues.map((d) => ({
-                value: d.id,
-                label: `${d.prenom} ${d.nom}`,
-              }))}
+              placeholder="Sélectionner une ou plusieurs zones"
+              options={zones.map((z) => ({ value: z.id, label: `${z.nom} — ${z.region}` }))}
             />
           </Form.Item>
         )}
@@ -351,9 +347,7 @@ function ZoneCard({
   onDelete: () => void;
 }) {
   const zoneDelegues = delegues.filter((d) => d.zoneIds?.includes(zone.id));
-  const zoneManagers = managers.filter((m) =>
-    zoneDelegues.some((d) => d.managerId === m.id),
-  );
+  const zoneManagers = managers.filter((m) => m.zoneIds?.includes(zone.id));
 
   return (
     <ProCard
@@ -702,7 +696,7 @@ export function UtilisateursZonesPage() {
       title: 'Zone(s)',
       key: 'zones',
       render: (_: unknown, u: Utilisateur) => {
-        if (u.role !== UserRole.DELEGUE || !u.zoneIds?.length) {
+        if ((u.role !== UserRole.DELEGUE && u.role !== UserRole.MANAGER) || !u.zoneIds?.length) {
           return <Text type="secondary">—</Text>;
         }
         return (
@@ -753,25 +747,28 @@ export function UtilisateursZonesPage() {
       title: 'Équipe',
       key: 'equipe',
       render: (_: unknown, u: Utilisateur) => {
-        if (u.role !== UserRole.MANAGER || !u.delegueIds?.length) {
+        if (u.role !== UserRole.MANAGER) {
+          return <Text type="secondary">—</Text>;
+        }
+        const equipe = utilisateurs.filter(
+          (d) => d.role === UserRole.DELEGUE && d.zoneIds?.some((z) => u.zoneIds?.includes(z)),
+        );
+        if (equipe.length === 0) {
           return <Text type="secondary">—</Text>;
         }
         return (
           <Tooltip
             title={
               <div>
-                {u.delegueIds.map((did) => {
-                  const d = utilisateurs.find((d) => d.id === did);
-                  return d ? (
-                    <div key={did}>
-                      {d.prenom} {d.nom}
-                    </div>
-                  ) : null;
-                })}
+                {equipe.map((d) => (
+                  <div key={d.id}>
+                    {d.prenom} {d.nom}
+                  </div>
+                ))}
               </div>
             }
           >
-            <Badge count={u.delegueIds.length} style={{ background: '#0F6E52' }}>
+            <Badge count={equipe.length} style={{ background: '#0F6E52' }}>
               <Tag icon={<TeamOutlined />} style={{ borderRadius: 6, cursor: 'default' }}>
                 délégués
               </Tag>

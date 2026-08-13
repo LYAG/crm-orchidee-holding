@@ -45,7 +45,7 @@ export const utilisateurs: Utilisateur[] = [
     nom: 'Koné',
     prenom: 'Fatoumata',
     role: UserRole.MANAGER,
-    delegueIds: ['delegue-1', 'delegue-2', 'delegue-3'],
+    zoneIds: ['zone-1', 'zone-2'],
   },
   {
     id: 'manager-2',
@@ -53,7 +53,7 @@ export const utilisateurs: Utilisateur[] = [
     nom: 'Coulibaly',
     prenom: 'Seydou',
     role: UserRole.MANAGER,
-    delegueIds: ['delegue-4', 'delegue-5'],
+    zoneIds: ['zone-3'],
   },
   {
     id: 'delegue-1',

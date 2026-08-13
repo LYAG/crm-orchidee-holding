@@ -20,12 +20,14 @@ export class UtilisateurServiceMock implements UtilisateurService {
     return utilisateurs.filter((u) => u.role === role).map((u) => ({ ...u }));
   }
 
+  /** L'équipe d'un manager = les délégués dont au moins une zone est supervisée par ce manager. */
   async getDeleguesByManager(managerId: string): Promise<Utilisateur[]> {
     await delay();
     const manager = utilisateurs.find((u) => u.id === managerId);
-    if (!manager?.delegueIds) return [];
+    const zoneIds = manager?.zoneIds ?? [];
+    if (zoneIds.length === 0) return [];
     return utilisateurs
-      .filter((u) => manager.delegueIds!.includes(u.id))
+      .filter((u) => u.role === 'DELEGUE' && u.zoneIds?.some((z) => zoneIds.includes(z)))
       .map((u) => ({ ...u }));
   }
 
@@ -36,20 +38,6 @@ export class UtilisateurServiceMock implements UtilisateurService {
     }
     const newUser: Utilisateur = { ...data, id: generateId('user') };
     utilisateurs.push(newUser);
-
-    // Mettre à jour delegueIds du manager
-    if (data.role === 'DELEGUE' && data.managerId) {
-      const mgr = utilisateurs.find((u) => u.id === data.managerId);
-      if (mgr) mgr.delegueIds = [...(mgr.delegueIds ?? []), newUser.id];
-    }
-    // Mettre à jour managerId des délégués assignés
-    if (data.role === 'MANAGER' && data.delegueIds?.length) {
-      data.delegueIds.forEach((did) => {
-        const del = utilisateurs.find((u) => u.id === did);
-        if (del) del.managerId = newUser.id;
-      });
-    }
-
     return { ...newUser };
   }
 
@@ -57,39 +45,7 @@ export class UtilisateurServiceMock implements UtilisateurService {
     await delay();
     const idx = utilisateurs.findIndex((u) => u.id === id);
     if (idx < 0) notFound('Utilisateur', id);
-    const old = utilisateurs[idx];
-
-    // Gestion du changement de manager pour un DELEGUE
-    if ('managerId' in data && data.managerId !== old.managerId) {
-      if (old.managerId) {
-        const oldMgr = utilisateurs.find((u) => u.id === old.managerId);
-        if (oldMgr) oldMgr.delegueIds = oldMgr.delegueIds?.filter((did) => did !== id);
-      }
-      if (data.managerId) {
-        const newMgr = utilisateurs.find((u) => u.id === data.managerId);
-        if (newMgr && !newMgr.delegueIds?.includes(id)) {
-          newMgr.delegueIds = [...(newMgr.delegueIds ?? []), id];
-        }
-      }
-    }
-
-    // Gestion des délégués d'un manager
-    if ('delegueIds' in data && data.delegueIds) {
-      const oldIds = old.delegueIds ?? [];
-      const newIds = data.delegueIds;
-      // Retirer managerId des anciens délégués non reconduits
-      oldIds.filter((did) => !newIds.includes(did)).forEach((did) => {
-        const del = utilisateurs.find((u) => u.id === did);
-        if (del && del.managerId === id) del.managerId = undefined;
-      });
-      // Ajouter managerId aux nouveaux délégués
-      newIds.filter((did) => !oldIds.includes(did)).forEach((did) => {
-        const del = utilisateurs.find((u) => u.id === did);
-        if (del) del.managerId = id;
-      });
-    }
-
-    utilisateurs[idx] = { ...old, ...data };
+    utilisateurs[idx] = { ...utilisateurs[idx], ...data };
     return { ...utilisateurs[idx] };
   }
 
@@ -97,19 +53,11 @@ export class UtilisateurServiceMock implements UtilisateurService {
     await delay();
     const idx = utilisateurs.findIndex((u) => u.id === id);
     if (idx < 0) notFound('Utilisateur', id);
-    const user = utilisateurs[idx];
 
-    // Nettoyer les références
-    if (user.managerId) {
-      const mgr = utilisateurs.find((u) => u.id === user.managerId);
-      if (mgr) mgr.delegueIds = mgr.delegueIds?.filter((did) => did !== id);
-    }
-    if (user.delegueIds) {
-      user.delegueIds.forEach((did) => {
-        const del = utilisateurs.find((u) => u.id === did);
-        if (del) del.managerId = undefined;
-      });
-    }
+    // Un délégué qui pointait sur ce manager (responsable) perd la référence.
+    utilisateurs.forEach((u) => {
+      if (u.managerId === id) u.managerId = undefined;
+    });
 
     utilisateurs.splice(idx, 1);
   }
