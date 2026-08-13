@@ -13,3 +13,14 @@ export function deepClone<T>(obj: T): T {
 export function notFound(entity: string, id: string): never {
   throw new Error(`${entity} introuvable : ${id}`);
 }
+
+// Alphabet sans caractères ambigus (0/O, 1/l/I) pour rester lisible/transcriptible à l'oral.
+const PASSWORD_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+
+export function genererMotDePasse(longueur = 10): string {
+  let mdp = '';
+  for (let i = 0; i < longueur; i++) {
+    mdp += PASSWORD_ALPHABET[Math.floor(Math.random() * PASSWORD_ALPHABET.length)];
+  }
+  return mdp;
+}

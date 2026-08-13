@@ -4,6 +4,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   EnvironmentOutlined,
+  KeyOutlined,
   MailOutlined,
   PlusOutlined,
   TeamOutlined,
@@ -69,6 +70,7 @@ function UtilisateurModal({
   zones,
   onClose,
   onSaved,
+  onCreated,
 }: {
   open: boolean;
   editing: Utilisateur | null;
@@ -76,6 +78,7 @@ function UtilisateurModal({
   zones: Zone[];
   onClose: () => void;
   onSaved: () => void;
+  onCreated: (email: string, motDePasse: string) => void;
 }) {
   const { message } = App.useApp();
   const [form] = Form.useForm<UtilisateurFormValues>();
@@ -117,12 +120,14 @@ function UtilisateurModal({
       if (editing) {
         await utilisateurService.update(editing.id, data);
         message.success('Utilisateur mis à jour.');
+        onSaved();
+        onClose();
       } else {
-        await utilisateurService.create(data);
-        message.success('Utilisateur créé.');
+        const { motDePasseGenere } = await utilisateurService.create(data);
+        onSaved();
+        onClose();
+        onCreated(data.email, motDePasseGenere);
       }
-      onSaved();
-      onClose();
     } catch (err) {
       message.error(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde.');
     } finally {
@@ -236,6 +241,74 @@ function UtilisateurModal({
           </Form.Item>
         )}
       </Form>
+    </Modal>
+  );
+}
+
+/* ── Modal Identifiants générés ──────────────────────────────────────────── */
+
+function CredentialsModal({
+  credentials,
+  onClose,
+}: {
+  credentials: { email: string; motDePasse: string } | null;
+  onClose: () => void;
+}) {
+  return (
+    <Modal
+      open={!!credentials}
+      title={
+        <Space>
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 8,
+              background: '#E8F5E9',
+              color: '#0F6E52',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <KeyOutlined />
+          </div>
+          <span style={{ color: '#123832' }}>Accès générés</span>
+        </Space>
+      }
+      onCancel={onClose}
+      onOk={onClose}
+      okText="Terminé"
+      cancelButtonProps={{ style: { display: 'none' } }}
+      destroyOnClose
+      width={440}
+    >
+      <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+        Communiquez ces identifiants au collaborateur. Le mot de passe ne sera plus affiché ensuite —
+        pensez à le copier maintenant.
+      </Text>
+      <Space direction="vertical" size={12} style={{ width: '100%' }}>
+        <div>
+          <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
+            Adresse e-mail
+          </Text>
+          <Text copyable strong>
+            {credentials?.email}
+          </Text>
+        </div>
+        <div>
+          <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
+            Mot de passe temporaire
+          </Text>
+          <Text
+            copyable={{ text: credentials?.motDePasse }}
+            strong
+            style={{ fontFamily: 'monospace', fontSize: 16 }}
+          >
+            {credentials?.motDePasse}
+          </Text>
+        </div>
+      </Space>
     </Modal>
   );
 }
@@ -561,7 +634,7 @@ function ZoneCard({
 /* ── Page principale ─────────────────────────────────────────────────────── */
 
 export function UtilisateursZonesPage() {
-  const { modal } = App.useApp();
+  const { modal, message } = App.useApp();
 
   const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>([]);
   const [zones, setZones] = useState<Zone[]>([]);
@@ -571,6 +644,9 @@ export function UtilisateursZonesPage() {
   // Modal utilisateur
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<Utilisateur | null>(null);
+
+  // Modal identifiants générés (création ou réinitialisation)
+  const [credentials, setCredentials] = useState<{ email: string; motDePasse: string } | null>(null);
 
   // Modal zone
   const [zoneModalOpen, setZoneModalOpen] = useState(false);
@@ -615,6 +691,23 @@ export function UtilisateursZonesPage() {
       onOk: async () => {
         await utilisateurService.delete(u.id);
         load();
+      },
+    });
+  }
+
+  function confirmResetPassword(u: Utilisateur) {
+    modal.confirm({
+      title: 'Réinitialiser le mot de passe ?',
+      content: `Un nouveau mot de passe temporaire sera généré pour ${u.prenom} ${u.nom}. L'ancien cessera de fonctionner immédiatement.`,
+      okText: 'Générer',
+      cancelText: 'Annuler',
+      onOk: async () => {
+        try {
+          const motDePasse = await utilisateurService.regenererMotDePasse(u.id);
+          setCredentials({ email: u.email, motDePasse });
+        } catch (err) {
+          message.error(err instanceof Error ? err.message : 'Erreur lors de la génération.');
+        }
       },
     });
   }
@@ -780,7 +873,7 @@ export function UtilisateursZonesPage() {
     {
       title: 'Actions',
       key: 'actions',
-      width: 90,
+      width: 120,
       render: (_: unknown, u: Utilisateur) => (
         <Space size={4}>
           <Tooltip title="Modifier">
@@ -790,6 +883,15 @@ export function UtilisateursZonesPage() {
               icon={<EditOutlined />}
               style={{ color: '#0F6E52' }}
               onClick={() => openEditUser(u)}
+            />
+          </Tooltip>
+          <Tooltip title="Réinitialiser le mot de passe">
+            <Button
+              type="text"
+              size="small"
+              icon={<KeyOutlined />}
+              style={{ color: '#1565C0' }}
+              onClick={() => confirmResetPassword(u)}
             />
           </Tooltip>
           <Tooltip title="Supprimer">
@@ -979,6 +1081,7 @@ export function UtilisateursZonesPage() {
         zones={zones}
         onClose={() => setUserModalOpen(false)}
         onSaved={load}
+        onCreated={(email, motDePasse) => setCredentials({ email, motDePasse })}
       />
 
       <ZoneModal
@@ -987,6 +1090,8 @@ export function UtilisateursZonesPage() {
         onClose={() => setZoneModalOpen(false)}
         onSaved={load}
       />
+
+      <CredentialsModal credentials={credentials} onClose={() => setCredentials(null)} />
     </PageContainer>
   );
 }

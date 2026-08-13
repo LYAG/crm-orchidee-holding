@@ -1,8 +1,13 @@
-import type { UtilisateurService, CreateUtilisateurDto, UpdateUtilisateurDto } from '@/services/api/UtilisateurService';
+import type {
+  UtilisateurService,
+  CreateUtilisateurDto,
+  CreateUtilisateurResult,
+  UpdateUtilisateurDto,
+} from '@/services/api/UtilisateurService';
 import type { UserRole } from '@/lib/constants';
 import type { Utilisateur } from '@/types';
-import { utilisateurs } from './data';
-import { delay, generateId, notFound } from './_utils';
+import { mockCredentials, utilisateurs } from './data';
+import { delay, generateId, genererMotDePasse, notFound } from './_utils';
 
 export class UtilisateurServiceMock implements UtilisateurService {
   async getAll(): Promise<Utilisateur[]> {
@@ -31,21 +36,29 @@ export class UtilisateurServiceMock implements UtilisateurService {
       .map((u) => ({ ...u }));
   }
 
-  async create(data: CreateUtilisateurDto): Promise<Utilisateur> {
+  async create(data: CreateUtilisateurDto): Promise<CreateUtilisateurResult> {
     await delay();
     if (utilisateurs.find((u) => u.email === data.email)) {
       throw new Error('Un utilisateur avec cet e-mail existe déjà.');
     }
     const newUser: Utilisateur = { ...data, id: generateId('user') };
     utilisateurs.push(newUser);
-    return { ...newUser };
+    const motDePasseGenere = genererMotDePasse();
+    mockCredentials[newUser.email] = motDePasseGenere;
+    return { utilisateur: { ...newUser }, motDePasseGenere };
   }
 
   async update(id: string, data: UpdateUtilisateurDto): Promise<Utilisateur> {
     await delay();
     const idx = utilisateurs.findIndex((u) => u.id === id);
     if (idx < 0) notFound('Utilisateur', id);
+    const ancienEmail = utilisateurs[idx].email;
     utilisateurs[idx] = { ...utilisateurs[idx], ...data };
+    // Le mot de passe est rattaché à l'e-mail : le faire suivre si celui-ci change.
+    if (data.email && data.email !== ancienEmail && mockCredentials[ancienEmail]) {
+      mockCredentials[data.email] = mockCredentials[ancienEmail];
+      delete mockCredentials[ancienEmail];
+    }
     return { ...utilisateurs[idx] };
   }
 
@@ -59,6 +72,16 @@ export class UtilisateurServiceMock implements UtilisateurService {
       if (u.managerId === id) u.managerId = undefined;
     });
 
+    delete mockCredentials[utilisateurs[idx].email];
     utilisateurs.splice(idx, 1);
+  }
+
+  async regenererMotDePasse(id: string): Promise<string> {
+    await delay();
+    const user = utilisateurs.find((u) => u.id === id);
+    if (!user) notFound('Utilisateur', id);
+    const motDePasseGenere = genererMotDePasse();
+    mockCredentials[user.email] = motDePasseGenere;
+    return motDePasseGenere;
   }
 }
