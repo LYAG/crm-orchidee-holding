@@ -22,6 +22,7 @@ export function ProfessionnelsPage() {
   const actionRef = useRef<ActionType | undefined>(undefined);
 
   const [centres, setCentres] = useState<Centre[]>([]);
+  const [filtreZoneId, setFiltreZoneId] = useState<string | undefined>(undefined);
   const [zones, setZones] = useState<Zone[]>([]);
   const [specialites, setSpecialites] = useState<Specialite[]>([]);
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
@@ -101,9 +102,20 @@ export function ProfessionnelsPage() {
       search: false,
     },
     {
+      title: 'Zone',
+      dataIndex: 'zoneId',
+      hideInTable: true,
+      valueEnum: Object.fromEntries(zones.map((z) => [z.id, { text: z.nom }])),
+      fieldProps: {
+        onChange: (value: string | undefined) => setFiltreZoneId(value),
+      },
+    },
+    {
       title: 'Centre',
       dataIndex: 'centreId',
-      valueEnum: Object.fromEntries(centres.map((c) => [c.id, { text: c.nom }])),
+      valueEnum: Object.fromEntries(
+        centres.filter((c) => !filtreZoneId || c.zoneId === filtreZoneId).map((c) => [c.id, { text: c.nom }]),
+      ),
       render: (_, p) => {
         const { centre, zone } = centreEtZone(p.centreId);
         return (
@@ -252,8 +264,16 @@ export function ProfessionnelsPage() {
   }
 
   async function loadData(params: Record<string, unknown>) {
+    const zoneId = params.zoneId as string | undefined;
+    let centreId = params.centreId as string | undefined;
+    // Le centre choisi peut appartenir à une zone différente de la zone sélectionnée
+    // ensuite (le champ n'est pas réinitialisé automatiquement) : on l'ignore alors.
+    if (zoneId && centreId && centres.find((c) => c.id === centreId)?.zoneId !== zoneId) {
+      centreId = undefined;
+    }
     let data = await professionnelService.getProfessionnels({
-      centreId: params.centreId as string | undefined,
+      centreId,
+      zoneId,
       specialiteId: params.specialiteIds as string | undefined,
       jourConsultation: params.jourConsultation as JourSemaine | undefined,
       delegueId: params.delegueId as string | undefined,
