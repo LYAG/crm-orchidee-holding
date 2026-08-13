@@ -5,6 +5,8 @@ import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { App, Button, Space, Tag } from 'antd';
 import { useRef, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { UserRole } from '@/lib/constants';
 import { professionnelService, utilisateurService } from '@/services';
 import type { DemandeValidation, Utilisateur } from '@/types';
 import { StatutDemandeValidation, TypeDemandeValidation } from '@/types';
@@ -14,15 +16,19 @@ const TYPE_LABELS: Record<TypeDemandeValidation, string> = {
   [TypeDemandeValidation.NOUVEAU_CENTRE]: 'Nouveau centre',
   [TypeDemandeValidation.NOUVELLE_SPECIALITE]: 'Nouvelle spécialité',
   [TypeDemandeValidation.NOUVEAU_GESTE]: 'Nouveau geste',
+  [TypeDemandeValidation.CHANGEMENT_CLASSIFICATION]: 'Changement de classification',
 };
 
 export function ValidationsPage() {
+  const { user } = useAuth();
   const { message, modal } = App.useApp();
   const actionRef = useRef<ActionType | undefined>(undefined);
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
   const [demandesAffichees, setDemandesAffichees] = useState<DemandeValidation[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [bulkLoading, setBulkLoading] = useState(false);
+  const isDelegue = user?.role === UserRole.DELEGUE;
+  const typesVisibles = isDelegue ? [TypeDemandeValidation.CHANGEMENT_CLASSIFICATION] : Object.values(TypeDemandeValidation);
 
   async function traiter(demande: DemandeValidation, statut: StatutDemandeValidation) {
     await professionnelService.traiterDemandeValidation(demande.id, statut);
@@ -71,7 +77,7 @@ export function ValidationsPage() {
     {
       title: 'Type',
       dataIndex: 'type',
-      valueEnum: Object.fromEntries(Object.values(TypeDemandeValidation).map((t) => [t, { text: TYPE_LABELS[t] }])),
+      valueEnum: Object.fromEntries(typesVisibles.map((t) => [t, { text: TYPE_LABELS[t] }])),
       render: (_, d) => <Tag color="blue">{TYPE_LABELS[d.type]}</Tag>,
     },
     { title: 'Détail', dataIndex: 'libelle', search: false },
@@ -79,6 +85,7 @@ export function ValidationsPage() {
       title: 'Délégué',
       dataIndex: 'delegueId',
       search: false,
+      hideInTable: isDelegue,
       render: (_, d) => {
         const u = delegues.find((x) => x.id === d.delegueId);
         return u ? `${u.prenom} ${u.nom}` : d.delegueId;
@@ -113,7 +120,10 @@ export function ValidationsPage() {
   ];
 
   return (
-    <PageContainer title="File de validation" subTitle="Doublons et nouveaux référentiels issus des imports">
+    <PageContainer
+      title="File de validation"
+      subTitle={isDelegue ? 'Vos demandes de changement de classification' : 'Doublons et nouveaux référentiels issus des imports'}
+    >
       <ProTable<DemandeValidation>
         actionRef={actionRef}
         rowKey="id"
@@ -162,7 +172,9 @@ export function ValidationsPage() {
           ]);
           setDelegues(tousDelegues);
           const type = params.type as TypeDemandeValidation | undefined;
-          const filtrees = type ? demandes.filter((d) => d.type === type) : demandes;
+          let filtrees = demandes.filter((d) => typesVisibles.includes(d.type));
+          if (isDelegue && user) filtrees = filtrees.filter((d) => d.delegueId === user.id);
+          if (type) filtrees = filtrees.filter((d) => d.type === type);
           setDemandesAffichees(filtrees);
           return { data: filtrees, success: true, total: filtrees.length };
         }}

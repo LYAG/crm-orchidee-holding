@@ -1,21 +1,34 @@
 'use client';
 
-import { CloudUploadOutlined, DeleteOutlined, PhoneOutlined, PlusOutlined, UploadOutlined, UserAddOutlined } from '@ant-design/icons';
+import {
+  AppstoreOutlined,
+  CloudUploadOutlined,
+  DeleteOutlined,
+  PhoneOutlined,
+  PlusOutlined,
+  TableOutlined,
+  UploadOutlined,
+  UserAddOutlined,
+} from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import { App, Avatar, Button, Space, Tag, Tooltip } from 'antd';
+import { App, Avatar, Button, Radio, Space, Tag, Tooltip } from 'antd';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, utilisateurService, zoneService } from '@/services';
-import type { Centre, GesteRealise, ProfessionnelSante, Specialite, Utilisateur, Zone } from '@/types';
-import { JourSemaine, StatutProfessionnel } from '@/types';
+import type { Centre, DemandeValidation, GesteRealise, ProfessionnelSante, Specialite, Utilisateur, Zone } from '@/types';
+import { JourSemaine, StatutDemandeValidation, StatutProfessionnel, TypeDemandeValidation } from '@/types';
+import type { DonneesChangementClassification } from '@/types';
 import { AttributionModal } from './AttributionModal';
+import { ClassificationKanban } from './ClassificationKanban';
 import { useImportJob } from './import/importJobStore';
 import { ProfessionnelDrawer } from './ProfessionnelDrawer';
 import { ProfessionnelFormModal } from './ProfessionnelFormModal';
 import { JOUR_LABELS, STATUT_CONFIG, formatJoursConsultation, formatPotentielCas } from './utils';
+
+type ViewMode = 'table' | 'kanban';
 
 const IMPORT_STATUT_STYLE: Record<string, { color: string; label: (curseur: number, total: number) => string }> = {
   EN_COURS: { color: '#1565C0', label: (c, t) => `Import en cours — ${Math.round((c / t) * 100)} %` },
@@ -42,6 +55,11 @@ export function ProfessionnelsPage() {
   const [attributionTarget, setAttributionTarget] = useState<ProfessionnelSante | null>(null);
   const [attributionOpen, setAttributionOpen] = useState(false);
 
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [kanbanData, setKanbanData] = useState<ProfessionnelSante[]>([]);
+  const [demandesClassification, setDemandesClassification] = useState<DemandeValidation[]>([]);
+  const [kanbanLoading, setKanbanLoading] = useState(false);
+
   useEffect(() => {
     professionnelService.getCentres().then(setCentres).catch(() => {});
     zoneService.getAll().then(setZones).catch(() => {});
@@ -62,6 +80,32 @@ export function ProfessionnelsPage() {
     });
   }, [user?.role, user?.id]);
 
+  const loadKanbanData = useCallback(async () => {
+    if (!user) return;
+    setKanbanLoading(true);
+    try {
+      let data = await professionnelService.getProfessionnels({});
+      if (user.role === UserRole.DELEGUE) {
+        data = data.filter((p) => p.delegueId === user.id);
+      } else if (user.role === UserRole.MANAGER) {
+        const monEquipe = await utilisateurService.getDeleguesByManager(user.id);
+        const myDelegueIds = monEquipe.map((d) => d.id);
+        data = data.filter((p) => !!p.delegueId && myDelegueIds.includes(p.delegueId));
+      }
+      setKanbanData(data);
+      const demandes = await professionnelService.getDemandesValidation(StatutDemandeValidation.EN_ATTENTE);
+      setDemandesClassification(demandes.filter((d) => d.type === TypeDemandeValidation.CHANGEMENT_CLASSIFICATION));
+    } finally {
+      setKanbanLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (viewMode !== 'kanban') return;
+    // Le tick différé évite d'appeler un setState de façon synchrone dans le corps de l'effet.
+    queueMicrotask(() => { loadKanbanData(); });
+  }, [viewMode, loadKanbanData]);
+
   if (!user) return null;
   const currentUser = user;
   const role = currentUser.role as UserRole;
@@ -75,6 +119,33 @@ export function ProfessionnelsPage() {
   function openDetail(pro: ProfessionnelSante) {
     setSelected(pro);
     setDrawerOpen(true);
+  }
+
+  const centreMap: Record<string, Centre> = Object.fromEntries(centres.map((c) => [c.id, c]));
+
+  const demandesEnAttenteParPro: Record<string, string> = {};
+  demandesClassification.forEach((d) => {
+    if (!d.professionnelExistantId) return;
+    const donnees = d.donnees as unknown as DonneesChangementClassification;
+    demandesEnAttenteParPro[d.professionnelExistantId] =
+      `${STATUT_CONFIG[donnees.statutActuel].label} → ${STATUT_CONFIG[donnees.statutDemande].label}`;
+  });
+
+  async function handleDemanderChangement(p: ProfessionnelSante, statutDemande: StatutProfessionnel) {
+    try {
+      const donnees: DonneesChangementClassification = { statutActuel: p.statut, statutDemande };
+      await professionnelService.creerDemandeValidation({
+        type: TypeDemandeValidation.CHANGEMENT_CLASSIFICATION,
+        delegueId: p.delegueId ?? currentUser.id,
+        libelle: `${p.nom} ${p.prenom ?? ''} — ${STATUT_CONFIG[p.statut].label} → ${STATUT_CONFIG[statutDemande].label}`,
+        donnees: donnees as unknown as Record<string, unknown>,
+        professionnelExistantId: p.id,
+      });
+      message.success('Demande de changement de classification envoyée pour validation.');
+      loadKanbanData();
+    } catch (err) {
+      message.error(err instanceof Error ? err.message : "Erreur lors de l'envoi de la demande.");
+    }
   }
 
   const columns: ProColumns<ProfessionnelSante>[] = [
@@ -298,42 +369,73 @@ export function ProfessionnelsPage() {
     return { data, success: true, total: data.length };
   }
 
+  const toolbarButtons = [
+    importJob && importJob.statut !== 'TERMINE' && (
+      <Link key="import-status" href="/professionnels/import">
+        <Button
+          icon={<CloudUploadOutlined />}
+          style={{ color: IMPORT_STATUT_STYLE[importJob.statut].color, borderColor: IMPORT_STATUT_STYLE[importJob.statut].color }}
+        >
+          {IMPORT_STATUT_STYLE[importJob.statut].label(importJob.curseur, importJob.total)}
+        </Button>
+      </Link>
+    ),
+    <Tooltip key="tip" title="Créer une fiche professionnel de santé">
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>
+        Nouveau professionnel
+      </Button>
+    </Tooltip>,
+    <Link key="import" href="/professionnels/import">
+      <Button icon={<UploadOutlined />}>Importer Excel</Button>
+    </Link>,
+    <Radio.Group
+      key="view-toggle"
+      value={viewMode}
+      onChange={(e) => setViewMode(e.target.value)}
+      buttonStyle="solid"
+      size="small"
+    >
+      <Radio.Button value="table"><TableOutlined /> Tableau</Radio.Button>
+      <Radio.Button value="kanban"><AppstoreOutlined /> Classification</Radio.Button>
+    </Radio.Group>,
+  ].filter(Boolean);
+
   return (
     <PageContainer title="Professionnels de santé" subTitle="Médecins, sages-femmes, infirmiers suivis">
-      <ProTable<ProfessionnelSante>
-        actionRef={actionRef}
-        rowKey="id"
-        columns={columns}
-        request={loadData}
-        search={{ labelWidth: 'auto' }}
-        pagination={{ pageSize: 10 }}
-        toolBarRender={() => [
-          importJob && importJob.statut !== 'TERMINE' && (
-            <Link key="import-status" href="/professionnels/import">
-              <Button
-                icon={<CloudUploadOutlined />}
-                style={{ color: IMPORT_STATUT_STYLE[importJob.statut].color, borderColor: IMPORT_STATUT_STYLE[importJob.statut].color }}
-              >
-                {IMPORT_STATUT_STYLE[importJob.statut].label(importJob.curseur, importJob.total)}
-              </Button>
-            </Link>
-          ),
-          <Tooltip key="tip" title="Créer une fiche professionnel de santé">
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>
-              Nouveau professionnel
-            </Button>
-          </Tooltip>,
-          <Link key="import" href="/professionnels/import">
-            <Button icon={<UploadOutlined />}>Importer Excel</Button>
-          </Link>,
-        ].filter(Boolean)}
-      />
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        {toolbarButtons}
+      </div>
+
+      {viewMode === 'table' ? (
+        <ProTable<ProfessionnelSante>
+          actionRef={actionRef}
+          rowKey="id"
+          columns={columns}
+          request={loadData}
+          search={{ labelWidth: 'auto' }}
+          pagination={{ pageSize: 10 }}
+        />
+      ) : kanbanLoading && kanbanData.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 40, color: '#8FB0A8' }}>Chargement…</div>
+      ) : (
+        <ClassificationKanban
+          professionnels={kanbanData}
+          centreMap={centreMap}
+          demandesEnAttente={demandesEnAttenteParPro}
+          readOnly={role !== UserRole.DELEGUE}
+          onSelect={openDetail}
+          onDemanderChangement={handleDemanderChangement}
+        />
+      )}
 
       <ProfessionnelDrawer
         open={drawerOpen}
         professionnel={selected}
         onClose={() => setDrawerOpen(false)}
-        onChanged={() => actionRef.current?.reload()}
+        onChanged={() => {
+          actionRef.current?.reload();
+          if (viewMode === 'kanban') loadKanbanData();
+        }}
       />
 
       <ProfessionnelFormModal
@@ -341,7 +443,10 @@ export function ProfessionnelsPage() {
         onOpenChange={setCreateOpen}
         defaultDelegueId={role === UserRole.DELEGUE ? user.id : undefined}
         delegues={role !== UserRole.DELEGUE ? delegues : undefined}
-        onSuccess={() => actionRef.current?.reload()}
+        onSuccess={() => {
+          actionRef.current?.reload();
+          if (viewMode === 'kanban') loadKanbanData();
+        }}
       />
 
       <AttributionModal
@@ -349,7 +454,10 @@ export function ProfessionnelsPage() {
         onOpenChange={setAttributionOpen}
         professionnel={attributionTarget}
         delegues={delegues}
-        onSuccess={() => actionRef.current?.reload()}
+        onSuccess={() => {
+          actionRef.current?.reload();
+          if (viewMode === 'kanban') loadKanbanData();
+        }}
       />
     </PageContainer>
   );
