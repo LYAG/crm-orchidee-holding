@@ -1,8 +1,16 @@
+import type { StatutProfessionnel } from './professionnels';
+
+export interface DonneesChangementClassification {
+  statutActuel: StatutProfessionnel;
+  statutDemande: StatutProfessionnel;
+}
+
 export enum TypeDemandeValidation {
   DOUBLON_PROFESSIONNEL = 'DOUBLON_PROFESSIONNEL',
   NOUVEAU_CENTRE = 'NOUVEAU_CENTRE',
   NOUVELLE_SPECIALITE = 'NOUVELLE_SPECIALITE',
   NOUVEAU_GESTE = 'NOUVEAU_GESTE',
+  CHANGEMENT_CLASSIFICATION = 'CHANGEMENT_CLASSIFICATION',
 }
 
 export enum StatutDemandeValidation {

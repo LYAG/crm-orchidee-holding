@@ -15,6 +15,7 @@ import { UserRole } from '@/lib/constants';
 import type {
   Centre,
   DemandeValidation,
+  DonneesChangementClassification,
   FiltresProfessionnel,
   GesteMarketing,
   GesteRealise,
@@ -389,6 +390,9 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
         await this.createGesteMarketing(demande.donnees as unknown as CreateGesteMarketingDto);
       } else if (demande.type === 'DOUBLON_PROFESSIONNEL') {
         await this.createProfessionnel(demande.donnees as unknown as CreateProfessionnelDto);
+      } else if (demande.type === 'CHANGEMENT_CLASSIFICATION' && demande.professionnelExistantId) {
+        const donnees = demande.donnees as unknown as DonneesChangementClassification;
+        await this.updateProfessionnel(demande.professionnelExistantId, { statut: donnees.statutDemande });
       }
     }
 
