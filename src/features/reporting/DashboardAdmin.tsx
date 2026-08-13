@@ -307,7 +307,7 @@ export function DashboardAdmin({ user }: Props) {
               title={
                 <Space>
                   <span>
-                    <strong>{kpi.professionnelsNonAttribuesSup30j}</strong> prospect
+                    <strong>{kpi.professionnelsNonAttribuesSup30j}</strong> professionnel
                     {kpi.professionnelsNonAttribuesSup30j > 1 ? 's' : ''} PNA non attribué
                     {kpi.professionnelsNonAttribuesSup30j > 1 ? 's' : ''} depuis plus de 30 jours
                   </span>
@@ -349,7 +349,7 @@ export function DashboardAdmin({ user }: Props) {
           <KpiCard
             loading={loading}
             icon={<UserOutlined />}
-            label="Prospects PNA > 30 jours"
+            label="Professionnels PNA > 30 jours"
             value={kpi?.professionnelsNonAttribuesSup30j ?? 0}
             accent="#6A1B9A"
             bg="#F3E5F5"
