@@ -107,6 +107,18 @@ export function HeaderNotifications({ user }: Props) {
             link: '/professionnels',
           });
         }
+
+        const demandesEnAttente = await professionnelService.getDemandesValidation(StatutDemandeValidation.EN_ATTENTE);
+        if (demandesEnAttente.length > 0) {
+          items.push({
+            key: 'demandes-validation',
+            icon: <SafetyCertificateOutlined />,
+            type: 'info',
+            title: `${demandesEnAttente.length} demande${demandesEnAttente.length > 1 ? 's' : ''} en attente de validation`,
+            description: 'Centres, spécialités, gestes, doublons et classifications à valider.',
+            link: '/validations',
+          });
+        }
       }
 
       if (user.role === UserRole.MANAGER) {
@@ -140,6 +152,24 @@ export function HeaderNotifications({ user }: Props) {
             title: `${nonQualifies.length} RDV non qualifié${nonQualifies.length > 1 ? 's' : ''}`,
             description: 'Des rendez-vous réalisés attendent encore leur qualification.',
             link: '/rdv',
+          });
+        }
+
+        // Demandes de changement de classification proposées par l'équipe
+        const equipeIds = kpi.delegues.map((d) => d.delegueId);
+        const demandesEquipe = (
+          await professionnelService.getDemandesValidation(StatutDemandeValidation.EN_ATTENTE)
+        ).filter(
+          (d) => d.type === TypeDemandeValidation.CHANGEMENT_CLASSIFICATION && equipeIds.includes(d.delegueId),
+        );
+        if (demandesEquipe.length > 0) {
+          items.push({
+            key: 'demandes-classification',
+            icon: <SafetyCertificateOutlined />,
+            type: 'info',
+            title: `${demandesEquipe.length} demande${demandesEquipe.length > 1 ? 's' : ''} de classification à valider`,
+            description: 'Changements de classification proposés par votre équipe.',
+            link: '/validations',
           });
         }
       }
@@ -204,6 +234,23 @@ export function HeaderNotifications({ user }: Props) {
             title: `${nonQualifies.length} RDV à qualifier`,
             description: 'Des rendez-vous réalisés n\'ont pas encore été qualifiés.',
             link: '/rdv',
+          });
+        }
+
+        // Mes demandes de changement de classification en attente
+        const mesDemandes = (
+          await professionnelService.getDemandesValidation(StatutDemandeValidation.EN_ATTENTE)
+        ).filter(
+          (d) => d.type === TypeDemandeValidation.CHANGEMENT_CLASSIFICATION && d.delegueId === user.id,
+        );
+        if (mesDemandes.length > 0) {
+          items.push({
+            key: 'mes-demandes-classification',
+            icon: <SafetyCertificateOutlined />,
+            type: 'info',
+            title: `${mesDemandes.length} demande${mesDemandes.length > 1 ? 's' : ''} de classification en attente`,
+            description: "En attente de validation par votre manager ou l'administrateur.",
+            link: '/validations',
           });
         }
       }
