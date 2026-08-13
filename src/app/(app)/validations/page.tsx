@@ -4,7 +4,7 @@ import { UserRole } from '@/lib/constants';
 
 export default function Page() {
   return (
-    <RoleGuard roles={[UserRole.ADMIN, UserRole.DELEGUE]}>
+    <RoleGuard roles={[UserRole.ADMIN, UserRole.MANAGER, UserRole.DELEGUE]}>
       <ValidationsPage />
     </RoleGuard>
   );

@@ -28,7 +28,9 @@ export function ValidationsPage() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [bulkLoading, setBulkLoading] = useState(false);
   const isDelegue = user?.role === UserRole.DELEGUE;
-  const typesVisibles = isDelegue ? [TypeDemandeValidation.CHANGEMENT_CLASSIFICATION] : Object.values(TypeDemandeValidation);
+  const isManager = user?.role === UserRole.MANAGER;
+  const typesVisibles =
+    isDelegue || isManager ? [TypeDemandeValidation.CHANGEMENT_CLASSIFICATION] : Object.values(TypeDemandeValidation);
 
   async function traiter(demande: DemandeValidation, statut: StatutDemandeValidation) {
     await professionnelService.traiterDemandeValidation(demande.id, statut);
@@ -122,7 +124,13 @@ export function ValidationsPage() {
   return (
     <PageContainer
       title="File de validation"
-      subTitle={isDelegue ? 'Vos demandes de changement de classification' : 'Doublons et nouveaux référentiels issus des imports'}
+      subTitle={
+        isDelegue
+          ? 'Vos demandes de changement de classification'
+          : isManager
+            ? "Demandes de changement de classification de votre équipe"
+            : 'Doublons et nouveaux référentiels issus des imports'
+      }
     >
       <ProTable<DemandeValidation>
         actionRef={actionRef}
@@ -166,14 +174,19 @@ export function ValidationsPage() {
           </Space>
         )}
         request={async (params) => {
-          const [demandes, tousDelegues] = await Promise.all([
+          const [demandes, tousDelegues, monEquipe] = await Promise.all([
             professionnelService.getDemandesValidation(StatutDemandeValidation.EN_ATTENTE),
             utilisateurService.getAll(),
+            isManager && user ? utilisateurService.getDeleguesByManager(user.id) : Promise.resolve<Utilisateur[]>([]),
           ]);
           setDelegues(tousDelegues);
           const type = params.type as TypeDemandeValidation | undefined;
           let filtrees = demandes.filter((d) => typesVisibles.includes(d.type));
           if (isDelegue && user) filtrees = filtrees.filter((d) => d.delegueId === user.id);
+          if (isManager) {
+            const equipeIds = monEquipe.map((d) => d.id);
+            filtrees = filtrees.filter((d) => equipeIds.includes(d.delegueId));
+          }
           if (type) filtrees = filtrees.filter((d) => d.type === type);
           setDemandesAffichees(filtrees);
           return { data: filtrees, success: true, total: filtrees.length };

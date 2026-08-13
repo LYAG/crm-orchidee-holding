@@ -61,7 +61,7 @@ const allRoutes: MenuRoute[] = [
     path: '/validations',
     name: 'File de validation',
     icon: <SafetyCertificateOutlined />,
-    roles: ['ADMIN', 'DELEGUE'],
+    roles: ['ADMIN', 'MANAGER', 'DELEGUE'],
   },
   {
     path: '/utilisateurs',

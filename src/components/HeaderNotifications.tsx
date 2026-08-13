@@ -7,6 +7,7 @@ import {
   CheckCircleOutlined,
   CloudUploadOutlined,
   MergeCellsOutlined,
+  SafetyCertificateOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
 import { Badge, Button, Empty, Popover, Spin, Tag, Typography } from 'antd';
@@ -14,8 +15,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { UserRole } from '@/lib/constants';
 import { useImportJob } from '@/features/professionnels/import/importJobStore';
-import { rdvService, reportingService } from '@/services';
-import { QualificationTransformation, RdvStatut } from '@/types';
+import { professionnelService, rdvService, reportingService } from '@/services';
+import { QualificationTransformation, RdvStatut, StatutDemandeValidation, TypeDemandeValidation } from '@/types';
 import type { Utilisateur } from '@/types';
 
 const { Text } = Typography;
