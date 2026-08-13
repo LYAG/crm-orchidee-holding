@@ -72,7 +72,9 @@ export function ImportWizard() {
   // Étape 4
   const [resultat, setResultat] = useState<ResultatSoumission | null>(null);
   const [soumission, setSoumission] = useState(false);
-  const [progression, setProgression] = useState<{ traitees: number; total: number } | null>(null);
+  const [progression, setProgression] = useState<{ traitees: number; total: number; etaSecondes: number | null } | null>(
+    null,
+  );
   const debutSoumissionRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -161,11 +163,18 @@ export function ImportWizard() {
   async function handleSoumettre() {
     if (!user || !delegueId || !zoneId) return;
     setSoumission(true);
-    setProgression({ traitees: 0, total: lignes.length });
+    setProgression({ traitees: 0, total: lignes.length, etaSecondes: null });
     debutSoumissionRef.current = Date.now();
     try {
       const res = await soumettreImport(lignes, delegueId, zoneId, (traitees, total) => {
-        setProgression({ traitees, total });
+        const debut = debutSoumissionRef.current;
+        const restantes = total - traitees;
+        let etaSecondes: number | null = null;
+        if (debut && traitees > 0 && restantes > 0) {
+          const msParLigne = (Date.now() - debut) / traitees;
+          etaSecondes = Math.max(0, Math.round((msParLigne * restantes) / 1000));
+        }
+        setProgression({ traitees, total, etaSecondes });
       });
       setResultat(res);
       setStep(3);
@@ -175,15 +184,6 @@ export function ImportWizard() {
       setSoumission(false);
       setProgression(null);
       debutSoumissionRef.current = null;
-    }
-  }
-
-  let etaSecondes: number | null = null;
-  if (progression && progression.traitees > 0 && debutSoumissionRef.current) {
-    const restantes = progression.total - progression.traitees;
-    if (restantes > 0) {
-      const msParLigne = (Date.now() - debutSoumissionRef.current) / progression.traitees;
-      etaSecondes = Math.max(0, Math.round((msParLigne * restantes) / 1000));
     }
   }
 
@@ -380,7 +380,7 @@ export function ImportWizard() {
               <Text type="secondary">
                 {progression.traitees} / {progression.total} ligne{progression.total > 1 ? 's' : ''} importée
                 {progression.traitees > 1 ? 's' : ''}
-                {etaSecondes !== null ? ` · encore environ ${formatDuree(etaSecondes)}` : ''}
+                {progression.etaSecondes !== null ? ` · encore environ ${formatDuree(progression.etaSecondes)}` : ''}
               </Text>
             </Space>
           ) : (
