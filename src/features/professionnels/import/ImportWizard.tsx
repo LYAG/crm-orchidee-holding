@@ -18,14 +18,14 @@ import {
   Upload,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, utilisateurService } from '@/services';
 import type { Centre, GesteMarketing, ProfessionnelSante, Specialite, Utilisateur } from '@/types';
 import { formatJoursConsultation, formatPotentielCas } from '../utils';
+import { demarrerImport, effacerJob, reprendreImport, resultatPartiel, useImportJob } from './importJobStore';
 import { listerFeuillesImportables, parserFeuille } from './parseFichier';
-import { soumettreImport, type ResultatSoumission } from './soumettreImport';
 import { transformerLignes } from './transformerLignes';
 import type { LigneBrute, ProfessionnelAImporter } from './types';
 
@@ -69,13 +69,8 @@ export function ImportWizard() {
   const [lignes, setLignes] = useState<ProfessionnelAImporter[]>([]);
   const [specialitesRef, setSpecialitesRef] = useState<Specialite[]>([]);
 
-  // Étape 4
-  const [resultat, setResultat] = useState<ResultatSoumission | null>(null);
-  const [soumission, setSoumission] = useState(false);
-  const [progression, setProgression] = useState<{ traitees: number; total: number; etaSecondes: number | null } | null>(
-    null,
-  );
-  const debutSoumissionRef = useRef<number | null>(null);
+  // Étape 4 — piloté par le store global (survit à la navigation et au rechargement de page)
+  const job = useImportJob();
 
   useEffect(() => {
     if (estGestionnaire) {
@@ -160,31 +155,24 @@ export function ImportWizard() {
     setLignes((prev) => prev.map((l) => (l.cle === cle ? { ...l, actionDoublon: action } : l)));
   }
 
-  async function handleSoumettre() {
-    if (!user || !delegueId || !zoneId) return;
-    setSoumission(true);
-    setProgression({ traitees: 0, total: lignes.length, etaSecondes: null });
-    debutSoumissionRef.current = Date.now();
-    try {
-      const res = await soumettreImport(lignes, delegueId, zoneId, (traitees, total) => {
-        const debut = debutSoumissionRef.current;
-        const restantes = total - traitees;
-        let etaSecondes: number | null = null;
-        if (debut && traitees > 0 && restantes > 0) {
-          const msParLigne = (Date.now() - debut) / traitees;
-          etaSecondes = Math.max(0, Math.round((msParLigne * restantes) / 1000));
-        }
-        setProgression({ traitees, total, etaSecondes });
-      });
-      setResultat(res);
-      setStep(3);
-    } catch (err) {
-      message.error(err instanceof Error ? err.message : "Erreur lors de l'intégration.");
-    } finally {
-      setSoumission(false);
-      setProgression(null);
-      debutSoumissionRef.current = null;
-    }
+  function handleSoumettre() {
+    if (!user || !delegueId || !zoneId || lignes.length === 0) return;
+    const nomDelegue = estGestionnaire && delegueChoisi ? `${delegueChoisi.prenom} ${delegueChoisi.nom}` : `${user.prenom} ${user.nom}`;
+    demarrerImport(lignes, delegueId, nomDelegue, zoneId);
+  }
+
+  function handleNouvelImport() {
+    effacerJob();
+    setStep(0);
+    setFile(null);
+    setFeuilles([]);
+    setFeuilleChoisie(null);
+    setLignesBrutes([]);
+    setLignesIgnorees(0);
+    setColonnesManquantes([]);
+    setLignes([]);
+    setSpecialitesRef([]);
+    setDelegueChoisiId(null);
   }
 
   const rapport = useMemo(() => {
@@ -256,7 +244,6 @@ export function ImportWizard() {
             size="small"
             style={{ width: 160 }}
             value={l.actionDoublon}
-            disabled={soumission}
             onChange={(v) => setActionDoublon(l.cle, v)}
             options={[
               { value: 'IGNORER', label: 'Ignorer' },
@@ -273,12 +260,84 @@ export function ImportWizard() {
   return (
     <PageContainer title="Import de professionnels de santé" subTitle="Fichier Excel — plan de tournée">
       <Steps
-        current={step}
+        current={job ? (job.statut === 'TERMINE' ? 3 : 2) : step}
         items={[{ title: 'Fichier' }, { title: 'Normalisation' }, { title: 'Revue' }, { title: 'Soumission' }]}
         style={{ marginBottom: 32 }}
       />
 
-      {step === 0 && (
+      {job && job.statut === 'TERMINE' && (
+        <Result
+          status="success"
+          title="Import terminé"
+          subTitle={
+            <Space direction="vertical">
+              <span>Pour {job.delegueNom}</span>
+              <span>{resultatPartiel(job).creees} fiche(s) créée(s)</span>
+              <span>{resultatPartiel(job).miseAJour} fiche(s) mise(s) à jour</span>
+              <span>{resultatPartiel(job).centresCrees} nouveau(x) centre(s) créé(s)</span>
+              <span>{resultatPartiel(job).ignorees} ligne(s) ignorée(s)</span>
+              <span>{resultatPartiel(job).demandesValidation} demande(s) envoyée(s) à l'administrateur</span>
+            </Space>
+          }
+          extra={
+            <Button type="primary" onClick={handleNouvelImport}>
+              Nouvel import
+            </Button>
+          }
+        />
+      )}
+
+      {job && job.statut !== 'TERMINE' && (
+        <Space direction="vertical" style={{ width: '100%' }} size="large">
+          <Descriptions bordered size="small" column={2}>
+            <Descriptions.Item label="Délégué">{job.delegueNom}</Descriptions.Item>
+            <Descriptions.Item label="Progression">
+              {job.curseur} / {job.total} lignes
+            </Descriptions.Item>
+          </Descriptions>
+
+          {job.statut === 'EN_COURS' && (
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Progress percent={Math.round((job.curseur / job.total) * 100)} status="active" />
+              <Text type="secondary">
+                {job.curseur} / {job.total} ligne{job.total > 1 ? 's' : ''} importée{job.curseur > 1 ? 's' : ''}
+                {job.etaSecondes != null ? ` · encore environ ${formatDuree(job.etaSecondes)}` : ''}
+                {' · '}vous pouvez quitter cette page, l&apos;import continue en arrière-plan.
+              </Text>
+            </Space>
+          )}
+
+          {job.statut === 'INTERROMPU' && (
+            <Alert
+              type="warning"
+              showIcon
+              message="Import interrompu"
+              description={`La page a été rechargée pendant l'import : ${job.curseur} / ${job.total} lignes avaient déjà été traitées à ce moment-là. Vous pouvez reprendre à partir de là, sans dupliquer ce qui a déjà été importé.`}
+              action={
+                <Button size="small" type="primary" onClick={reprendreImport}>
+                  Reprendre l&apos;import
+                </Button>
+              }
+            />
+          )}
+
+          {job.statut === 'ERREUR' && (
+            <Alert
+              type="error"
+              showIcon
+              message="Erreur pendant l'import"
+              description={job.erreur ?? 'Une erreur inattendue est survenue.'}
+              action={
+                <Button size="small" danger onClick={reprendreImport}>
+                  Réessayer
+                </Button>
+              }
+            />
+          )}
+        </Space>
+      )}
+
+      {!job && step === 0 && (
         <Space direction="vertical" style={{ width: '100%' }} size="large">
           <Alert
             type="info"
@@ -329,7 +388,7 @@ export function ImportWizard() {
         </Space>
       )}
 
-      {step === 1 && (
+      {!job && step === 1 && (
         <Space direction="vertical" style={{ width: '100%' }} size="large">
           <Descriptions bordered size="small" column={2}>
             <Descriptions.Item label="Lignes lues">{lignesBrutes.length}</Descriptions.Item>
@@ -349,7 +408,7 @@ export function ImportWizard() {
         </Space>
       )}
 
-      {step === 2 && (
+      {!job && step === 2 && (
         <Space direction="vertical" style={{ width: '100%' }} size="large">
           <Descriptions bordered size="small" column={4}>
             <Descriptions.Item label="Prêtes">{rapport.pretes}</Descriptions.Item>
@@ -371,40 +430,10 @@ export function ImportWizard() {
             scroll={{ x: true }}
           />
 
-          {soumission && progression ? (
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Progress
-                percent={Math.round((progression.traitees / progression.total) * 100)}
-                status="active"
-              />
-              <Text type="secondary">
-                {progression.traitees} / {progression.total} ligne{progression.total > 1 ? 's' : ''} importée
-                {progression.traitees > 1 ? 's' : ''}
-                {progression.etaSecondes !== null ? ` · encore environ ${formatDuree(progression.etaSecondes)}` : ''}
-              </Text>
-            </Space>
-          ) : (
-            <Button type="primary" loading={soumission} onClick={handleSoumettre} disabled={lignes.length === 0}>
-              Soumettre l'import
-            </Button>
-          )}
+          <Button type="primary" onClick={handleSoumettre} disabled={lignes.length === 0}>
+            Soumettre l'import
+          </Button>
         </Space>
-      )}
-
-      {step === 3 && resultat && (
-        <Result
-          status="success"
-          title="Import terminé"
-          subTitle={
-            <Space direction="vertical">
-              <span>{resultat.creees} fiche(s) créée(s)</span>
-              <span>{resultat.miseAJour} fiche(s) mise(s) à jour</span>
-              <span>{resultat.centresCrees} nouveau(x) centre(s) créé(s)</span>
-              <span>{resultat.ignorees} ligne(s) ignorée(s)</span>
-              <span>{resultat.demandesValidation} demande(s) envoyée(s) à l'administrateur</span>
-            </Space>
-          }
-        />
       )}
     </PageContainer>
   );

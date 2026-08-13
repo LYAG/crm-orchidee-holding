@@ -5,6 +5,7 @@ import {
   BellOutlined,
   CalendarOutlined,
   CheckCircleOutlined,
+  CloudUploadOutlined,
   MergeCellsOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
@@ -12,6 +13,7 @@ import { Badge, Button, Empty, Popover, Spin, Tag, Typography } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { UserRole } from '@/lib/constants';
+import { useImportJob } from '@/features/professionnels/import/importJobStore';
 import { rdvService, reportingService } from '@/services';
 import { QualificationTransformation, RdvStatut } from '@/types';
 import type { Utilisateur } from '@/types';
@@ -35,11 +37,45 @@ export function HeaderNotifications({ user }: Props) {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const importJob = useImportJob();
 
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.id, user.role]);
+
+  const importAlert: AlertItem | null = !importJob
+    ? null
+    : importJob.statut === 'TERMINE'
+      ? null
+      : importJob.statut === 'INTERROMPU'
+        ? {
+            key: 'import',
+            icon: <CloudUploadOutlined />,
+            type: 'warning',
+            title: 'Import interrompu',
+            description: `${importJob.curseur} / ${importJob.total} lignes traitées pour ${importJob.delegueNom} — reprendre l'import.`,
+            link: '/professionnels/import',
+          }
+        : importJob.statut === 'ERREUR'
+          ? {
+              key: 'import',
+              icon: <CloudUploadOutlined />,
+              type: 'error',
+              title: "Erreur pendant l'import",
+              description: importJob.erreur ?? 'Une erreur est survenue — cliquez pour reprendre.',
+              link: '/professionnels/import',
+            }
+          : {
+              key: 'import',
+              icon: <CloudUploadOutlined />,
+              type: 'info',
+              title: `Import en cours — ${Math.round((importJob.curseur / importJob.total) * 100)} %`,
+              description: `${importJob.curseur} / ${importJob.total} lignes pour ${importJob.delegueNom}.`,
+              link: '/professionnels/import',
+            };
+
+  const alertsAffiches = importAlert ? [importAlert, ...alerts] : alerts;
 
   async function load() {
     setLoading(true);
@@ -201,7 +237,7 @@ export function HeaderNotifications({ user }: Props) {
         <Text strong style={{ fontSize: 14, color: '#123832' }}>
           Notifications
         </Text>
-        {alerts.length > 0 && (
+        {alertsAffiches.length > 0 && (
           <Tag
             style={{
               background: '#FEE2E2',
@@ -213,7 +249,7 @@ export function HeaderNotifications({ user }: Props) {
               padding: '0 8px',
             }}
           >
-            {alerts.length} action{alerts.length > 1 ? 's' : ''}
+            {alertsAffiches.length} action{alertsAffiches.length > 1 ? 's' : ''}
           </Tag>
         )}
       </div>
@@ -224,7 +260,7 @@ export function HeaderNotifications({ user }: Props) {
           <div style={{ textAlign: 'center', padding: 32 }}>
             <Spin size="small" />
           </div>
-        ) : alerts.length === 0 ? (
+        ) : alertsAffiches.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
@@ -235,7 +271,7 @@ export function HeaderNotifications({ user }: Props) {
             style={{ padding: '24px 16px' }}
           />
         ) : (
-          alerts.map((alert) => {
+          alertsAffiches.map((alert) => {
             const style = TYPE_STYLES[alert.type];
             const row = (
               <div
@@ -298,7 +334,7 @@ export function HeaderNotifications({ user }: Props) {
       </div>
 
       {/* Footer */}
-      {!loading && alerts.length === 0 && (
+      {!loading && alertsAffiches.length === 0 && (
         <div
           style={{
             padding: '8px 16px 12px',
@@ -342,11 +378,11 @@ export function HeaderNotifications({ user }: Props) {
           justifyContent: 'center',
           width: 36,
           height: 36,
-          color: alerts.length > 0 ? '#123832' : '#8FB0A8',
+          color: alertsAffiches.length > 0 ? '#123832' : '#8FB0A8',
         }}
       >
         <Badge
-          count={alerts.length}
+          count={alertsAffiches.length}
           size="small"
           offset={[-2, 2]}
           styles={{

@@ -1,6 +1,6 @@
 'use client';
 
-import { DeleteOutlined, PhoneOutlined, PlusOutlined, UploadOutlined, UserAddOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, DeleteOutlined, PhoneOutlined, PlusOutlined, UploadOutlined, UserAddOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { App, Avatar, Button, Space, Tag, Tooltip } from 'antd';
@@ -12,14 +12,22 @@ import { professionnelService, utilisateurService, zoneService } from '@/service
 import type { Centre, GesteRealise, ProfessionnelSante, Specialite, Utilisateur, Zone } from '@/types';
 import { JourSemaine, StatutProfessionnel } from '@/types';
 import { AttributionModal } from './AttributionModal';
+import { useImportJob } from './import/importJobStore';
 import { ProfessionnelDrawer } from './ProfessionnelDrawer';
 import { ProfessionnelFormModal } from './ProfessionnelFormModal';
 import { JOUR_LABELS, STATUT_CONFIG, formatJoursConsultation, formatPotentielCas } from './utils';
+
+const IMPORT_STATUT_STYLE: Record<string, { color: string; label: (curseur: number, total: number) => string }> = {
+  EN_COURS: { color: '#1565C0', label: (c, t) => `Import en cours — ${Math.round((c / t) * 100)} %` },
+  INTERROMPU: { color: '#E65100', label: () => 'Import interrompu — reprendre' },
+  ERREUR: { color: '#D32F2F', label: () => 'Import en erreur — reprendre' },
+};
 
 export function ProfessionnelsPage() {
   const { user } = useAuth();
   const { message, modal } = App.useApp();
   const actionRef = useRef<ActionType | undefined>(undefined);
+  const importJob = useImportJob();
 
   const [centres, setCentres] = useState<Centre[]>([]);
   const [filtreZoneId, setFiltreZoneId] = useState<string | undefined>(undefined);
@@ -300,6 +308,16 @@ export function ProfessionnelsPage() {
         search={{ labelWidth: 'auto' }}
         pagination={{ pageSize: 10 }}
         toolBarRender={() => [
+          importJob && importJob.statut !== 'TERMINE' && (
+            <Link key="import-status" href="/professionnels/import">
+              <Button
+                icon={<CloudUploadOutlined />}
+                style={{ color: IMPORT_STATUT_STYLE[importJob.statut].color, borderColor: IMPORT_STATUT_STYLE[importJob.statut].color }}
+              >
+                {IMPORT_STATUT_STYLE[importJob.statut].label(importJob.curseur, importJob.total)}
+              </Button>
+            </Link>
+          ),
           <Tooltip key="tip" title="Créer une fiche professionnel de santé">
             <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>
               Nouveau professionnel
