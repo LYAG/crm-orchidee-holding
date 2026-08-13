@@ -49,26 +49,42 @@ async function construireDto(ligne: ProfessionnelAImporter, delegueId: string): 
   };
 }
 
-interface ContexteSoumission {
+/**
+ * État accumulé pendant l'import — en structures simples (pas de Map/Set) pour
+ * rester sérialisable tel quel (persistance de la reprise après rechargement).
+ */
+export interface ContexteSoumission {
   delegueId: string;
   zoneId: string;
   resultat: ResultatSoumission;
-  centresCreesParNom: Map<string, string>;
-  planningParJour: Map<JourTourneeKey, Set<string>>;
+  /** Un seul centre créé par nom rencontré dans le lot, réutilisé pour les lignes suivantes. */
+  centresCreesParNom: Record<string, string>;
+  /** JourTourneeKey -> liste de centreId (dédupliquée) couverts ce jour-là. */
+  planningParJour: Record<string, string[]>;
 }
 
-async function traiterLigne(ligne: ProfessionnelAImporter, ctx: ContexteSoumission): Promise<void> {
+export function nouveauContexte(delegueId: string, zoneId: string): ContexteSoumission {
+  return {
+    delegueId,
+    zoneId,
+    resultat: { creees: 0, miseAJour: 0, ignorees: 0, demandesValidation: 0, centresCrees: 0 },
+    centresCreesParNom: {},
+    planningParJour: {},
+  };
+}
+
+export async function traiterLigne(ligne: ProfessionnelAImporter, ctx: ContexteSoumission): Promise<void> {
   const { delegueId, zoneId, resultat, centresCreesParNom, planningParJour } = ctx;
 
   // Centre inconnu : on le crée directement dans la zone du délégué pour ne pas
   // bloquer l'import, tout en gardant une trace (demande de validation informative).
   if (ligne.centreACreer && !ligne.centreId) {
     const clef = ligne.centreBrut.trim().toUpperCase();
-    let centreId = centresCreesParNom.get(clef);
+    let centreId = centresCreesParNom[clef];
     if (!centreId) {
       const centre = await professionnelService.createCentre({ nom: ligne.centreBrut.trim(), zoneId, actif: true });
       centreId = centre.id;
-      centresCreesParNom.set(clef, centreId);
+      centresCreesParNom[clef] = centreId;
       resultat.centresCrees++;
       await professionnelService.creerDemandeValidation({
         type: TypeDemandeValidation.NOUVEAU_CENTRE,
@@ -82,8 +98,8 @@ async function traiterLigne(ligne: ProfessionnelAImporter, ctx: ContexteSoumissi
 
   if (ligne.jourTournee && ligne.jourTournee !== JourSemaine.DIM && ligne.centreId) {
     const jourTournee = ligne.jourTournee as JourTourneeKey;
-    if (!planningParJour.has(jourTournee)) planningParJour.set(jourTournee, new Set());
-    planningParJour.get(jourTournee)!.add(ligne.centreId);
+    const liste = planningParJour[jourTournee] ?? (planningParJour[jourTournee] = []);
+    if (!liste.includes(ligne.centreId)) liste.push(ligne.centreId);
   }
 
   for (const code of ligne.specialitesInconnues) {
@@ -143,34 +159,33 @@ async function traiterLigne(ligne: ProfessionnelAImporter, ctx: ContexteSoumissi
   }
 }
 
+export async function finaliserPlanning(ctx: ContexteSoumission): Promise<void> {
+  const planningsExistants: JourTournee[] = await professionnelService.getJourneesTournee(ctx.delegueId);
+  for (const [jour, centreIds] of Object.entries(ctx.planningParJour)) {
+    const existant = planningsExistants.find((p) => p.jour === jour);
+    const fusion = new Set([...(existant?.centreIds ?? []), ...centreIds]);
+    await professionnelService.saveJourTournee({
+      delegueId: ctx.delegueId,
+      jour: jour as JourTourneeKey,
+      centreIds: [...fusion],
+    });
+  }
+}
+
+/** Import complet, sans suivi de reprise — utilisé par le store de job pour le cas simple. */
 export async function soumettreImport(
   lignes: ProfessionnelAImporter[],
   delegueId: string,
   zoneId: string,
   onProgress?: ProgressionSoumission,
 ): Promise<ResultatSoumission> {
-  const ctx: ContexteSoumission = {
-    delegueId,
-    zoneId,
-    resultat: { creees: 0, miseAJour: 0, ignorees: 0, demandesValidation: 0, centresCrees: 0 },
-    // Un seul centre créé par nom rencontré dans le lot, réutilisé pour les lignes suivantes.
-    centresCreesParNom: new Map<string, string>(),
-    planningParJour: new Map<JourTourneeKey, Set<string>>(),
-  };
-
+  const ctx = nouveauContexte(delegueId, zoneId);
   let traitees = 0;
   for (const ligne of lignes) {
     await traiterLigne(ligne, ctx);
     traitees++;
     onProgress?.(traitees, lignes.length);
   }
-
-  const planningsExistants: JourTournee[] = await professionnelService.getJourneesTournee(delegueId);
-  for (const [jour, centreIds] of ctx.planningParJour.entries()) {
-    const existant = planningsExistants.find((p) => p.jour === jour);
-    const fusion = new Set([...(existant?.centreIds ?? []), ...centreIds]);
-    await professionnelService.saveJourTournee({ delegueId, jour, centreIds: [...fusion] });
-  }
-
+  await finaliserPlanning(ctx);
   return ctx.resultat;
 }
