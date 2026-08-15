@@ -20,6 +20,10 @@ import type { ZoneService } from './api/ZoneService';
 
 const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS !== 'false';
 
+/* eslint-disable @typescript-eslint/no-require-imports --
+   Chargement conditionnel volontaire : un `import` statique chargerait (et empaqueterait)
+   à la fois les mocks et les implémentations réelles, quel que soit NEXT_PUBLIC_USE_MOCKS. */
+
 function loadMocks() {
   const { AuthServiceMock } = require('./mocks/AuthServiceMock');
   const { OpportuniteServiceMock } = require('./mocks/OpportuniteServiceMock');
@@ -46,11 +50,30 @@ function loadMocks() {
   };
 }
 
-function loadReal(): ReturnType<typeof loadMocks> {
-  // À implémenter dans src/services/real/ quand le backend sera prêt
-  throw new Error(
-    'Implémentation réelle non disponible. Définissez NEXT_PUBLIC_USE_MOCKS=true ou créez src/services/real/.',
-  );
+function loadReal() {
+  const { AuthServiceReal } = require('./real/AuthServiceReal');
+  const { OpportuniteServiceReal } = require('./real/OpportuniteServiceReal');
+  const { ProfessionnelServiceReal } = require('./real/ProfessionnelServiceReal');
+  const { QualificationServiceReal } = require('./real/QualificationServiceReal');
+  const { ReportingServiceReal } = require('./real/ReportingServiceReal');
+  const { RdvServiceReal } = require('./real/RdvServiceReal');
+  const { RoleServiceReal } = require('./real/RoleServiceReal');
+  const { SupportServiceReal } = require('./real/SupportServiceReal');
+  const { UtilisateurServiceReal } = require('./real/UtilisateurServiceReal');
+  const { ZoneServiceReal } = require('./real/ZoneServiceReal');
+
+  return {
+    authService: new AuthServiceReal() as AuthService,
+    rdvService: new RdvServiceReal() as RdvService,
+    roleService: new RoleServiceReal() as RoleService,
+    supportService: new SupportServiceReal() as SupportService,
+    qualificationService: new QualificationServiceReal() as QualificationService,
+    opportuniteService: new OpportuniteServiceReal() as OpportuniteService,
+    professionnelService: new ProfessionnelServiceReal() as ProfessionnelService,
+    reportingService: new ReportingServiceReal() as ReportingService,
+    utilisateurService: new UtilisateurServiceReal() as UtilisateurService,
+    zoneService: new ZoneServiceReal() as ZoneService,
+  };
 }
 
 const services = useMocks ? loadMocks() : loadReal();
