@@ -7,6 +7,9 @@ import {
   App,
   Button,
   Descriptions,
+  Form,
+  Input,
+  Modal,
   Progress,
   Result,
   Select,
@@ -21,8 +24,8 @@ import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
-import { professionnelService, utilisateurService } from '@/services';
-import type { Centre, GesteMarketing, ProfessionnelSante, Specialite, Utilisateur } from '@/types';
+import { professionnelService, utilisateurService, zoneService } from '@/services';
+import type { Centre, GesteMarketing, ProfessionnelSante, Specialite, Utilisateur, Zone } from '@/types';
 import { formatJoursConsultation, formatPotentielCas } from '../utils';
 import { demarrerImport, effacerJob, reprendreImport, resultatPartiel, useImportJob } from './importJobStore';
 import { listerFeuillesImportables, parserFeuille } from './parseFichier';
@@ -55,6 +58,12 @@ export function ImportWizard() {
   const estGestionnaire = user?.role === UserRole.ADMIN || user?.role === UserRole.MANAGER;
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
   const [delegueChoisiId, setDelegueChoisiId] = useState<string | null>(null);
+
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [zoneId, setZoneId] = useState<string | null>(null);
+  const [zoneModalOpen, setZoneModalOpen] = useState(false);
+  const [creationZoneEnCours, setCreationZoneEnCours] = useState(false);
+  const [zoneForm] = Form.useForm<{ nom: string; region: string }>();
 
   // Étape 1
   const [file, setFile] = useState<File | null>(null);
