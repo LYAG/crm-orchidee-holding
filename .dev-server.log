@@ -126,3 +126,41 @@ https://react.dev/link/hydration-mismatch
  GET /parametres 200 in 29ms (next.js: 4ms, application-code: 25ms)
  GET /parametres/presentation 200 in 38ms (next.js: 5ms, application-code: 34ms)
  GET /parametres/presentation 200 in 42ms (next.js: 3ms, application-code: 39ms)
+✓ Compiled in 898ms
+ GET /parametres/presentation 200 in 586ms (next.js: 388ms, application-code: 197ms)
+○ Compiling /_error ...
+✓ Compiled in 11.2s
+ GET /parametres/presentation 500 in 16.0s (next.js: 14.4s, application-code: 1604ms)
+✓ Compiled in 22ms
+ GET /parametres/presentation 200 in 644ms (next.js: 398ms, application-code: 246ms)
+ GET /parametres/presentation 200 in 267ms (next.js: 192ms, application-code: 74ms)
+ GET /parametres/presentation 200 in 269ms (next.js: 115ms, application-code: 155ms)
+ GET /parametres/presentation 200 in 652ms (next.js: 247ms, application-code: 405ms)
+ GET /parametres/presentation 200 in 1880ms (next.js: 7ms, application-code: 1873ms)
+[browser] ./src/features/professionnels/import/ImportWizard.tsx:92:9
+the name `zoneId` is defined multiple times
+  90 |   const delegueChoisi = delegues.find((d) => d.id === delegueChoisiId);
+  91 |   const delegueId = estGestionnaire ? delegueChoisiId ?? undefined : user?.id;
+> 92 |   const zoneId = estGestionnaire ? delegueChoisi?.zoneIds?.[0] : user?.zoneIds?.[0];
+     |         ^^^^^^
+  93 |
+  94 |   async function handleFileSelected(f: File) {
+  95 |     setFile(f);
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./src/features/professionnels/import/ImportWizard.tsx
+    ./src/app/(app)/professionnels/import/page.tsx 
+[browser] Failed to fetch RSC payload for http://localhost:3000/parametres/presentation. Falling back to browser navigation. TypeError: NetworkError when attempting to fetch resource.
+[browser] Failed to fetch RSC payload for http://localhost:3000/parametres/presentation. Falling back to browser navigation. TypeError: NetworkError when attempting to fetch resource.
+[browser] Failed to fetch RSC payload for http://localhost:3000/parametres/presentation. Falling back to browser navigation. TypeError: NetworkError when attempting to fetch resource.
+[browser] Failed to fetch RSC payload for http://localhost:3000/parametres/presentation. Falling back to browser navigation. TypeError: NetworkError when attempting to fetch resource.
+[browser] Failed to fetch RSC payload for http://localhost:3000/parametres/presentation. Falling back to browser navigation. TypeError: NetworkError when attempting to fetch resource.
+[browser] Failed to fetch RSC payload for http://localhost:3000/parametres/presentation. Falling back to browser navigation. TypeError: NetworkError when attempting to fetch resource.
+ GET /parametres/presentation 200 in 543ms (next.js: 290ms, application-code: 253ms)
+ GET /parametres/presentation 200 in 406ms (next.js: 251ms, application-code: 156ms)
+ GET /parametres/presentation 200 in 109ms (next.js: 7ms, application-code: 102ms)
+ GET /parametres/presentation 200 in 107ms (next.js: 7ms, application-code: 100ms)
+ GET /parametres/presentation 200 in 104ms (next.js: 7ms, application-code: 97ms)
