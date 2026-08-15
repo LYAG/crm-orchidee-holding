@@ -1,0 +1,128 @@
+
+> crm-orchidee-holding@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.71:3000
+- Environments: .env.local
+✓ Ready in 1040ms
+
+○ Compiling /login ...
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/utilisateurs" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="fr-FR"
+                          className="geist_a71539c9-module__T19VSG__variable geist_mono_8d43a2aa-module__8Li5zG__variable"
+-                         style={{transition-property:"none",margin-right:"0px"}}
+                        >
+                  ...
+ 
+ GET / 200 in 6.8s (next.js: 3.1s, application-code: 3.7s)
+ GET / 200 in 313ms (next.js: 38ms, application-code: 275ms)
+ GET /login 200 in 11.4s (next.js: 9.0s, application-code: 2.4s)
+ GET /login 200 in 11.8s (next.js: 9.0s, application-code: 2.8s)
+ GET /login 200 in 609ms (next.js: 19ms, application-code: 590ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/login" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html
+                          lang="fr-FR"
+                          className="geist_a71539c9-module__T19VSG__variable geist_mono_8d43a2aa-module__8Li5zG__variable"
+-                         style={{transition-property:"none",margin-right:"0px"}}
+                        >
+                  ...
+ 
+ GET /login 200 in 430ms (next.js: 7ms, application-code: 423ms)
+ GET / 200 in 45ms (next.js: 6ms, application-code: 39ms)
+ GET /utilisateurs 200 in 93ms (next.js: 56ms, application-code: 37ms)
+[browser] Warning: [antd: Modal] `destroyOnClose` is deprecated. Please use `destroyOnHidden` instead. 
+[browser] Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead. 
+ GET / 200 in 33ms (next.js: 6ms, application-code: 27ms)
+ GET / 200 in 25ms (next.js: 6ms, application-code: 19ms)
+ GET / 200 in 29ms (next.js: 5ms, application-code: 23ms)
+ GET / 200 in 132ms (next.js: 4ms, application-code: 128ms)
+ GET /parametres 200 in 104ms (next.js: 66ms, application-code: 38ms)
+ GET /parametres/presentation 200 in 103ms (next.js: 63ms, application-code: 40ms)
+ GET /parametres/presentation 200 in 74ms (next.js: 7ms, application-code: 68ms)
+ GET /professionnels 200 in 77ms (next.js: 48ms, application-code: 29ms)
+[browser] Warning: [antd: Modal] `destroyOnClose` is deprecated. Please use `destroyOnHidden` instead. 
+[browser] Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead. 
+[browser] Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead. 
+ GET /professionnels/import 200 in 94ms (next.js: 56ms, application-code: 39ms)
+[browser] Warning: [antd: Alert] `message` is deprecated. Please use `title` instead. 
+ GET /rdv 200 in 82ms (next.js: 55ms, application-code: 27ms)
+ GET /professionnels 200 in 46ms (next.js: 9ms, application-code: 37ms)
+ GET / 200 in 33ms (next.js: 6ms, application-code: 27ms)
+ GET /rdv 200 in 41ms (next.js: 6ms, application-code: 34ms)
+ GET /professionnels 200 in 41ms (next.js: 7ms, application-code: 34ms)
+ GET / 200 in 39ms (next.js: 5ms, application-code: 34ms)
+ GET /utilisateurs 200 in 56ms (next.js: 5ms, application-code: 51ms)
+ GET /parametres 200 in 29ms (next.js: 4ms, application-code: 25ms)
+ GET /parametres/presentation 200 in 38ms (next.js: 5ms, application-code: 34ms)
+ GET /parametres/presentation 200 in 42ms (next.js: 3ms, application-code: 39ms)
