@@ -1,0 +1,4528 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API CRM Orchidée Holding",
+    "description": "Backend du CRM — voir BACKEND_INTEGRATION.md pour le cahier des charges.",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/zones/{id}": {
+      "get": {
+        "tags": [
+          "zone-controller"
+        ],
+        "operationId": "getById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "zone-controller"
+        ],
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZoneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "zone-controller"
+        ],
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/{id}": {
+      "get": {
+        "tags": [
+          "utilisateur-controller"
+        ],
+        "operationId": "getById_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UtilisateurDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "utilisateur-controller"
+        ],
+        "operationId": "update_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUtilisateurRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UtilisateurDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "utilisateur-controller"
+        ],
+        "operationId": "delete_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/supports/{id}": {
+      "get": {
+        "tags": [
+          "support-commercial-controller"
+        ],
+        "operationId": "getById_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportCommercialDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "support-commercial-controller"
+        ],
+        "operationId": "update_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportCommercialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportCommercialDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "support-commercial-controller"
+        ],
+        "operationId": "delete_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/specialites/{id}": {
+      "get": {
+        "tags": [
+          "specialite-controller"
+        ],
+        "operationId": "getById_3",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecialiteDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "specialite-controller"
+        ],
+        "operationId": "update_3",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpecialiteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecialiteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roles/{key}": {
+      "put": {
+        "tags": [
+          "role-controller"
+        ],
+        "operationId": "updateRoleDefinition",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DELEGUE",
+                "MANAGER",
+                "ADMIN"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleDefinitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleDefinitionDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/qualifications/{id}": {
+      "put": {
+        "tags": [
+          "qualification-controller"
+        ],
+        "operationId": "update_4",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualificationRDVRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualificationRDVDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/professionnels/{id}": {
+      "get": {
+        "tags": [
+          "professionnel-sante-controller"
+        ],
+        "operationId": "getById_4",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionnelSanteDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "professionnel-sante-controller"
+        ],
+        "operationId": "update_5",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfessionnelSanteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionnelSanteDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "professionnel-sante-controller"
+        ],
+        "operationId": "delete_3",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/permissions/{id}": {
+      "put": {
+        "tags": [
+          "role-controller"
+        ],
+        "operationId": "updatePermissionModule",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PermissionModuleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionModuleDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "role-controller"
+        ],
+        "operationId": "deletePermissionModule",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/parametres": {
+      "get": {
+        "tags": [
+          "parametres-app-controller"
+        ],
+        "operationId": "get",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParametresAppDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "parametres-app-controller"
+        ],
+        "operationId": "update_6",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParametresAppRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParametresAppDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opportunites/{id}": {
+      "get": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "getById_5",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpportuniteDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "update_7",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpportuniteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpportuniteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opportunites/{id}/devis/{devisId}": {
+      "put": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "mettreAJourDevis",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "devisId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevisUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevisDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gestes-marketing/{id}": {
+      "get": {
+        "tags": [
+          "geste-marketing-controller"
+        ],
+        "operationId": "getById_6",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GesteMarketingDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "geste-marketing-controller"
+        ],
+        "operationId": "update_8",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GesteMarketingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GesteMarketingDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/centres/{id}": {
+      "get": {
+        "tags": [
+          "centre-controller"
+        ],
+        "operationId": "getById_7",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CentreDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "centre-controller"
+        ],
+        "operationId": "update_9",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CentreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CentreDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/zones": {
+      "get": {
+        "tags": [
+          "zone-controller"
+        ],
+        "operationId": "getAll",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ZoneDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "zone-controller"
+        ],
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZoneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs": {
+      "get": {
+        "tags": [
+          "utilisateur-controller"
+        ],
+        "operationId": "getAll_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UtilisateurDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "utilisateur-controller"
+        ],
+        "operationId": "create_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUtilisateurRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUtilisateurResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/{id}/regenerer-mot-de-passe": {
+      "post": {
+        "tags": [
+          "utilisateur-controller"
+        ],
+        "operationId": "regenererMotDePasse",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MotDePasseGenereResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tournees": {
+      "post": {
+        "tags": [
+          "jour-tournee-controller"
+        ],
+        "operationId": "upsert",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JourTourneeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/JourTourneeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/supports": {
+      "get": {
+        "tags": [
+          "support-commercial-controller"
+        ],
+        "operationId": "getAll_2",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SupportCommercialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "support-commercial-controller"
+        ],
+        "operationId": "create_2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportCommercialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportCommercialDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/specialites": {
+      "get": {
+        "tags": [
+          "specialite-controller"
+        ],
+        "operationId": "getAll_3",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpecialiteDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "specialite-controller"
+        ],
+        "operationId": "create_3",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpecialiteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecialiteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rendez-vous": {
+      "get": {
+        "tags": [
+          "rendez-vous-controller"
+        ],
+        "operationId": "getAll_4",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RendezVousDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "rendez-vous-controller"
+        ],
+        "operationId": "create_4",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RendezVousRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RendezVousDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rendez-vous/{id}/annuler": {
+      "post": {
+        "tags": [
+          "rendez-vous-controller"
+        ],
+        "operationId": "annuler",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnnulerRdvRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RendezVousDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/qualifications": {
+      "post": {
+        "tags": [
+          "qualification-controller"
+        ],
+        "operationId": "create_5",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualificationRDVRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualificationRDVDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/professionnels": {
+      "get": {
+        "tags": [
+          "professionnel-sante-controller"
+        ],
+        "operationId": "getAll_5",
+        "parameters": [
+          {
+            "name": "centreId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "specialiteId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "delegueId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "statut",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PNA",
+                "ST",
+                "T1",
+                "T2",
+                "T3",
+                "PERDU"
+              ]
+            }
+          },
+          {
+            "name": "jourConsultation",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "LUN",
+                "MAR",
+                "MER",
+                "JEU",
+                "VEN",
+                "SAM",
+                "DIM"
+              ]
+            }
+          },
+          {
+            "name": "zoneId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "recherche",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProfessionnelSanteDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "professionnel-sante-controller"
+        ],
+        "operationId": "create_6",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfessionnelSanteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionnelSanteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/professionnels/{id}/auto-attribution": {
+      "post": {
+        "tags": [
+          "professionnel-sante-controller"
+        ],
+        "operationId": "sAutoAttribuer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionnelSanteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/professionnels/{id}/attribuer": {
+      "post": {
+        "tags": [
+          "professionnel-sante-controller"
+        ],
+        "operationId": "attribuerAuDelegue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "delegueId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionnelSanteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/professionnels/importer": {
+      "post": {
+        "tags": [
+          "professionnel-sante-controller"
+        ],
+        "operationId": "importer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfessionnelSanteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionnelSanteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/permissions": {
+      "get": {
+        "tags": [
+          "role-controller"
+        ],
+        "operationId": "getAllPermissionModules",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PermissionModuleDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "role-controller"
+        ],
+        "operationId": "createPermissionModule",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PermissionModuleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionModuleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opportunites": {
+      "get": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "getAll_6",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OpportuniteDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "create_7",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpportuniteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpportuniteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opportunites/{id}/notes": {
+      "post": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "ajouterNote",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteOpportuniteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteOpportuniteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opportunites/{id}/marquer-perdue": {
+      "post": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "marquerPerdue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarquerPerdueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpportuniteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opportunites/{id}/marquer-gagnee": {
+      "post": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "marquerGagnee",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpportuniteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opportunites/{id}/devis": {
+      "post": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "ajouterDevis",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevisDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/metriques-presentation": {
+      "post": {
+        "tags": [
+          "metrique-presentation-controller"
+        ],
+        "operationId": "create_8",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetriquePresentationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetriquePresentationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gestes-realises": {
+      "get": {
+        "tags": [
+          "geste-realise-controller"
+        ],
+        "operationId": "getByProfessionnelOuDelegue",
+        "parameters": [
+          {
+            "name": "professionnelId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "delegueId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GesteRealiseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "geste-realise-controller"
+        ],
+        "operationId": "create_9",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GesteRealiseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GesteRealiseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gestes-marketing": {
+      "get": {
+        "tags": [
+          "geste-marketing-controller"
+        ],
+        "operationId": "getAll_7",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GesteMarketingDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "geste-marketing-controller"
+        ],
+        "operationId": "create_10",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GesteMarketingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GesteMarketingDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demandes-validation": {
+      "get": {
+        "tags": [
+          "demande-validation-controller"
+        ],
+        "operationId": "getAll_8",
+        "parameters": [
+          {
+            "name": "statut",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "EN_ATTENTE",
+                "APPROUVEE",
+                "REJETEE"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DemandeValidationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "demande-validation-controller"
+        ],
+        "operationId": "create_11",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreerDemandeValidationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemandeValidationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/centres": {
+      "get": {
+        "tags": [
+          "centre-controller"
+        ],
+        "operationId": "getAll_9",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CentreDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "centre-controller"
+        ],
+        "operationId": "create_12",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CentreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CentreDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "auth-controller"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rendez-vous/{id}/statut": {
+      "patch": {
+        "tags": [
+          "rendez-vous-controller"
+        ],
+        "operationId": "changerStatut",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "statut",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PLANIFIE",
+                "EN_COURS",
+                "REALISE",
+                "ANNULE"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RendezVousDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opportunites/{id}/etape": {
+      "patch": {
+        "tags": [
+          "opportunite-controller"
+        ],
+        "operationId": "changerEtape",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangerEtapeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpportuniteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/demandes-validation/{id}/traiter": {
+      "patch": {
+        "tags": [
+          "demande-validation-controller"
+        ],
+        "operationId": "traiter",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TraiterDemandeValidationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemandeValidationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tournees/delegue/{delegueId}": {
+      "get": {
+        "tags": [
+          "jour-tournee-controller"
+        ],
+        "operationId": "getByDelegue",
+        "parameters": [
+          {
+            "name": "delegueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JourTourneeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roles": {
+      "get": {
+        "tags": [
+          "role-controller"
+        ],
+        "operationId": "getAllRoleDefinitions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDefinitionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reporting/kpi-manager/{managerId}": {
+      "get": {
+        "tags": [
+          "reporting-controller"
+        ],
+        "operationId": "getKpiManager",
+        "parameters": [
+          {
+            "name": "managerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/KpiManagerDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reporting/kpi-delegue/{delegueId}": {
+      "get": {
+        "tags": [
+          "reporting-controller"
+        ],
+        "operationId": "getKpiDelegue",
+        "parameters": [
+          {
+            "name": "delegueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/KpiDelegueDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reporting/kpi-admin": {
+      "get": {
+        "tags": [
+          "reporting-controller"
+        ],
+        "operationId": "getKpiAdmin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/KpiAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reporting/export-csv": {
+      "get": {
+        "tags": [
+          "reporting-controller"
+        ],
+        "operationId": "exporterCsv",
+        "parameters": [
+          {
+            "name": "zoneId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "delegueId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rendez-vous/{id}": {
+      "get": {
+        "tags": [
+          "rendez-vous-controller"
+        ],
+        "operationId": "getById_8",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RendezVousDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/qualifications/rdv/{rdvId}": {
+      "get": {
+        "tags": [
+          "qualification-controller"
+        ],
+        "operationId": "getByRdv",
+        "parameters": [
+          {
+            "name": "rdvId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualificationRDVDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/metriques-presentation/rdv/{rdvId}": {
+      "get": {
+        "tags": [
+          "metrique-presentation-controller"
+        ],
+        "operationId": "getByRdv_1",
+        "parameters": [
+          {
+            "name": "rdvId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetriquePresentationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/managers/{managerId}/delegues": {
+      "get": {
+        "tags": [
+          "utilisateur-controller"
+        ],
+        "operationId": "getDeleguesByManager",
+        "parameters": [
+          {
+            "name": "managerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UtilisateurDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tournees/{id}": {
+      "delete": {
+        "tags": [
+          "jour-tournee-controller"
+        ],
+        "operationId": "delete_4",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/gestes-realises/{id}": {
+      "delete": {
+        "tags": [
+          "geste-realise-controller"
+        ],
+        "operationId": "delete_5",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ZoneRequest": {
+        "type": "object",
+        "properties": {
+          "nom": {
+            "type": "string",
+            "minLength": 1
+          },
+          "region": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "nom",
+          "region"
+        ]
+      },
+      "ZoneDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nom": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateUtilisateurRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nom": {
+            "type": "string",
+            "minLength": 1
+          },
+          "prenom": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "DELEGUE",
+              "MANAGER",
+              "ADMIN"
+            ]
+          },
+          "zoneIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "managerId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "email",
+          "nom",
+          "prenom",
+          "role"
+        ]
+      },
+      "UtilisateurDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "nom": {
+            "type": "string"
+          },
+          "prenom": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "DELEGUE",
+              "MANAGER",
+              "ADMIN"
+            ]
+          },
+          "zoneIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "managerId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "SupportCommercialRequest": {
+        "type": "object",
+        "properties": {
+          "titre": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "PPT",
+              "PDF"
+            ]
+          },
+          "nombreSlides": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "apercu": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "titre",
+          "type"
+        ]
+      },
+      "SupportCommercialDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "titre": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "PPT",
+              "PDF"
+            ]
+          },
+          "nombreSlides": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dateVersion": {
+            "type": "string",
+            "format": "date"
+          },
+          "apercu": {
+            "type": "string"
+          },
+          "actif": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SpecialiteRequest": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "libelle": {
+            "type": "string",
+            "minLength": 1
+          },
+          "actif": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "libelle"
+        ]
+      },
+      "SpecialiteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "libelle": {
+            "type": "string"
+          },
+          "actif": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RoleDefinitionRequest": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "color": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bg": {
+            "type": "string",
+            "minLength": 1
+          },
+          "gradientFrom": {
+            "type": "string",
+            "minLength": 1
+          },
+          "gradientTo": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bg",
+          "color",
+          "gradientFrom",
+          "gradientTo",
+          "label"
+        ]
+      },
+      "RoleDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": [
+              "DELEGUE",
+              "MANAGER",
+              "ADMIN"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "bg": {
+            "type": "string"
+          },
+          "gradientFrom": {
+            "type": "string"
+          },
+          "gradientTo": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "QualificationRDVRequest": {
+        "type": "object",
+        "properties": {
+          "rdvId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productif": {
+            "type": "string",
+            "enum": [
+              "PRODUCTIF",
+              "NON_PRODUCTIF"
+            ]
+          },
+          "motifNonProductif": {
+            "type": "string",
+            "enum": [
+              "CLIENT_ABSENT",
+              "REPORTE",
+              "PAS_INTERESSE",
+              "AUTRE"
+            ]
+          },
+          "motifNonProductifAutre": {
+            "type": "string"
+          },
+          "opportunite": {
+            "type": "string",
+            "enum": [
+              "OPPORTUNITE_IDENTIFIEE",
+              "DEVIS_DEMANDE",
+              "AUCUNE"
+            ]
+          },
+          "montantEstimeDevis": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "descriptionDevis": {
+            "type": "string"
+          },
+          "transformation": {
+            "type": "string",
+            "enum": [
+              "TRANSFORME_CLIENT",
+              "RELANCE_NECESSAIRE"
+            ]
+          },
+          "dateRelance": {
+            "type": "string",
+            "format": "date"
+          },
+          "canalRelance": {
+            "type": "string",
+            "enum": [
+              "TELEPHONE",
+              "EMAIL",
+              "VISITE"
+            ]
+          }
+        },
+        "required": [
+          "opportunite",
+          "productif",
+          "rdvId",
+          "transformation"
+        ]
+      },
+      "QualificationRDVDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rdvId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productif": {
+            "type": "string",
+            "enum": [
+              "PRODUCTIF",
+              "NON_PRODUCTIF"
+            ]
+          },
+          "motifNonProductif": {
+            "type": "string",
+            "enum": [
+              "CLIENT_ABSENT",
+              "REPORTE",
+              "PAS_INTERESSE",
+              "AUTRE"
+            ]
+          },
+          "motifNonProductifAutre": {
+            "type": "string"
+          },
+          "opportunite": {
+            "type": "string",
+            "enum": [
+              "OPPORTUNITE_IDENTIFIEE",
+              "DEVIS_DEMANDE",
+              "AUCUNE"
+            ]
+          },
+          "montantEstimeDevis": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "descriptionDevis": {
+            "type": "string"
+          },
+          "transformation": {
+            "type": "string",
+            "enum": [
+              "TRANSFORME_CLIENT",
+              "RELANCE_NECESSAIRE"
+            ]
+          },
+          "dateRelance": {
+            "type": "string",
+            "format": "date"
+          },
+          "canalRelance": {
+            "type": "string",
+            "enum": [
+              "TELEPHONE",
+              "EMAIL",
+              "VISITE"
+            ]
+          },
+          "dateQualification": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "qualifiePar": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "modifiePar": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dateModification": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "logModification": {
+            "type": "string"
+          }
+        }
+      },
+      "JoursConsultationRequest": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "JOURS_EXPLICITES",
+              "FREQUENCE"
+            ]
+          },
+          "jours": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "LUN",
+                "MAR",
+                "MER",
+                "JEU",
+                "VEN",
+                "SAM",
+                "DIM"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "frequenceParSemaine": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "commentaire": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "PotentielCasRequest": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "max": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unite": {
+            "type": "string",
+            "enum": [
+              "JOUR",
+              "SEMAINE",
+              "MOIS"
+            ]
+          },
+          "typeCas": {
+            "type": "string",
+            "enum": [
+              "CAS",
+              "ACCOUCHEMENT",
+              "CONSULTATION"
+            ]
+          },
+          "estMinimum": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "min",
+          "typeCas",
+          "unite"
+        ]
+      },
+      "ProfessionnelSanteRequest": {
+        "type": "object",
+        "properties": {
+          "nom": {
+            "type": "string",
+            "minLength": 1
+          },
+          "prenom": {
+            "type": "string"
+          },
+          "titre": {
+            "type": "string",
+            "enum": [
+              "DR",
+              "SF",
+              "MME",
+              "M",
+              "MAJOR"
+            ]
+          },
+          "centreId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "specialiteIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "telephones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "email": {
+            "type": "string"
+          },
+          "adresse": {
+            "type": "string"
+          },
+          "categorie": {
+            "type": "string",
+            "enum": [
+              "MEDECIN",
+              "INFIRMIER",
+              "PHARMACIE"
+            ]
+          },
+          "joursConsultation": {
+            "$ref": "#/components/schemas/JoursConsultationRequest"
+          },
+          "potentielCas": {
+            "$ref": "#/components/schemas/PotentielCasRequest"
+          },
+          "statut": {
+            "type": "string",
+            "enum": [
+              "PNA",
+              "ST",
+              "T1",
+              "T2",
+              "T3",
+              "PERDU"
+            ]
+          },
+          "classificationDemandee": {
+            "type": "string",
+            "enum": [
+              "PNA",
+              "ST",
+              "T1",
+              "T2",
+              "T3",
+              "PERDU"
+            ]
+          },
+          "classificationDemandeeLe": {
+            "type": "string",
+            "format": "date"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dernierContact": {
+            "type": "string",
+            "format": "date"
+          },
+          "motifPerdu": {
+            "type": "string"
+          },
+          "observations": {
+            "type": "string"
+          },
+          "actif": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "centreId",
+          "joursConsultation",
+          "nom",
+          "statut"
+        ]
+      },
+      "JoursConsultationDto": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "JOURS_EXPLICITES",
+              "FREQUENCE"
+            ]
+          },
+          "jours": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "LUN",
+                "MAR",
+                "MER",
+                "JEU",
+                "VEN",
+                "SAM",
+                "DIM"
+              ]
+            },
+            "uniqueItems": true
+          },
+          "frequenceParSemaine": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "commentaire": {
+            "type": "string"
+          }
+        }
+      },
+      "PotentielCasDto": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "max": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unite": {
+            "type": "string",
+            "enum": [
+              "JOUR",
+              "SEMAINE",
+              "MOIS"
+            ]
+          },
+          "typeCas": {
+            "type": "string",
+            "enum": [
+              "CAS",
+              "ACCOUCHEMENT",
+              "CONSULTATION"
+            ]
+          },
+          "estMinimum": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProfessionnelSanteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nom": {
+            "type": "string"
+          },
+          "prenom": {
+            "type": "string"
+          },
+          "titre": {
+            "type": "string",
+            "enum": [
+              "DR",
+              "SF",
+              "MME",
+              "M",
+              "MAJOR"
+            ]
+          },
+          "centreId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "specialiteIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "telephones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "email": {
+            "type": "string"
+          },
+          "adresse": {
+            "type": "string"
+          },
+          "categorie": {
+            "type": "string",
+            "enum": [
+              "MEDECIN",
+              "INFIRMIER",
+              "PHARMACIE"
+            ]
+          },
+          "joursConsultation": {
+            "$ref": "#/components/schemas/JoursConsultationDto"
+          },
+          "potentielCas": {
+            "$ref": "#/components/schemas/PotentielCasDto"
+          },
+          "statut": {
+            "type": "string",
+            "enum": [
+              "PNA",
+              "ST",
+              "T1",
+              "T2",
+              "T3",
+              "PERDU"
+            ]
+          },
+          "classificationDemandee": {
+            "type": "string",
+            "enum": [
+              "PNA",
+              "ST",
+              "T1",
+              "T2",
+              "T3",
+              "PERDU"
+            ]
+          },
+          "classificationDemandeeLe": {
+            "type": "string",
+            "format": "date"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dateCreation": {
+            "type": "string",
+            "format": "date"
+          },
+          "dernierContact": {
+            "type": "string",
+            "format": "date"
+          },
+          "motifPerdu": {
+            "type": "string"
+          },
+          "observations": {
+            "type": "string"
+          },
+          "actif": {
+            "type": "boolean"
+          },
+          "aDejaEuContact": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PermissionModuleRequest": {
+        "type": "object",
+        "properties": {
+          "module": {
+            "type": "string",
+            "minLength": 1
+          },
+          "icon": {
+            "type": "string",
+            "minLength": 1
+          },
+          "access": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "access",
+          "icon",
+          "module"
+        ]
+      },
+      "PermissionModuleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "module": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "access": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ParametresAppRequest": {
+        "type": "object",
+        "properties": {
+          "tempsMoyenParSlide": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ParametresAppDto": {
+        "type": "object",
+        "properties": {
+          "tempsMoyenParSlide": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "OpportuniteRequest": {
+        "type": "object",
+        "properties": {
+          "professionnelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "titre": {
+            "type": "string",
+            "minLength": 1
+          },
+          "montantEstime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "probabilite": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "rdvIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "delegueId",
+          "professionnelId",
+          "titre"
+        ]
+      },
+      "DevisDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "opportuniteId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "montant": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "dateEnvoi": {
+            "type": "string",
+            "format": "date"
+          },
+          "statut": {
+            "type": "string",
+            "enum": [
+              "EN_ATTENTE",
+              "ACCEPTE",
+              "REFUSE"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "NoteOpportuniteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contenu": {
+            "type": "string"
+          },
+          "auteurId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "OpportuniteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "professionnelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "titre": {
+            "type": "string"
+          },
+          "montantEstime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "probabilite": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "etape": {
+            "type": "string",
+            "enum": [
+              "IDENTIFIEE",
+              "DEVIS_ENVOYE",
+              "NEGOCIATION",
+              "GAGNEE",
+              "PERDUE"
+            ]
+          },
+          "rdvIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "devis": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DevisDto"
+            }
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteOpportuniteDto"
+            }
+          },
+          "dateDerniereMaj": {
+            "type": "string",
+            "format": "date"
+          },
+          "dateCreation": {
+            "type": "string",
+            "format": "date"
+          },
+          "motifPerte": {
+            "type": "string"
+          }
+        }
+      },
+      "DevisUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "statut": {
+            "type": "string",
+            "enum": [
+              "EN_ATTENTE",
+              "ACCEPTE",
+              "REFUSE"
+            ]
+          },
+          "montant": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "dateEnvoi": {
+            "type": "string",
+            "format": "date"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "statut"
+        ]
+      },
+      "GesteMarketingRequest": {
+        "type": "object",
+        "properties": {
+          "libelle": {
+            "type": "string",
+            "minLength": 1
+          },
+          "categorie": {
+            "type": "string",
+            "enum": [
+              "REPAS",
+              "CADEAU",
+              "FINANCIER",
+              "ECHANTILLON",
+              "AUTRE"
+            ]
+          },
+          "coutIndicatifFcfa": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "actif": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "libelle"
+        ]
+      },
+      "GesteMarketingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "libelle": {
+            "type": "string"
+          },
+          "categorie": {
+            "type": "string",
+            "enum": [
+              "REPAS",
+              "CADEAU",
+              "FINANCIER",
+              "ECHANTILLON",
+              "AUTRE"
+            ]
+          },
+          "coutIndicatifFcfa": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "actif": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CentreRequest": {
+        "type": "object",
+        "properties": {
+          "nom": {
+            "type": "string",
+            "minLength": 1
+          },
+          "zoneId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "HOPITAL",
+              "CSU",
+              "FSU",
+              "INFIRMERIE",
+              "CM",
+              "CHR",
+              "AUTRE"
+            ]
+          },
+          "adresse": {
+            "type": "string"
+          },
+          "actif": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "nom",
+          "zoneId"
+        ]
+      },
+      "CentreDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nom": {
+            "type": "string"
+          },
+          "zoneId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "HOPITAL",
+              "CSU",
+              "FSU",
+              "INFIRMERIE",
+              "CM",
+              "CHR",
+              "AUTRE"
+            ]
+          },
+          "adresse": {
+            "type": "string"
+          },
+          "actif": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "CreateUtilisateurRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nom": {
+            "type": "string",
+            "minLength": 1
+          },
+          "prenom": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "DELEGUE",
+              "MANAGER",
+              "ADMIN"
+            ]
+          },
+          "zoneIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "managerId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "email",
+          "nom",
+          "prenom",
+          "role"
+        ]
+      },
+      "CreateUtilisateurResponse": {
+        "type": "object",
+        "properties": {
+          "utilisateur": {
+            "$ref": "#/components/schemas/UtilisateurDto"
+          },
+          "motDePasseGenere": {
+            "type": "string"
+          }
+        }
+      },
+      "MotDePasseGenereResponse": {
+        "type": "object",
+        "properties": {
+          "motDePasseGenere": {
+            "type": "string"
+          }
+        }
+      },
+      "JourTourneeRequest": {
+        "type": "object",
+        "properties": {
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "jour": {
+            "type": "string",
+            "enum": [
+              "LUN",
+              "MAR",
+              "MER",
+              "JEU",
+              "VEN",
+              "SAM",
+              "DIM"
+            ]
+          },
+          "centreIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "delegueId",
+          "jour"
+        ]
+      },
+      "JourTourneeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "jour": {
+            "type": "string",
+            "enum": [
+              "LUN",
+              "MAR",
+              "MER",
+              "JEU",
+              "VEN",
+              "SAM",
+              "DIM"
+            ]
+          },
+          "centreIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "RendezVousRequest": {
+        "type": "object",
+        "properties": {
+          "professionnelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supportId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dateHeure": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dureeMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dateHeure",
+          "delegueId",
+          "professionnelId",
+          "supportId"
+        ]
+      },
+      "RendezVousDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "professionnelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supportId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dateHeure": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dureeMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "statut": {
+            "type": "string",
+            "enum": [
+              "PLANIFIE",
+              "EN_COURS",
+              "REALISE",
+              "ANNULE"
+            ]
+          },
+          "motifAnnulation": {
+            "type": "string"
+          },
+          "qualifie": {
+            "type": "boolean"
+          },
+          "metriqueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "dateCreation": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "AnnulerRdvRequest": {
+        "type": "object",
+        "properties": {
+          "motif": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "motif"
+        ]
+      },
+      "NoteOpportuniteRequest": {
+        "type": "object",
+        "properties": {
+          "contenu": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "contenu"
+        ]
+      },
+      "MarquerPerdueRequest": {
+        "type": "object",
+        "properties": {
+          "motif": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "motif"
+        ]
+      },
+      "DevisRequest": {
+        "type": "object",
+        "properties": {
+          "montant": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "dateEnvoi": {
+            "type": "string",
+            "format": "date"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dateEnvoi"
+        ]
+      },
+      "MetriquePresentationRequest": {
+        "type": "object",
+        "properties": {
+          "supportId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rdvId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "datePresentation": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dureeTotal": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "slides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SlideMetriqueRequest"
+            }
+          }
+        },
+        "required": [
+          "datePresentation",
+          "supportId"
+        ]
+      },
+      "SlideMetriqueRequest": {
+        "type": "object",
+        "properties": {
+          "slideIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "titreSlide": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tempsPasse": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "titreSlide"
+        ]
+      },
+      "MetriquePresentationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "supportId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rdvId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "datePresentation": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dureeTotal": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "slides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SlideMetriqueDto"
+            }
+          },
+          "conforme": {
+            "type": "boolean"
+          },
+          "dureeMinimaleAttendue": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SlideMetriqueDto": {
+        "type": "object",
+        "properties": {
+          "slideIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "titreSlide": {
+            "type": "string"
+          },
+          "tempsPasse": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GesteRealiseRequest": {
+        "type": "object",
+        "properties": {
+          "professionnelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gesteMarketingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "coutFcfa": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "commentaire": {
+            "type": "string"
+          },
+          "rdvId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "date",
+          "delegueId",
+          "gesteMarketingId",
+          "professionnelId"
+        ]
+      },
+      "GesteRealiseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "professionnelId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gesteMarketingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "coutFcfa": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "commentaire": {
+            "type": "string"
+          },
+          "rdvId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "CreerDemandeValidationRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "DOUBLON_PROFESSIONNEL",
+              "NOUVEAU_CENTRE",
+              "NOUVELLE_SPECIALITE",
+              "NOUVEAU_GESTE",
+              "CHANGEMENT_CLASSIFICATION"
+            ]
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "libelle": {
+            "type": "string",
+            "minLength": 1
+          },
+          "donnees": {
+            "type": "object",
+            "additionalProperties": {
+
+            }
+          },
+          "professionnelExistantId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "delegueId",
+          "donnees",
+          "libelle",
+          "type"
+        ]
+      },
+      "DemandeValidationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DOUBLON_PROFESSIONNEL",
+              "NOUVEAU_CENTRE",
+              "NOUVELLE_SPECIALITE",
+              "NOUVEAU_GESTE",
+              "CHANGEMENT_CLASSIFICATION"
+            ]
+          },
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dateCreation": {
+            "type": "string",
+            "format": "date"
+          },
+          "statut": {
+            "type": "string",
+            "enum": [
+              "EN_ATTENTE",
+              "APPROUVEE",
+              "REJETEE"
+            ]
+          },
+          "libelle": {
+            "type": "string"
+          },
+          "donnees": {
+            "type": "object",
+            "additionalProperties": {
+
+            }
+          },
+          "professionnelExistantId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "utilisateur": {
+            "$ref": "#/components/schemas/UtilisateurDto"
+          }
+        }
+      },
+      "ChangerEtapeRequest": {
+        "type": "object",
+        "properties": {
+          "etape": {
+            "type": "string",
+            "enum": [
+              "IDENTIFIEE",
+              "DEVIS_ENVOYE",
+              "NEGOCIATION",
+              "GAGNEE",
+              "PERDUE"
+            ]
+          }
+        },
+        "required": [
+          "etape"
+        ]
+      },
+      "TraiterDemandeValidationRequest": {
+        "type": "object",
+        "properties": {
+          "statut": {
+            "type": "string",
+            "enum": [
+              "EN_ATTENTE",
+              "APPROUVEE",
+              "REJETEE"
+            ]
+          }
+        },
+        "required": [
+          "statut"
+        ]
+      },
+      "DelegueKpiLigne": {
+        "type": "object",
+        "properties": {
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nom": {
+            "type": "string"
+          },
+          "nbRdv": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tauxTransformation": {
+            "type": "number",
+            "format": "double"
+          },
+          "montantPipeline": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "KpiManagerDto": {
+        "type": "object",
+        "properties": {
+          "managerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "delegues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DelegueKpiLigne"
+            }
+          },
+          "pipelineGlobal": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "tauxTransformationGlobal": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "ActivitySemaine": {
+        "type": "object",
+        "properties": {
+          "semaine": {
+            "type": "string"
+          },
+          "nbRdv": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "KpiDelegueDto": {
+        "type": "object",
+        "properties": {
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rdvSemaine": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tauxTransformation": {
+            "type": "number",
+            "format": "double"
+          },
+          "montantPipelineEnCours": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "relancesAVenir": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "activiteParSemaine": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActivitySemaine"
+            }
+          }
+        }
+      },
+      "KpiAdminDto": {
+        "type": "object",
+        "properties": {
+          "doublonsEnAttente": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "professionnelsNonAttribuesSup30j": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pipelineTotal": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "tauxTransformationGlobal": {
+            "type": "number",
+            "format": "double"
+          },
+          "rdvRealises": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "rdvTotal": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "conversionsT3VersT2": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "conversionsT2VersT3": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "topDelegues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopDelegueDto"
+            }
+          }
+        }
+      },
+      "TopDelegueDto": {
+        "type": "object",
+        "properties": {
+          "delegueId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nom": {
+            "type": "string"
+          },
+          "tauxTransformation": {
+            "type": "number",
+            "format": "double"
+          },
+          "nbRdv": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "name": "bearerAuth",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
