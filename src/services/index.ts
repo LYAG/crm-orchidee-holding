@@ -10,6 +10,7 @@
 import type { AuthService } from './api/AuthService';
 import type { OpportuniteService } from './api/OpportuniteService';
 import type { ProfessionnelService } from './api/ProfessionnelService';
+import type { PurgeService } from './api/PurgeService';
 import type { QualificationService } from './api/QualificationService';
 import type { ReportingService } from './api/ReportingService';
 import type { RdvService } from './api/RdvService';
@@ -35,6 +36,7 @@ function loadMocks() {
   const { SupportServiceMock } = require('./mocks/SupportServiceMock');
   const { UtilisateurServiceMock } = require('./mocks/UtilisateurServiceMock');
   const { ZoneServiceMock } = require('./mocks/ZoneServiceMock');
+  const { PurgeServiceMock } = require('./mocks/PurgeServiceMock');
 
   return {
     authService: new AuthServiceMock() as AuthService,
@@ -47,6 +49,7 @@ function loadMocks() {
     reportingService: new ReportingServiceMock() as ReportingService,
     utilisateurService: new UtilisateurServiceMock() as UtilisateurService,
     zoneService: new ZoneServiceMock() as ZoneService,
+    purgeService: new PurgeServiceMock() as PurgeService,
   };
 }
 
@@ -61,6 +64,7 @@ function loadReal() {
   const { SupportServiceReal } = require('./real/SupportServiceReal');
   const { UtilisateurServiceReal } = require('./real/UtilisateurServiceReal');
   const { ZoneServiceReal } = require('./real/ZoneServiceReal');
+  const { PurgeServiceReal } = require('./real/PurgeServiceReal');
 
   return {
     authService: new AuthServiceReal() as AuthService,
@@ -73,6 +77,7 @@ function loadReal() {
     reportingService: new ReportingServiceReal() as ReportingService,
     utilisateurService: new UtilisateurServiceReal() as UtilisateurService,
     zoneService: new ZoneServiceReal() as ZoneService,
+    purgeService: new PurgeServiceReal() as PurgeService,
   };
 }
 
@@ -88,3 +93,4 @@ export const professionnelService = services.professionnelService;
 export const reportingService = services.reportingService;
 export const utilisateurService = services.utilisateurService;
 export const zoneService = services.zoneService;
+export const purgeService = services.purgeService;

@@ -3,6 +3,7 @@ import {
   CalendarOutlined,
   DashboardOutlined,
   DatabaseOutlined,
+  DeleteOutlined,
   EnvironmentOutlined,
   FileTextOutlined,
   GiftOutlined,
@@ -113,6 +114,12 @@ const allRoutes: MenuRoute[] = [
         icon: <SafetyCertificateOutlined />,
         roles: ['ADMIN'],
       },
+      {
+        path: '/parametres/purge',
+        name: 'Purge base de données',
+        icon: <DeleteOutlined />,
+        roles: ['ADMIN'],
+      },
     ],
   },
 ];
@@ -144,4 +151,5 @@ export const PAGE_TITLES: Record<string, string> = {
   '/parametres': 'Paramètres',
   '/parametres/presentation': 'Présentation commerciale',
   '/parametres/roles': 'Rôles & permissions',
+  '/parametres/purge': 'Purge base de données',
 };
