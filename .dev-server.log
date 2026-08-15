@@ -164,3 +164,17 @@ Import trace:
  GET /parametres/presentation 200 in 109ms (next.js: 7ms, application-code: 102ms)
  GET /parametres/presentation 200 in 107ms (next.js: 7ms, application-code: 100ms)
  GET /parametres/presentation 200 in 104ms (next.js: 7ms, application-code: 97ms)
+ GET / 200 in 320ms (next.js: 258ms, application-code: 61ms)
+ GET /professionnels 200 in 303ms (next.js: 226ms, application-code: 77ms)
+[browser] Warning: [antd: Modal] `destroyOnClose` is deprecated. Please use `destroyOnHidden` instead. 
+[browser] Warning: [antd: Space] `direction` is deprecated. Please use `orientation` instead. 
+ GET /professionnels/import 200 in 522ms (next.js: 425ms, application-code: 97ms)
+[browser] Warning: [antd: Alert] `message` is deprecated. Please use `title` instead. 
+ GET /professionnels 200 in 69ms (next.js: 10ms, application-code: 59ms)
+[browser] Warning: [antd: Drawer] `width` is deprecated. Please use `size` instead. 
+✓ Compiled in 843ms
+ GET /professionnels 200 in 712ms (next.js: 226ms, application-code: 487ms)
+ GET /login 200 in 411ms (next.js: 262ms, application-code: 149ms)
+✓ Compiled in 161ms
+ GET /professionnels 200 in 435ms (next.js: 214ms, application-code: 221ms)
+ GET /login 200 in 103ms (next.js: 32ms, application-code: 71ms)

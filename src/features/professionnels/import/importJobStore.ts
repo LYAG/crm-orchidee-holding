@@ -75,31 +75,36 @@ export function getSnapshot(): JobImport | null {
 
 async function executer() {
   if (!job) return;
-  job.statut = 'EN_COURS';
-  job.debut = Date.now();
-  const curseurDebutSession = job.curseur;
+  // `actuel` porte la référence courante : `job` (module-level) est réassigné à chaque étape
+  // plutôt que muté en place, sinon useSyncExternalStore (comparaison par Object.is) ne
+  // détecte aucun changement et React ne re-render jamais.
+  let actuel: JobImport = { ...job, statut: 'EN_COURS', debut: Date.now() };
+  job = actuel;
+  const curseurDebutSession = actuel.curseur;
   notifier();
   try {
-    while (job.curseur < job.lignes.length) {
-      await traiterLigne(job.lignes[job.curseur], job.ctx);
-      job.curseur++;
+    while (actuel.curseur < actuel.lignes.length) {
+      await traiterLigne(actuel.lignes[actuel.curseur], actuel.ctx);
 
-      const traiteesCetteSession = job.curseur - curseurDebutSession;
-      const restantes = job.total - job.curseur;
-      job.etaSecondes =
+      const curseur = actuel.curseur + 1;
+      const traiteesCetteSession = curseur - curseurDebutSession;
+      const restantes = actuel.total - curseur;
+      const etaSecondes =
         traiteesCetteSession > 0 && restantes > 0
-          ? Math.max(0, Math.round(((Date.now() - job.debut) / traiteesCetteSession) * restantes / 1000))
+          ? Math.max(0, Math.round(((Date.now() - actuel.debut) / traiteesCetteSession) * restantes / 1000))
           : undefined;
 
+      actuel = { ...actuel, curseur, etaSecondes };
+      job = actuel;
       notifier();
     }
-    await finaliserPlanning(job.ctx);
-    job.statut = 'TERMINE';
-    job.etaSecondes = undefined;
+    await finaliserPlanning(actuel.ctx);
+    actuel = { ...actuel, statut: 'TERMINE', etaSecondes: undefined };
+    job = actuel;
     notifier();
   } catch (err) {
-    job.statut = 'ERREUR';
-    job.erreur = err instanceof Error ? err.message : "Erreur lors de l'intégration.";
+    actuel = { ...actuel, statut: 'ERREUR', erreur: err instanceof Error ? err.message : "Erreur lors de l'intégration." };
+    job = actuel;
     notifier();
   }
 }
@@ -130,8 +135,7 @@ export function demarrerImport(
 /** Reprend un import interrompu (rechargement de page) ou en erreur, à partir de la ligne où il s'est arrêté. */
 export function reprendreImport(): void {
   if (!job || (job.statut !== 'INTERROMPU' && job.statut !== 'ERREUR')) return;
-  job.erreur = undefined;
-  job.debut = Date.now();
+  job = { ...job, erreur: undefined, debut: Date.now() };
   void executer();
 }
 
