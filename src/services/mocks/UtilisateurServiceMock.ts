@@ -6,13 +6,23 @@ import type {
 } from '@/services/api/UtilisateurService';
 import type { UserRole } from '@/lib/constants';
 import type { Utilisateur } from '@/types';
+import type { PageResponse } from '@/types/pagination';
 import { mockCredentials, utilisateurs } from './data';
-import { delay, generateId, genererMotDePasse, notFound } from './_utils';
+import { delay, generateId, genererMotDePasse, notFound, paginer } from './_utils';
 
 export class UtilisateurServiceMock implements UtilisateurService {
   async getAll(): Promise<Utilisateur[]> {
     await delay();
     return utilisateurs.map((u) => ({ ...u }));
+  }
+
+  async getAllPagine(role: UserRole | undefined, page: number, pageSize: number): Promise<PageResponse<Utilisateur>> {
+    await delay();
+    const filtres = utilisateurs
+      .filter((u) => !role || u.role === role)
+      .map((u) => ({ ...u }))
+      .sort((a, b) => a.nom.localeCompare(b.nom));
+    return paginer(filtres, page, pageSize);
   }
 
   async getById(id: string): Promise<Utilisateur> {

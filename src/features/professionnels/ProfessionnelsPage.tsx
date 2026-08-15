@@ -342,7 +342,7 @@ export function ProfessionnelsPage() {
     });
   }
 
-  async function loadData(params: Record<string, unknown>) {
+  async function loadData(params: Record<string, unknown> & { current?: number; pageSize?: number }) {
     const zoneId = params.zoneId as string | undefined;
     let centreId = params.centreId as string | undefined;
     // Le centre choisi peut appartenir à une zone différente de la zone sélectionnée
@@ -350,23 +350,25 @@ export function ProfessionnelsPage() {
     if (zoneId && centreId && centres.find((c) => c.id === centreId)?.zoneId !== zoneId) {
       centreId = undefined;
     }
-    let data = await professionnelService.getProfessionnels({
-      centreId,
-      zoneId,
-      specialiteId: params.specialiteIds as string | undefined,
-      jourConsultation: params.jourConsultation as JourSemaine | undefined,
-      delegueId: params.delegueId as string | undefined,
-    });
+    // Le périmètre MANAGER/DELEGUE est déjà appliqué côté serveur (ScopeService) — pas besoin
+    // de re-filtrer ici, sauf pour forcer explicitement "mes propres fiches" pour un délégué.
+    const page = (params.current ?? 1) - 1;
+    const pageSize = params.pageSize ?? 10;
+    const resultat = await professionnelService.getProfessionnelsPagine(
+      {
+        centreId,
+        zoneId,
+        specialiteId: params.specialiteIds as string | undefined,
+        jourConsultation: params.jourConsultation as JourSemaine | undefined,
+        delegueId:
+          (params.delegueId as string | undefined) ?? (role === UserRole.DELEGUE ? currentUser.id : undefined),
+        statut: params.statut as StatutProfessionnel | undefined,
+      },
+      page,
+      pageSize,
+    );
 
-    if (role === UserRole.DELEGUE) {
-      data = data.filter((p) => p.delegueId === currentUser.id);
-    } else if (role === UserRole.MANAGER) {
-      const monEquipe = await utilisateurService.getDeleguesByManager(currentUser.id);
-      const myDelegueIds = monEquipe.map((d) => d.id);
-      data = data.filter((p) => !!p.delegueId && myDelegueIds.includes(p.delegueId));
-    }
-
-    return { data, success: true, total: data.length };
+    return { data: resultat.contenu, success: true, total: resultat.total };
   }
 
   const toolbarButtons = [
@@ -413,7 +415,7 @@ export function ProfessionnelsPage() {
           columns={columns}
           request={loadData}
           search={{ labelWidth: 'auto' }}
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize: 10, showSizeChanger: true, showQuickJumper: true }}
         />
       ) : kanbanLoading && kanbanData.length === 0 ? (
         <div style={{ textAlign: 'center', padding: 40, color: '#8FB0A8' }}>Chargement…</div>

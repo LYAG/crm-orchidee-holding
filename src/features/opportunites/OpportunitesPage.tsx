@@ -64,7 +64,11 @@ export function OpportunitesPage() {
     }
   }, [effectiveDelegueId, filterEtape, message]);
 
-  useEffect(() => { load(); }, [load]);
+  // La vue Kanban a besoin de l'ensemble des opportunités filtrées ; la vue Tableau
+  // se charge elle-même via son propre `request` paginé (loadTableData ci-dessous).
+  useEffect(() => {
+    if (viewMode === 'kanban') load();
+  }, [viewMode, load]);
 
   // Load delegues + utilisateur map for MANAGER/ADMIN
   useEffect(() => {
@@ -98,6 +102,7 @@ export function OpportunitesPage() {
       }
       setAllOpps((prev) => prev.map((o) => (o.id === oppId ? updated : o)));
       if (selectedOpp?.id === oppId) setSelectedOpp(updated);
+      tableRef.current?.reload();
     } catch {
       message.error('Erreur lors du changement d\'étape.');
     }
@@ -106,6 +111,33 @@ export function OpportunitesPage() {
   function handleUpdate(updated: Opportunite) {
     setAllOpps((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
     setSelectedOpp(updated);
+    tableRef.current?.reload();
+  }
+
+  async function loadTableData(params: Record<string, unknown> & { current?: number; pageSize?: number }) {
+    const page = (params.current ?? 1) - 1;
+    const pageSize = params.pageSize ?? 20;
+    const resultat = await opportuniteService.getAllPagine(
+      { etape: filterEtape, delegueId: effectiveDelegueId },
+      page,
+      pageSize,
+    );
+
+    const idsManquants = [...new Set(resultat.contenu.map((o) => o.professionnelId))].filter(
+      (id) => !professionnelMap[id],
+    );
+    if (idsManquants.length > 0) {
+      const pList = await Promise.all(
+        idsManquants.map((id) => professionnelService.getProfessionnelById(id).catch(() => null)),
+      );
+      setProfessionnelMap((prev) => {
+        const next = { ...prev };
+        pList.forEach((p) => { if (p) next[p.id] = p; });
+        return next;
+      });
+    }
+
+    return { data: resultat.contenu, success: true, total: resultat.total };
   }
 
   const columns: ProColumns<Opportunite>[] = [
@@ -226,23 +258,26 @@ export function OpportunitesPage() {
       </div>
 
       {viewMode === 'kanban' ? (
-        <OpportuniteKanban
-          opportunites={allOpps}
-          professionnelMap={professionnelMap}
-          utilisateurMap={utilisateurMap}
-          onSelect={(opp) => { setSelectedOpp(opp); setDetailOpen(true); }}
-          onEtapeChange={handleEtapeChange}
-        />
+        loading && allOpps.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 40, color: '#8FB0A8' }}>Chargement…</div>
+        ) : (
+          <OpportuniteKanban
+            opportunites={allOpps}
+            professionnelMap={professionnelMap}
+            utilisateurMap={utilisateurMap}
+            onSelect={(opp) => { setSelectedOpp(opp); setDetailOpen(true); }}
+            onEtapeChange={handleEtapeChange}
+          />
+        )
       ) : (
         <ProTable<Opportunite>
           actionRef={tableRef}
-          loading={loading}
-          dataSource={allOpps}
+          request={loadTableData}
+          params={{ filterEtape, effectiveDelegueId }}
           columns={columns}
           rowKey="id"
           search={false}
-          pagination={{ pageSize: 20 }}
-          options={{ reload: load }}
+          pagination={{ pageSize: 20, showSizeChanger: true, showQuickJumper: true }}
         />
       )}
 
@@ -261,6 +296,7 @@ export function OpportunitesPage() {
         onSuccess={(created) => {
           setAllOpps((prev) => [created, ...prev]);
           setNewOppOpen(false);
+          tableRef.current?.reload();
         }}
       />
     </PageContainer>

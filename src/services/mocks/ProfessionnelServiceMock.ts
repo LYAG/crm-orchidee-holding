@@ -24,7 +24,9 @@ import type {
   Specialite,
 } from '@/types';
 import { StatutDemandeValidation, StatutProfessionnel } from '@/types';
-import { deepClone, delay, generateId, notFound } from './_utils';
+import type { TypeDemandeValidation } from '@/types';
+import type { PageResponse } from '@/types/pagination';
+import { deepClone, delay, generateId, notFound, paginer } from './_utils';
 import {
   centres as mockCentres,
   gestesMarketing as mockGestesMarketing,
@@ -214,8 +216,7 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
 
   // ── Professionnels de santé ─────────────────────────────────────────────
 
-  async getProfessionnels(filtres?: FiltresProfessionnel): Promise<ProfessionnelSante[]> {
-    await delay();
+  private filtrerProfessionnels(filtres?: FiltresProfessionnel): ProfessionnelSante[] {
     let result = [...professionnels];
     if (filtres?.centreId) result = result.filter((p) => p.centreId === filtres.centreId);
     if (filtres?.specialiteId) result = result.filter((p) => p.specialiteIds.includes(filtres.specialiteId!));
@@ -234,7 +235,21 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
         (p) => p.nom.toLowerCase().includes(q) || p.prenom?.toLowerCase().includes(q),
       );
     }
-    return result;
+    return result.sort((a, b) => a.nom.localeCompare(b.nom));
+  }
+
+  async getProfessionnels(filtres?: FiltresProfessionnel): Promise<ProfessionnelSante[]> {
+    await delay();
+    return this.filtrerProfessionnels(filtres);
+  }
+
+  async getProfessionnelsPagine(
+    filtres: FiltresProfessionnel | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<ProfessionnelSante>> {
+    await delay();
+    return paginer(this.filtrerProfessionnels(filtres), page, pageSize);
   }
 
   async getProfessionnelById(id: string): Promise<ProfessionnelSante> {
@@ -352,6 +367,20 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     return demandesValidation
       .filter((d) => !statut || d.statut === statut)
       .sort((a, b) => b.dateCreation.localeCompare(a.dateCreation));
+  }
+
+  async getDemandesValidationPagine(
+    statut: StatutDemandeValidation | undefined,
+    type: TypeDemandeValidation | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<DemandeValidation>> {
+    await delay();
+    const filtrees = demandesValidation
+      .filter((d) => !statut || d.statut === statut)
+      .filter((d) => !type || d.type === type)
+      .sort((a, b) => b.dateCreation.localeCompare(a.dateCreation));
+    return paginer(filtrees, page, pageSize);
   }
 
   async creerDemandeValidation(

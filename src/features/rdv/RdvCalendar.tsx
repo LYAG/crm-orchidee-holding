@@ -40,7 +40,7 @@ const TOTAL_SLOTS = (END_HOUR - START_HOUR) * 2;
 const GRID_H = TOTAL_SLOTS * SLOT_H;
 const TIME_COL_W = 56;
 
-type ViewMode = 'semaine' | 'mois' | 'jour';
+export type ViewMode = 'semaine' | 'mois' | 'jour';
 
 const VIEW_LABELS: Record<ViewMode, string> = {
   semaine: 'Semaine',
@@ -757,12 +757,25 @@ interface Props {
   onDropProfessionnel?: (professionnelId: string, dateTime: Dayjs) => void;
   /** Fourni en contexte Manager/Admin : permet d'identifier le délégué de chaque RDV sur le calendrier. */
   delegues?: Utilisateur[];
+  /** Vue/date affichées — remontées au parent pour borner le fetch des RDV à la plage visible. */
+  viewMode: ViewMode;
+  currentDate: Dayjs;
+  onViewModeChange: (mode: ViewMode) => void;
+  onCurrentDateChange: (date: Dayjs) => void;
 }
 
-export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, onDropProfessionnel, delegues }: Props) {
-  const [viewMode, setViewMode] = useState<ViewMode>('semaine');
-  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
-
+export function RdvCalendar({
+  rdvList,
+  selectedDate,
+  onSelectDate,
+  onSelectRdv,
+  onDropProfessionnel,
+  delegues,
+  viewMode,
+  currentDate,
+  onViewModeChange,
+  onCurrentDateChange,
+}: Props) {
   const deleguesParId = useMemo(() => {
     if (!delegues || delegues.length === 0) return undefined;
     return Object.fromEntries(delegues.map((d) => [d.id, d]));
@@ -784,7 +797,7 @@ export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, 
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <ProCard bordered bodyStyle={{ padding: 0 }} style={{ borderRadius: 12, overflow: 'hidden' }}>
-            <CalendarTopBar viewMode={viewMode} currentDate={currentDate} onViewChange={setViewMode} onNavigate={setCurrentDate} />
+            <CalendarTopBar viewMode={viewMode} currentDate={currentDate} onViewChange={onViewModeChange} onNavigate={onCurrentDateChange} />
             <MonthGrid
               calendarDate={currentDate}
               rdvList={rdvList}
@@ -810,7 +823,7 @@ export function RdvCalendar({ rdvList, selectedDate, onSelectDate, onSelectRdv, 
       bodyStyle={{ padding: 0, display: 'flex', flexDirection: 'column', height: '75vh' }}
       style={{ borderRadius: 12, overflow: 'hidden' }}
     >
-      <CalendarTopBar viewMode={viewMode} currentDate={currentDate} onViewChange={setViewMode} onNavigate={setCurrentDate} />
+      <CalendarTopBar viewMode={viewMode} currentDate={currentDate} onViewChange={onViewModeChange} onNavigate={onCurrentDateChange} />
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <WeekView
           weekStart={ws}

@@ -4,7 +4,7 @@ import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { App, Button, Space, Tag } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, utilisateurService } from '@/services';
@@ -31,6 +31,11 @@ export function ValidationsPage() {
   const isManager = user?.role === UserRole.MANAGER;
   const typesVisibles =
     isDelegue || isManager ? [TypeDemandeValidation.CHANGEMENT_CLASSIFICATION] : Object.values(TypeDemandeValidation);
+
+  // Chargée une fois indépendamment de la pagination — sert uniquement au libellé de la colonne Délégué.
+  useEffect(() => {
+    utilisateurService.getAll().then(setDelegues).catch(() => {});
+  }, []);
 
   async function traiter(demande: DemandeValidation, statut: StatutDemandeValidation) {
     await professionnelService.traiterDemandeValidation(demande.id, statut);
@@ -142,7 +147,7 @@ export function ValidationsPage() {
           selections: [
             {
               key: 'all-filtered',
-              text: 'Tout sélectionner (résultats filtrés)',
+              text: 'Tout sélectionner (page actuelle)',
               onSelect: () => setSelectedRowKeys(demandesAffichees.map((d) => d.id)),
             },
             { key: 'clear', text: 'Tout désélectionner', onSelect: () => setSelectedRowKeys([]) },
@@ -174,22 +179,19 @@ export function ValidationsPage() {
           </Space>
         )}
         request={async (params) => {
-          const [demandes, tousDelegues, monEquipe] = await Promise.all([
-            professionnelService.getDemandesValidation(StatutDemandeValidation.EN_ATTENTE),
-            utilisateurService.getAll(),
-            isManager && user ? utilisateurService.getDeleguesByManager(user.id) : Promise.resolve<Utilisateur[]>([]),
-          ]);
-          setDelegues(tousDelegues);
+          // Le périmètre ADMIN/MANAGER/DELEGUE (et la restriction de type pour ces deux derniers)
+          // est désormais appliqué côté serveur (ValidationService.getDemandesValidationPagine).
+          const page = (params.current ?? 1) - 1;
+          const pageSize = params.pageSize ?? 10;
           const type = params.type as TypeDemandeValidation | undefined;
-          let filtrees = demandes.filter((d) => typesVisibles.includes(d.type));
-          if (isDelegue && user) filtrees = filtrees.filter((d) => d.delegueId === user.id);
-          if (isManager) {
-            const equipeIds = monEquipe.map((d) => d.id);
-            filtrees = filtrees.filter((d) => equipeIds.includes(d.delegueId));
-          }
-          if (type) filtrees = filtrees.filter((d) => d.type === type);
-          setDemandesAffichees(filtrees);
-          return { data: filtrees, success: true, total: filtrees.length };
+          const resultat = await professionnelService.getDemandesValidationPagine(
+            StatutDemandeValidation.EN_ATTENTE,
+            type,
+            page,
+            pageSize,
+          );
+          setDemandesAffichees(resultat.contenu);
+          return { data: resultat.contenu, success: true, total: resultat.total };
         }}
         search={{ labelWidth: 'auto' }}
         pagination={{ pageSize: 10 }}

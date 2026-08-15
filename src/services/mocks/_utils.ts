@@ -14,6 +14,12 @@ export function notFound(entity: string, id: string): never {
   throw new Error(`${entity} introuvable : ${id}`);
 }
 
+/** `page` est 0-indexé, comme côté backend (voir PageDto). */
+export function paginer<T>(items: T[], page: number, pageSize: number): { contenu: T[]; total: number; page: number; taille: number } {
+  const debut = page * pageSize;
+  return { contenu: items.slice(debut, debut + pageSize), total: items.length, page, taille: pageSize };
+}
+
 // Alphabet sans caractères ambigus (0/O, 1/l/I) pour rester lisible/transcriptible à l'oral.
 const PASSWORD_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
 

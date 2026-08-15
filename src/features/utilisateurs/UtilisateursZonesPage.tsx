@@ -10,7 +10,8 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { PageContainer, ProCard } from '@ant-design/pro-components';
+import { PageContainer, ProCard, ProTable } from '@ant-design/pro-components';
+import type { ActionType } from '@ant-design/pro-components';
 import {
   App,
   Avatar,
@@ -24,12 +25,11 @@ import {
   Select,
   Skeleton,
   Space,
-  Table,
   Tag,
   Tooltip,
   Typography,
 } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { utilisateurService, zoneService } from '@/services';
 import type { Utilisateur, Zone } from '@/types';
@@ -640,6 +640,7 @@ export function UtilisateursZonesPage() {
   const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('utilisateurs');
+  const tableRef = useRef<ActionType | undefined>(undefined);
 
   // Modal utilisateur
   const [userModalOpen, setUserModalOpen] = useState(false);
@@ -652,16 +653,27 @@ export function UtilisateursZonesPage() {
   const [zoneModalOpen, setZoneModalOpen] = useState(false);
   const [editingZone, setEditingZone] = useState<Zone | null>(null);
 
+  // Liste complète : nécessaire aux tuiles de comptage, aux menus déroulants du formulaire
+  // (manager/délégués) et aux colonnes dérivées (Manager, Équipe) — le tableau affiché,
+  // lui, se charge indépendamment page par page via loadUtilisateursPage ci-dessous.
   const load = useCallback(() => {
     setLoading(true);
     Promise.all([utilisateurService.getAll(), zoneService.getAll()])
       .then(([u, z]) => {
         setUtilisateurs(u);
         setZones(z);
+        tableRef.current?.reload();
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  async function loadUtilisateursPage(params: Record<string, unknown> & { current?: number; pageSize?: number }) {
+    const page = (params.current ?? 1) - 1;
+    const pageSize = params.pageSize ?? 10;
+    const resultat = await utilisateurService.getAllPagine(undefined, page, pageSize);
+    return { data: resultat.contenu, success: true, total: resultat.total };
+  }
 
   useEffect(() => {
     load();
@@ -990,13 +1002,14 @@ export function UtilisateursZonesPage() {
 
           {/* Table */}
           <ProCard bordered bodyStyle={{ padding: 0 }}>
-            <Table<Utilisateur>
-              dataSource={utilisateurs}
+            <ProTable<Utilisateur>
+              actionRef={tableRef}
+              request={loadUtilisateursPage}
               columns={columns}
               rowKey="id"
-              loading={loading}
-              pagination={false}
+              search={false}
               size="middle"
+              pagination={{ pageSize: 10, showSizeChanger: true, showQuickJumper: true }}
             />
           </ProCard>
         </div>

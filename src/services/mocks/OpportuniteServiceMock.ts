@@ -1,7 +1,8 @@
 import type { OpportuniteService } from '@/services/api/OpportuniteService';
 import type { Devis, FiltresOpportunite, NoteOpportunite, Opportunite } from '@/types';
 import { OpportuniteEtape, StatutProfessionnel } from '@/types';
-import { deepClone, delay, generateId, notFound } from './_utils';
+import type { PageResponse } from '@/types/pagination';
+import { deepClone, delay, generateId, notFound, paginer } from './_utils';
 import { opportunites as mockOpportunites } from './data';
 import { ProfessionnelServiceMock } from './ProfessionnelServiceMock';
 
@@ -9,12 +10,25 @@ const opportunites: Opportunite[] = deepClone(mockOpportunites);
 const professionnelService = new ProfessionnelServiceMock();
 
 export class OpportuniteServiceMock implements OpportuniteService {
-  async getAll(filtres?: FiltresOpportunite): Promise<Opportunite[]> {
-    await delay();
+  private filtrerOpportunites(filtres?: FiltresOpportunite): Opportunite[] {
     let result = [...opportunites];
     if (filtres?.etape) result = result.filter((o) => o.etape === filtres.etape);
     if (filtres?.delegueId) result = result.filter((o) => o.delegueId === filtres.delegueId);
-    return result;
+    return result.sort((a, b) => b.dateCreation.localeCompare(a.dateCreation));
+  }
+
+  async getAll(filtres?: FiltresOpportunite): Promise<Opportunite[]> {
+    await delay();
+    return this.filtrerOpportunites(filtres);
+  }
+
+  async getAllPagine(
+    filtres: FiltresOpportunite | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<Opportunite>> {
+    await delay();
+    return paginer(this.filtrerOpportunites(filtres), page, pageSize);
   }
 
   async getById(id: string): Promise<Opportunite> {
