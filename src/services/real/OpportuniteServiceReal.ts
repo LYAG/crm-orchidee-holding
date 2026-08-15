@@ -1,6 +1,7 @@
 import type { OpportuniteService } from '@/services/api/OpportuniteService';
 import type { Devis, FiltresOpportunite, NoteOpportunite, Opportunite, OpportuniteEtape } from '@/types';
-import { apiFetch } from './httpClient';
+import type { PageResponse } from '@/types/pagination';
+import { apiFetch, qs } from './httpClient';
 
 export class OpportuniteServiceReal implements OpportuniteService {
   /** Pas de filtres côté serveur pour cette liste — réappliqués côté client (identique au comportement du mock, zoneId non filtré). */
@@ -9,6 +10,15 @@ export class OpportuniteServiceReal implements OpportuniteService {
     if (filtres?.etape) result = result.filter((o) => o.etape === filtres.etape);
     if (filtres?.delegueId) result = result.filter((o) => o.delegueId === filtres.delegueId);
     return result;
+  }
+
+  async getAllPagine(
+    filtres: FiltresOpportunite | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<Opportunite>> {
+    const query = qs({ etape: filtres?.etape, delegueId: filtres?.delegueId, page, size: pageSize });
+    return apiFetch<PageResponse<Opportunite>>(`/opportunites/page${query}`);
   }
 
   async getById(id: string): Promise<Opportunite> {

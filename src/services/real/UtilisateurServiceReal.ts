@@ -6,7 +6,8 @@ import type {
 } from '@/services/api/UtilisateurService';
 import type { UserRole } from '@/lib/constants';
 import type { Utilisateur } from '@/types';
-import { apiFetch } from './httpClient';
+import type { PageResponse } from '@/types/pagination';
+import { apiFetch, qs } from './httpClient';
 
 interface MotDePasseGenereResponse {
   motDePasseGenere: string;
@@ -15,6 +16,11 @@ interface MotDePasseGenereResponse {
 export class UtilisateurServiceReal implements UtilisateurService {
   async getAll(): Promise<Utilisateur[]> {
     return apiFetch<Utilisateur[]>('/utilisateurs');
+  }
+
+  async getAllPagine(role: UserRole | undefined, page: number, pageSize: number): Promise<PageResponse<Utilisateur>> {
+    const query = qs({ role, page, size: pageSize });
+    return apiFetch<PageResponse<Utilisateur>>(`/utilisateurs/page${query}`);
   }
 
   async getById(id: string): Promise<Utilisateur> {

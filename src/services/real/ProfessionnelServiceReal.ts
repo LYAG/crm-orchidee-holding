@@ -23,7 +23,9 @@ import type {
   ProfessionnelSante,
   Specialite,
   StatutDemandeValidation,
+  TypeDemandeValidation,
 } from '@/types';
+import type { PageResponse } from '@/types/pagination';
 import { apiFetch, qs } from './httpClient';
 
 /** Normalise pour rapprochement flou : majuscules, sans ponctuation, sans espaces multiples (identique à la logique déjà utilisée côté mock). */
@@ -157,6 +159,25 @@ export class ProfessionnelServiceReal implements ProfessionnelService {
     return apiFetch<ProfessionnelSante[]>(`/professionnels${query}`);
   }
 
+  async getProfessionnelsPagine(
+    filtres: FiltresProfessionnel | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<ProfessionnelSante>> {
+    const query = qs({
+      centreId: filtres?.centreId,
+      specialiteId: filtres?.specialiteId,
+      delegueId: filtres?.delegueId,
+      statut: filtres?.statut,
+      jourConsultation: filtres?.jourConsultation,
+      zoneId: filtres?.zoneId,
+      recherche: filtres?.recherche,
+      page,
+      size: pageSize,
+    });
+    return apiFetch<PageResponse<ProfessionnelSante>>(`/professionnels/page${query}`);
+  }
+
   async getProfessionnelById(id: string): Promise<ProfessionnelSante> {
     return apiFetch<ProfessionnelSante>(`/professionnels/${id}`);
   }
@@ -232,6 +253,16 @@ export class ProfessionnelServiceReal implements ProfessionnelService {
 
   async getDemandesValidation(statut?: StatutDemandeValidation): Promise<DemandeValidation[]> {
     return apiFetch<DemandeValidation[]>(`/demandes-validation${qs({ statut })}`);
+  }
+
+  async getDemandesValidationPagine(
+    statut: StatutDemandeValidation | undefined,
+    type: TypeDemandeValidation | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<DemandeValidation>> {
+    const query = qs({ statut, type, page, size: pageSize });
+    return apiFetch<PageResponse<DemandeValidation>>(`/demandes-validation/page${query}`);
   }
 
   async creerDemandeValidation(

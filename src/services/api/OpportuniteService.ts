@@ -1,7 +1,9 @@
 import type { Devis, FiltresOpportunite, NoteOpportunite, Opportunite, OpportuniteEtape } from '@/types';
+import type { PageResponse } from '@/types/pagination';
 
 export interface OpportuniteService {
   getAll(filtres?: FiltresOpportunite): Promise<Opportunite[]>;
+  getAllPagine(filtres: FiltresOpportunite | undefined, page: number, pageSize: number): Promise<PageResponse<Opportunite>>;
   getById(id: string): Promise<Opportunite>;
   create(data: Omit<Opportunite, 'id' | 'dateCreation' | 'dateDerniereMaj' | 'devis' | 'notes'>): Promise<Opportunite>;
   update(id: string, data: Partial<Opportunite>): Promise<Opportunite>;

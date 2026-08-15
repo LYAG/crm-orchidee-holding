@@ -9,7 +9,9 @@ import type {
   ProfessionnelSante,
   Specialite,
   StatutDemandeValidation,
+  TypeDemandeValidation,
 } from '@/types';
+import type { PageResponse } from '@/types/pagination';
 
 export type CreateCentreDto = Omit<Centre, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateCentreDto = Partial<Omit<Centre, 'id' | 'createdAt' | 'updatedAt'>>;
@@ -56,6 +58,12 @@ export interface ProfessionnelService {
 
   // Professionnels de santé
   getProfessionnels(filtres?: FiltresProfessionnel): Promise<ProfessionnelSante[]>;
+  /** `page` est 0-indexé (convention backend) — convertir le `current` 1-indexé d'AntD ProTable avant l'appel. */
+  getProfessionnelsPagine(
+    filtres: FiltresProfessionnel | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<ProfessionnelSante>>;
   getProfessionnelById(id: string): Promise<ProfessionnelSante>;
   getProfessionnelsByDelegue(delegueId: string): Promise<ProfessionnelSante[]>;
   getProfessionnelsByRole(role: UserRole, userId: string): Promise<ProfessionnelSante[]>;
@@ -78,6 +86,12 @@ export interface ProfessionnelService {
   // Import Excel : intégration directe + file de validation ADMIN
   importerProfessionnel(data: CreateProfessionnelDto): Promise<ProfessionnelSante>;
   getDemandesValidation(statut?: StatutDemandeValidation): Promise<DemandeValidation[]>;
+  getDemandesValidationPagine(
+    statut: StatutDemandeValidation | undefined,
+    type: TypeDemandeValidation | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<DemandeValidation>>;
   creerDemandeValidation(data: Omit<DemandeValidation, 'id' | 'dateCreation' | 'statut'>): Promise<DemandeValidation>;
   traiterDemandeValidation(id: string, statut: StatutDemandeValidation): Promise<DemandeValidation>;
 }

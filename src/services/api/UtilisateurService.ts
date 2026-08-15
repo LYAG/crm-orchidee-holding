@@ -1,5 +1,6 @@
 import type { UserRole } from '@/lib/constants';
 import type { Utilisateur } from '@/types';
+import type { PageResponse } from '@/types/pagination';
 
 export type CreateUtilisateurDto = Omit<Utilisateur, 'id'>;
 export type UpdateUtilisateurDto = Partial<Omit<Utilisateur, 'id'>>;
@@ -11,6 +12,7 @@ export interface CreateUtilisateurResult {
 
 export interface UtilisateurService {
   getAll(): Promise<Utilisateur[]>;
+  getAllPagine(role: UserRole | undefined, page: number, pageSize: number): Promise<PageResponse<Utilisateur>>;
   getById(id: string): Promise<Utilisateur>;
   getByRole(role: UserRole): Promise<Utilisateur[]>;
   getDeleguesByManager(managerId: string): Promise<Utilisateur[]>;
