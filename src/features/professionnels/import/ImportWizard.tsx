@@ -87,9 +87,44 @@ export function ImportWizard() {
     }
   }, [estGestionnaire]);
 
+  useEffect(() => {
+    zoneService.getAll().then(setZones).catch(() => {});
+  }, []);
+
+  // Le fichier ne précise jamais de zone : on préremplit avec celle du délégué (self-import)
+  // dès qu'elle est connue, sans écraser un choix déjà fait manuellement dans le wizard.
+  useEffect(() => {
+    if (!estGestionnaire && user) {
+      queueMicrotask(() => {
+        setZoneId((prev) => prev ?? user.zoneIds?.[0] ?? null);
+      });
+    }
+  }, [estGestionnaire, user]);
+
   const delegueChoisi = delegues.find((d) => d.id === delegueChoisiId);
   const delegueId = estGestionnaire ? delegueChoisiId ?? undefined : user?.id;
-  const zoneId = estGestionnaire ? delegueChoisi?.zoneIds?.[0] : user?.zoneIds?.[0];
+
+  function handleDelegueChange(id: string) {
+    setDelegueChoisiId(id);
+    const personne = delegues.find((d) => d.id === id);
+    setZoneId(personne?.zoneIds?.[0] ?? null);
+  }
+
+  async function handleCreerZone(values: { nom: string; region: string }) {
+    setCreationZoneEnCours(true);
+    try {
+      const zone = await zoneService.create(values);
+      setZones((prev) => [...prev, zone]);
+      setZoneId(zone.id);
+      setZoneModalOpen(false);
+      zoneForm.resetFields();
+      message.success('Zone créée.');
+    } catch (err) {
+      message.error(err instanceof Error ? err.message : 'Erreur lors de la création de la zone.');
+    } finally {
+      setCreationZoneEnCours(false);
+    }
+  }
 
   async function handleFileSelected(f: File) {
     setFile(f);
@@ -127,9 +162,7 @@ export function ImportWizard() {
 
   async function handleNormaliser() {
     if (!zoneId) {
-      message.error(
-        estGestionnaire ? 'Sélectionnez un délégué avant de lancer la normalisation.' : 'Aucune zone associée à votre profil délégué.',
-      );
+      message.error('Sélectionnez ou créez une zone avant de lancer la normalisation.');
       return;
     }
     setChargement(true);
@@ -182,6 +215,7 @@ export function ImportWizard() {
     setLignes([]);
     setSpecialitesRef([]);
     setDelegueChoisiId(null);
+    setZoneId(null);
   }
 
   const rapport = useMemo(() => {
@@ -360,19 +394,42 @@ export function ImportWizard() {
                 style={{ width: 280 }}
                 placeholder="Sélectionner un délégué"
                 value={delegueChoisiId}
-                onChange={setDelegueChoisiId}
+                onChange={handleDelegueChange}
                 options={delegues.map((d) => ({ value: d.id, label: `${d.prenom} ${d.nom}` }))}
               />
-              {delegueChoisiId && !zoneId && (
-                <Alert type="warning" showIcon message="Ce délégué n'a aucune zone associée — l'import ne pourra pas être lancé." />
-              )}
             </Space>
           )}
+
+          {(!estGestionnaire || delegueChoisiId) && (
+            <Space direction="vertical">
+              <Text strong>Zone pour les nouveaux centres</Text>
+              <Alert
+                type="info"
+                showIcon
+                message="Ce type de fichier ne précise jamais la zone des centres. Sélectionnez une zone existante ou créez-en une — sans quitter cet écran — pour que les nouveaux centres y soient rattachés."
+                style={{ maxWidth: 520 }}
+              />
+              <Space>
+                <Select
+                  style={{ width: 280 }}
+                  placeholder="Sélectionner une zone"
+                  value={zoneId}
+                  onChange={setZoneId}
+                  showSearch
+                  optionFilterProp="label"
+                  options={zones.map((z) => ({ value: z.id, label: `${z.nom} — ${z.region}` }))}
+                />
+                <Button onClick={() => setZoneModalOpen(true)}>Créer une zone</Button>
+              </Space>
+              {!zoneId && <Alert type="warning" showIcon message="Aucune zone sélectionnée — l'import ne pourra pas être lancé." />}
+            </Space>
+          )}
+
           <Dragger
             accept=".xlsx,.xls"
             beforeUpload={handleFileSelected}
             showUploadList={false}
-            disabled={chargement || (estGestionnaire && !delegueChoisiId)}>
+            disabled={chargement || (estGestionnaire && !delegueChoisiId) || !zoneId}>
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
@@ -444,6 +501,25 @@ export function ImportWizard() {
           </Button>
         </Space>
       )}
+
+      <Modal
+        open={zoneModalOpen}
+        title="Créer une nouvelle zone"
+        onCancel={() => setZoneModalOpen(false)}
+        onOk={() => zoneForm.submit()}
+        confirmLoading={creationZoneEnCours}
+        okText="Créer"
+        cancelText="Annuler"
+        destroyOnClose>
+        <Form form={zoneForm} layout="vertical" onFinish={handleCreerZone}>
+          <Form.Item name="nom" label="Nom de la zone" rules={[{ required: true, message: 'Obligatoire.' }]}>
+            <Input placeholder="Ex. Abidjan Nord" />
+          </Form.Item>
+          <Form.Item name="region" label="Région" rules={[{ required: true, message: 'Obligatoire.' }]}>
+            <Input placeholder="Ex. Abidjan" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </PageContainer>
   );
 }
