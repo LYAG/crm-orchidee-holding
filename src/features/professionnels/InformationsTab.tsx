@@ -5,7 +5,14 @@ import { App, Button, Form, Input, Select, Space, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { professionnelService } from '@/services';
 import type { Centre, ProfessionnelSante, Specialite } from '@/types';
-import { TitreProfessionnel } from '@/types';
+import { CategorieEtablissement, TitreProfessionnel } from '@/types';
+
+const CATEGORIE_LABELS: Record<CategorieEtablissement, string> = {
+  [CategorieEtablissement.MEDECIN]: 'Médecin',
+  [CategorieEtablissement.INFIRMIER]: 'Infirmier',
+  [CategorieEtablissement.PHARMACIE]: 'Pharmacie',
+};
+const CATEGORIE_OPTIONS = Object.values(CategorieEtablissement).map((c) => ({ value: c, label: CATEGORIE_LABELS[c] }));
 
 interface Props {
   professionnel: ProfessionnelSante;
@@ -18,6 +25,7 @@ interface FormValues {
   nom: string;
   prenom?: string;
   titre?: TitreProfessionnel;
+  categorie?: CategorieEtablissement;
   centreId: string;
   specialiteIds: string[];
   telephones: string;
@@ -33,16 +41,19 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
   const verrouille = professionnel.aDejaEuContact;
 
   useEffect(() => {
-    form.setFieldsValue({
-      nom: professionnel.nom,
-      prenom: professionnel.prenom,
-      titre: professionnel.titre,
-      centreId: professionnel.centreId,
-      specialiteIds: professionnel.specialiteIds,
-      telephones: professionnel.telephones.join(', '),
-      observations: professionnel.observations,
+    queueMicrotask(() => {
+      form.setFieldsValue({
+        nom: professionnel.nom,
+        prenom: professionnel.prenom,
+        titre: professionnel.titre,
+        categorie: professionnel.categorie,
+        centreId: professionnel.centreId,
+        specialiteIds: professionnel.specialiteIds,
+        telephones: professionnel.telephones.join(', '),
+        observations: professionnel.observations,
+      });
+      setEditing(false);
     });
-    setEditing(false);
   }, [professionnel, form]);
 
   async function handleSave() {
@@ -53,6 +64,7 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
         nom: values.nom,
         prenom: values.prenom,
         titre: values.titre,
+        categorie: values.categorie,
         centreId: values.centreId,
         specialiteIds: values.specialiteIds,
         telephones: values.telephones.split(',').map((t) => t.trim()).filter(Boolean),
@@ -100,6 +112,13 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
           <Select
             disabled={!editing}
             options={Object.values(TitreProfessionnel).map((t) => ({ value: t, label: t }))}
+            allowClear
+          />
+        </Form.Item>
+        <Form.Item name="categorie" label="Catégorie">
+          <Select
+            disabled={!editing}
+            options={CATEGORIE_OPTIONS}
             allowClear
           />
         </Form.Item>

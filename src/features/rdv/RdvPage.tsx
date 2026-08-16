@@ -153,6 +153,9 @@ function DeleguePanel({
 
 /* ── Panel contacts ──────────────────────────────────────────────────────── */
 
+const AUTRES = 'AUTRES' as const;
+const AUTRES_CONFIG = { label: 'Autres', color: '#6D7B76', bg: '#EEF1F0', icon: <TeamOutlined /> };
+
 function ContactsPanel({
   professionnels,
   selectedDelegue,
@@ -166,6 +169,9 @@ function ContactsPanel({
     acc[cat] = professionnels.filter((p) => p.categorie === cat);
     return acc;
   }, {});
+  // Un professionnel sans catégorie renseignée (champ facultatif, souvent absent des
+  // fiches créées avant l'ajout de ce champ) ne doit pas disparaître du glisser-déposer.
+  grouped[AUTRES] = professionnels.filter((p) => !CAT_ORDER.includes(p.categorie as CategorieEtablissement));
 
   const hasAny = professionnels.length > 0;
 
@@ -220,10 +226,10 @@ function ContactsPanel({
             Aucun contact affecté
           </Text>
         ) : (
-          CAT_ORDER.map((cat) => {
+          [...CAT_ORDER, AUTRES].map((cat) => {
             const list = grouped[cat];
             if (!list || list.length === 0) return null;
-            const cfg = CAT_CONFIG[cat];
+            const cfg = cat === AUTRES ? AUTRES_CONFIG : CAT_CONFIG[cat as CategorieEtablissement];
             return (
               <div key={cat} style={{ marginBottom: 6 }}>
                 {/* Label catégorie */}

@@ -13,7 +13,22 @@ import { App, Modal } from 'antd';
 import { useEffect, useState } from 'react';
 import { professionnelService } from '@/services';
 import type { Centre, JoursConsultation, PotentielCas, Specialite, Utilisateur } from '@/types';
-import { JourSemaine, ModeJoursConsultation, StatutProfessionnel, TitreProfessionnel, TypeCas, UniteCas } from '@/types';
+import {
+  CategorieEtablissement,
+  JourSemaine,
+  ModeJoursConsultation,
+  StatutProfessionnel,
+  TitreProfessionnel,
+  TypeCas,
+  UniteCas,
+} from '@/types';
+
+const CATEGORIE_LABELS: Record<CategorieEtablissement, string> = {
+  [CategorieEtablissement.MEDECIN]: 'Médecin',
+  [CategorieEtablissement.INFIRMIER]: 'Infirmier',
+  [CategorieEtablissement.PHARMACIE]: 'Pharmacie',
+};
+const CATEGORIE_OPTIONS = Object.values(CategorieEtablissement).map((c) => ({ value: c, label: CATEGORIE_LABELS[c] }));
 
 const TITRE_OPTIONS = Object.values(TitreProfessionnel).map((t) => ({ value: t, label: t }));
 const JOUR_OPTIONS = Object.values(JourSemaine).map((j) => ({ value: j, label: j }));
@@ -33,6 +48,7 @@ interface FormValues {
   nom: string;
   prenom?: string;
   titre?: TitreProfessionnel;
+  categorie: CategorieEtablissement;
   telephones: { numero: string }[];
   observations?: string;
   delegueId?: string;
@@ -98,6 +114,7 @@ export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, d
         nom: values.nom,
         prenom: values.prenom,
         titre: values.titre,
+        categorie: values.categorie,
         centreId: values.centreId,
         specialiteIds: values.specialiteIds ?? [],
         telephones: (values.telephones ?? []).map((t) => t.numero).filter(Boolean),
@@ -144,6 +161,12 @@ export function ProfessionnelFormModal({ open, onOpenChange, defaultDelegueId, d
           <ProFormText name="nom" label="Nom" rules={[{ required: true, message: 'Obligatoire.' }]} />
           <ProFormText name="prenom" label="Prénom" />
           <ProFormSelect name="titre" label="Titre" options={TITRE_OPTIONS} />
+          <ProFormSelect
+            name="categorie"
+            label="Catégorie"
+            rules={[{ required: true, message: 'Obligatoire.' }]}
+            options={CATEGORIE_OPTIONS}
+          />
           <ProFormList name="telephones" label="Téléphone(s)" creatorButtonProps={{ creatorButtonText: 'Ajouter un numéro' }}>
             <ProFormText name="numero" placeholder="0708123456" rules={[{ required: true, message: 'Obligatoire.' }]} />
           </ProFormList>
