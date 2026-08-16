@@ -10,7 +10,7 @@ import {
   RightOutlined,
 } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, Empty, Tag, Typography } from 'antd';
+import { Button, Empty, Typography } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { useMemo, useRef, useState } from 'react';

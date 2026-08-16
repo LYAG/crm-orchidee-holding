@@ -86,22 +86,24 @@ function UtilisateurModal({
   const [role, setRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
-    if (open) {
-      if (editing) {
-        form.setFieldsValue({
-          prenom: editing.prenom,
-          nom: editing.nom,
-          email: editing.email,
-          role: editing.role as UserRole,
-          zoneIds: editing.zoneIds,
-          managerId: editing.managerId,
-        });
-        setRole(editing.role as UserRole);
-      } else {
-        form.resetFields();
-        setRole(null);
+    queueMicrotask(() => {
+      if (open) {
+        if (editing) {
+          form.setFieldsValue({
+            prenom: editing.prenom,
+            nom: editing.nom,
+            email: editing.email,
+            role: editing.role as UserRole,
+            zoneIds: editing.zoneIds,
+            managerId: editing.managerId,
+          });
+          setRole(editing.role as UserRole);
+        } else {
+          form.resetFields();
+          setRole(null);
+        }
       }
-    }
+    });
   }, [open, editing, form]);
 
   async function handleOk() {
@@ -676,7 +678,9 @@ export function UtilisateursZonesPage() {
   }
 
   useEffect(() => {
-    load();
+    queueMicrotask(() => {
+      load();
+    });
   }, [load]);
 
   const delegues = utilisateurs.filter((u) => u.role === UserRole.DELEGUE);

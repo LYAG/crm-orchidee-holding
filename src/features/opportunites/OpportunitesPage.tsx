@@ -3,7 +3,7 @@
 import { AppstoreOutlined, PlusOutlined, TableOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import { App, Button, Progress, Radio, Select, Space, Tag } from 'antd';
+import { App, Button, Progress, Radio, Select, Tag } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
@@ -34,12 +34,11 @@ export function OpportunitesPage() {
   const [newOppOpen, setNewOppOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  if (!user) return null;
-
-  const role = user.role as UserRole;
+  // Calculés avant les hooks (avec chaînage optionnel) pour que ceux-ci restent appelés
+  // inconditionnellement — le garde-fou `if (!user) return null;` vient après tous les hooks.
+  const role = user?.role as UserRole | undefined;
   const isDelegue = role === UserRole.DELEGUE;
-
-  const effectiveDelegueId = isDelegue ? user.id : filterDelegueId;
+  const effectiveDelegueId = isDelegue ? user?.id : filterDelegueId;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -67,7 +66,10 @@ export function OpportunitesPage() {
   // La vue Kanban a besoin de l'ensemble des opportunités filtrées ; la vue Tableau
   // se charge elle-même via son propre `request` paginé (loadTableData ci-dessous).
   useEffect(() => {
-    if (viewMode === 'kanban') load();
+    if (viewMode !== 'kanban') return;
+    queueMicrotask(() => {
+      load();
+    });
   }, [viewMode, load]);
 
   // Load delegues + utilisateur map for MANAGER/ADMIN
@@ -84,6 +86,8 @@ export function OpportunitesPage() {
       setUtilisateurMap(um);
     }).catch(() => {});
   }, [role, user, isDelegue]);
+
+  if (!user) return null;
 
   async function handleEtapeChange(oppId: string, etape: OpportuniteEtape) {
     try {

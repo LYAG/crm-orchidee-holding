@@ -13,10 +13,24 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, rdvService, utilisateurService } from '@/services';
-import type { ProfessionnelSante, RendezVous, Utilisateur } from '@/types';
+import type { FiltresRdv, ProfessionnelSante, RendezVous, Utilisateur } from '@/types';
 import { CategorieEtablissement } from '@/types';
 import { AnnulationModal } from './AnnulationModal';
 import { RdvCalendar } from './RdvCalendar';
+import type { ViewMode } from './RdvCalendar';
+
+/** Plage de dates couvrant largement la grille affichée pour la vue donnée (avec marge). */
+function plagePourVue(viewMode: ViewMode, currentDate: Dayjs): { debut: Dayjs; fin: Dayjs } {
+  if (viewMode === 'jour') {
+    return { debut: currentDate.startOf('day'), fin: currentDate.endOf('day') };
+  }
+  if (viewMode === 'mois') {
+    return { debut: currentDate.startOf('month').subtract(7, 'day'), fin: currentDate.endOf('month').add(7, 'day') };
+  }
+  const dow = currentDate.day();
+  const monday = currentDate.add(dow === 0 ? -6 : 1 - dow, 'day').startOf('day');
+  return { debut: monday, fin: monday.add(6, 'day').endOf('day') };
+}
 import { RdvDetailDrawer } from './RdvDetailDrawer';
 import { RdvDrawerForm } from './RdvDrawerForm';
 
@@ -283,6 +297,8 @@ export function RdvPage() {
   const [contacts, setContacts] = useState<ProfessionnelSante[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+  const [calendarViewMode, setCalendarViewMode] = useState<ViewMode>('semaine');
+  const [calendarCurrentDate, setCalendarCurrentDate] = useState<Dayjs>(dayjs());
   const [selectedRdv, setSelectedRdv] = useState<RendezVous | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
@@ -291,45 +307,54 @@ export function RdvPage() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [annulationOpen, setAnnulationOpen] = useState(false);
 
-  if (!user) return null;
-
-  const role = user.role as UserRole;
+  // Calculés avant les hooks (avec chaînage optionnel) pour que ceux-ci restent appelés
+  // inconditionnellement — le garde-fou `if (!user) return null;` vient après tous les hooks.
+  const role = user?.role as UserRole | undefined;
   const isDelegue = role === UserRole.DELEGUE;
 
   // Pour le délégué connecté, son ID est fixe
-  const effectiveDelegueId = isDelegue ? user.id : (selectedDelegueId ?? undefined);
+  const effectiveDelegueId = isDelegue ? user?.id : (selectedDelegueId ?? undefined);
 
-  // Chargement des RDV
+  // Chargement des RDV — bornés à la plage visible du calendrier plutôt que la table entière.
   const load = useCallback(() => {
-    const filtres = effectiveDelegueId ? { delegueId: effectiveDelegueId } : undefined;
+    const { debut, fin } = plagePourVue(calendarViewMode, calendarCurrentDate);
+    const filtres: FiltresRdv = {
+      dateDebut: debut.toISOString(),
+      dateFin: fin.toISOString(),
+      ...(effectiveDelegueId ? { delegueId: effectiveDelegueId } : {}),
+    };
     rdvService.getAll(filtres).then(setRdvList).catch(() => {});
-  }, [effectiveDelegueId]);
+  }, [effectiveDelegueId, calendarViewMode, calendarCurrentDate]);
 
   useEffect(() => { load(); }, [load]);
 
   // Chargement des délégués (admin/manager uniquement)
   useEffect(() => {
-    if (isDelegue) return;
+    if (!user || isDelegue) return;
     const fn = role === UserRole.MANAGER
       ? utilisateurService.getDeleguesByManager(user.id)
       : utilisateurService.getByRole(UserRole.DELEGUE);
     fn.then(setDelegues).catch(() => {});
-  }, [role, user.id, isDelegue]);
+  }, [role, user, isDelegue]);
 
   // Chargement des contacts pour le délégué sélectionné (ou le délégué lui-même)
   useEffect(() => {
-    const delegueId = isDelegue ? user.id : selectedDelegueId;
-    if (!delegueId) {
-      setContacts([]);
-      return;
-    }
-    setContactsLoading(true);
-    professionnelService
-      .getProfessionnels({ delegueId })
-      .then(setContacts)
-      .catch(() => {})
-      .finally(() => setContactsLoading(false));
-  }, [isDelegue, user.id, selectedDelegueId]);
+    queueMicrotask(() => {
+      const delegueId = isDelegue ? user?.id : selectedDelegueId;
+      if (!delegueId) {
+        setContacts([]);
+        return;
+      }
+      setContactsLoading(true);
+      professionnelService
+        .getProfessionnels({ delegueId })
+        .then(setContacts)
+        .catch(() => {})
+        .finally(() => setContactsLoading(false));
+    });
+  }, [isDelegue, user?.id, selectedDelegueId]);
+
+  if (!user) return null;
 
   // Un manager/admin n'est pas lui-même un délégué : tant qu'il n'en a pas choisi un
   // dans le panneau, il n'y a pas de délégué "actif" pour créer un RDV.
@@ -408,6 +433,10 @@ export function RdvPage() {
             onSelectRdv={(rdv) => { setSelectedRdv(rdv); setDetailOpen(true); }}
             onDropProfessionnel={handleDropProfessionnel}
             delegues={!isDelegue ? delegues : undefined}
+            viewMode={calendarViewMode}
+            currentDate={calendarCurrentDate}
+            onViewModeChange={setCalendarViewMode}
+            onCurrentDateChange={setCalendarCurrentDate}
           />
         </div>
       </div>
