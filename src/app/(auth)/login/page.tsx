@@ -3,15 +3,25 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { ProFormText } from '@ant-design/pro-components';
 import { Alert, Button, Form, Typography } from 'antd';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
 const { Title, Text } = Typography;
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionExpiree = searchParams.get('session') === 'expiree';
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -235,6 +245,15 @@ export default function LoginPage() {
           <Text type="secondary" style={{ display: 'block', marginBottom: 32 }}>
             Entrez vos identifiants pour accéder à votre espace.
           </Text>
+
+          {!error && sessionExpiree && (
+            <Alert
+              title="Votre session a expiré. Veuillez vous reconnecter."
+              type="warning"
+              showIcon
+              style={{ marginBottom: 20, borderRadius: 8 }}
+            />
+          )}
 
           {error && (
             <Alert

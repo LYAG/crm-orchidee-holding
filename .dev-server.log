@@ -499,3 +499,7 @@ https://react.dev/link/hydration-mismatch
  GET /professionnels 200 in 368ms (next.js: 273ms, application-code: 94ms)
  GET /login 200 in 247ms (next.js: 206ms, application-code: 41ms)
  GET /professionnels 200 in 250ms (next.js: 132ms, application-code: 118ms)
+ GET /apple-touch-icon.png 404 in 582ms (next.js: 365ms, application-code: 217ms)
+ GET /apple-touch-icon-precomposed.png 404 in 592ms (next.js: 455ms, application-code: 137ms)
+ GET / 200 in 4.9s (next.js: 1230ms, application-code: 3.7s)
+[?25h

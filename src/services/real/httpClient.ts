@@ -71,6 +71,22 @@ async function parseErrorMessage(res: Response): Promise<string> {
   return `Erreur serveur (${res.status}).`;
 }
 
+/**
+ * Un 401 signifie que le token est absent/invalide/expiré (voir SecurityConfig
+ * côté backend, qui renvoie ce statut spécifiquement pour ce cas — un 403 reste
+ * un vrai refus de droits, à laisser gérer localement par l'appelant). On efface
+ * la session périmée et on renvoie vers /login plutôt que de laisser l'appli
+ * continuer à afficher des écrans vides sans explication.
+ */
+function gererSessionExpiree(path: string, status: number): void {
+  if (status !== 401 || path.startsWith('/auth/login')) return;
+  if (typeof window === 'undefined') return;
+  clearToken();
+  if (!window.location.pathname.startsWith('/login')) {
+    window.location.href = '/login?session=expiree';
+  }
+}
+
 function withAuthHeaders(options: RequestInit): Headers {
   const headers = new Headers(options.headers);
   const token = getToken();
@@ -82,7 +98,10 @@ function withAuthHeaders(options: RequestInit): Headers {
 /** Appel JSON standard. Renvoie `undefined` pour les réponses 204 No Content. */
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${baseUrl()}${path}`, { ...options, headers: withAuthHeaders(options) });
-  if (!res.ok) throw new ApiError(await parseErrorMessage(res), res.status);
+  if (!res.ok) {
+    gererSessionExpiree(path, res.status);
+    throw new ApiError(await parseErrorMessage(res), res.status);
+  }
   if (res.status === 204) return undefined as T;
   const text = await res.text();
   return (text ? JSON.parse(text) : undefined) as T;
@@ -91,7 +110,10 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
 /** Appel renvoyant du texte brut (ex. export CSV en text/csv). */
 export async function apiFetchText(path: string, options: RequestInit = {}): Promise<string> {
   const res = await fetch(`${baseUrl()}${path}`, { ...options, headers: withAuthHeaders(options) });
-  if (!res.ok) throw new ApiError(await parseErrorMessage(res), res.status);
+  if (!res.ok) {
+    gererSessionExpiree(path, res.status);
+    throw new ApiError(await parseErrorMessage(res), res.status);
+  }
   return res.text();
 }
 
