@@ -8,6 +8,7 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { message } from 'antd';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { professionnelService, rdvService, supportService } from '@/services';
 import type { ProfessionnelSante, RendezVous, SupportCommercial } from '@/types';
@@ -37,10 +38,13 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, p
   }, [open, delegueId]);
 
   async function handleFinish(values: Record<string, unknown>) {
+    // ProFormDateTimePicker soumet par défaut "YYYY-MM-DD HH:mm:ss" (espace) — le
+    // LocalDateTime du backend attend un séparateur 'T' (ISO_LOCAL_DATE_TIME).
+    const dateHeure = dayjs(values.dateHeure as string).format('YYYY-MM-DDTHH:mm:ss');
     try {
       if (isEdit && rdv) {
         await rdvService.update(rdv.id, {
-          dateHeure: values.dateHeure as string,
+          dateHeure,
           dureeMinutes: values.dureeMinutes as number,
           supportId: values.supportId as string,
           notes: values.notes as string | undefined,
@@ -51,7 +55,7 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, p
           professionnelId: values.professionnelId as string,
           delegueId,
           supportId: values.supportId as string,
-          dateHeure: values.dateHeure as string,
+          dateHeure,
           dureeMinutes: values.dureeMinutes as number,
           notes: values.notes as string | undefined,
         });

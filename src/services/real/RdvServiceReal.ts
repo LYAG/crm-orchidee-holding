@@ -7,12 +7,6 @@ function versLocalDateTime(iso: string): string {
   return iso.endsWith('Z') ? iso.slice(0, -1) : iso;
 }
 
-/**
- * ⚠️ Écart backend connu : il n'existe pas de PUT générique pour modifier un RDV déjà
- * planifié (date/heure, durée, support) — seuls `/annuler` et `/statut` existent.
- * `update()` échoue donc explicitement tant que l'endpoint manquant n'est pas ajouté
- * (voir RdvDrawerForm.tsx, qui l'utilise pour l'édition d'un RDV planifié).
- */
 export class RdvServiceReal implements RdvService {
   async getAll(filtres?: FiltresRdv): Promise<RendezVous[]> {
     const query = qs({
@@ -33,10 +27,25 @@ export class RdvServiceReal implements RdvService {
     return apiFetch<RendezVous>('/rendez-vous', { method: 'POST', body: JSON.stringify(data) });
   }
 
-  async update(_id: string, _data: Partial<RendezVous>): Promise<RendezVous> {
-    throw new Error(
-      "La modification d'un rendez-vous planifié n'est pas encore disponible : il manque un endpoint PUT /api/rendez-vous/{id} côté backend.",
-    );
+  /**
+   * Le backend attend le body `RendezVousRequest` complet (professionnelId/delegueId
+   * inclus, même s'ils ne changent jamais depuis ce formulaire) — on récupère donc le
+   * RDV courant pour compléter les champs non fournis par l'appelant.
+   */
+  async update(id: string, data: Partial<RendezVous>): Promise<RendezVous> {
+    const current = await this.getById(id);
+    const merged = { ...current, ...data };
+    return apiFetch<RendezVous>(`/rendez-vous/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        professionnelId: merged.professionnelId,
+        delegueId: merged.delegueId,
+        supportId: merged.supportId,
+        dateHeure: versLocalDateTime(merged.dateHeure),
+        dureeMinutes: merged.dureeMinutes,
+        notes: merged.notes,
+      }),
+    });
   }
 
   async annuler(id: string, motif: string): Promise<RendezVous> {
