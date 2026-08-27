@@ -42,7 +42,7 @@ export function PlanifierRdvModal({ open, professionnel, onClose, onSaved }: Pro
   const isDelegue = user?.role === UserRole.DELEGUE;
   const jourChoisi = dateValue ? jourSemaineDepuisDate(dateValue.format('YYYY-MM-DD')) : null;
   const disponible = jourChoisi ? estDisponibleCeJour(professionnel.joursConsultation, jourChoisi) : true;
-  const bloque = isDelegue && jourChoisi && !disponible;
+  const bloque = !!(isDelegue && jourChoisi && !disponible);
 
   async function handleOk() {
     if (!user || bloque) return;
