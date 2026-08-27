@@ -7,11 +7,14 @@ import {
   ProFormSelect,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { message } from 'antd';
+import { Alert, Form, message } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { UserRole } from '@/lib/constants';
 import { professionnelService, rdvService, supportService } from '@/services';
 import type { ProfessionnelSante, RendezVous, SupportCommercial } from '@/types';
+import { estDisponibleCeJour, formatJoursConsultation, jourSemaineDepuisDate } from '../professionnels/utils';
 
 interface Props {
   open: boolean;
@@ -22,8 +25,19 @@ interface Props {
   prefill?: { professionnelId?: string; dateHeure?: string };
 }
 
+interface FormValues {
+  professionnelId: string;
+  dateHeure: string;
+  dureeMinutes: number;
+  supportId: string;
+  notes?: string;
+}
+
 export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, prefill }: Props) {
+  const { user } = useAuth();
   const isEdit = !!rdv;
+  const isDelegue = user?.role === UserRole.DELEGUE;
+  const [form] = Form.useForm<FormValues>();
   const [professionnels, setProfessionnels] = useState<ProfessionnelSante[]>([]);
   const [supports, setSupports] = useState<SupportCommercial[]>([]);
 
@@ -37,27 +51,40 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, p
       .catch(() => {});
   }, [open, delegueId]);
 
-  async function handleFinish(values: Record<string, unknown>) {
+  const professionnelIdChoisi = Form.useWatch('professionnelId', form) ?? rdv?.professionnelId;
+  const dateHeureChoisie = Form.useWatch('dateHeure', form);
+  const professionnelSelectionne = professionnels.find((p) => p.id === professionnelIdChoisi) ?? null;
+  const jourChoisi = dateHeureChoisie ? jourSemaineDepuisDate(dayjs(dateHeureChoisie).format('YYYY-MM-DD')) : null;
+  const disponible = professionnelSelectionne && jourChoisi
+    ? estDisponibleCeJour(professionnelSelectionne.joursConsultation, jourChoisi)
+    : true;
+
+  async function handleFinish(values: FormValues) {
     // ProFormDateTimePicker soumet par défaut "YYYY-MM-DD HH:mm:ss" (espace) — le
     // LocalDateTime du backend attend un séparateur 'T' (ISO_LOCAL_DATE_TIME).
-    const dateHeure = dayjs(values.dateHeure as string).format('YYYY-MM-DDTHH:mm:ss');
+    const dateHeure = dayjs(values.dateHeure).format('YYYY-MM-DDTHH:mm:ss');
+    // Le blocage strict (jours de consultation) ne s'applique qu'au délégué : un
+    // manager/admin peut forcer une exception, le backend l'autorise via `forcer`.
+    const forcer = !isDelegue;
     try {
       if (isEdit && rdv) {
         await rdvService.update(rdv.id, {
           dateHeure,
-          dureeMinutes: values.dureeMinutes as number,
-          supportId: values.supportId as string,
-          notes: values.notes as string | undefined,
+          dureeMinutes: values.dureeMinutes,
+          supportId: values.supportId,
+          notes: values.notes,
+          forcer,
         });
         message.success('Rendez-vous mis à jour.');
       } else {
         await rdvService.create({
-          professionnelId: values.professionnelId as string,
+          professionnelId: values.professionnelId,
           delegueId,
-          supportId: values.supportId as string,
+          supportId: values.supportId,
           dateHeure,
-          dureeMinutes: values.dureeMinutes as number,
-          notes: values.notes as string | undefined,
+          dureeMinutes: values.dureeMinutes,
+          notes: values.notes,
+          forcer,
         });
         message.success('Rendez-vous créé avec succès.');
       }
@@ -70,7 +97,8 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, p
   }
 
   return (
-    <DrawerForm
+    <DrawerForm<FormValues>
+      form={form}
       title={isEdit ? 'Modifier le rendez-vous' : 'Nouveau rendez-vous'}
       open={open}
       onOpenChange={onOpenChange}
@@ -101,11 +129,47 @@ export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, p
         showSearch
         fieldProps={{ optionFilterProp: 'label' }}
       />
+
+      {professionnelSelectionne && jourChoisi && !disponible && (
+        <Alert
+          type={isDelegue ? 'error' : 'warning'}
+          showIcon
+          style={{ marginBottom: 16 }}
+          message={
+            isDelegue
+              ? "Ce professionnel ne consulte pas ce jour-là."
+              : "Attention : ce professionnel ne consulte pas ce jour-là (autorisé pour votre rôle)."
+          }
+          description={`Jours de consultation : ${formatJoursConsultation(professionnelSelectionne.joursConsultation)}.`}
+        />
+      )}
+
       <ProFormDateTimePicker
         name="dateHeure"
         label="Date et heure"
-        rules={[{ required: true, message: 'La date est requise.' }]}
-        fieldProps={{ format: 'DD/MM/YYYY HH:mm', minuteStep: 15 }}
+        rules={[
+          { required: true, message: 'La date est requise.' },
+          {
+            validator: async (_, value: string | undefined) => {
+              if (!isDelegue || !value || !professionnelSelectionne) return;
+              const jour = jourSemaineDepuisDate(dayjs(value).format('YYYY-MM-DD'));
+              if (!estDisponibleCeJour(professionnelSelectionne.joursConsultation, jour)) {
+                throw new Error(
+                  `Ce professionnel ne consulte pas ce jour-là (${formatJoursConsultation(professionnelSelectionne.joursConsultation)}).`,
+                );
+              }
+            },
+          },
+        ]}
+        fieldProps={{
+          format: 'DD/MM/YYYY HH:mm',
+          minuteStep: 15,
+          disabledDate: (current) => {
+            if (!isDelegue || !professionnelSelectionne || !current) return false;
+            const jour = jourSemaineDepuisDate(current.format('YYYY-MM-DD'));
+            return !estDisponibleCeJour(professionnelSelectionne.joursConsultation, jour);
+          },
+        }}
       />
       <ProFormDigit
         name="dureeMinutes"

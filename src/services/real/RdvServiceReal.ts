@@ -23,8 +23,13 @@ export class RdvServiceReal implements RdvService {
     return apiFetch<RendezVous>(`/rendez-vous/${id}`);
   }
 
-  async create(data: Omit<RendezVous, 'id' | 'dateCreation' | 'qualifie' | 'statut'>): Promise<RendezVous> {
-    return apiFetch<RendezVous>('/rendez-vous', { method: 'POST', body: JSON.stringify(data) });
+  async create(
+    data: Omit<RendezVous, 'id' | 'dateCreation' | 'qualifie' | 'statut'> & { forcer?: boolean },
+  ): Promise<RendezVous> {
+    return apiFetch<RendezVous>('/rendez-vous', {
+      method: 'POST',
+      body: JSON.stringify({ ...data, dateHeure: versLocalDateTime(data.dateHeure), forcer: data.forcer ?? false }),
+    });
   }
 
   /**
@@ -32,7 +37,7 @@ export class RdvServiceReal implements RdvService {
    * inclus, même s'ils ne changent jamais depuis ce formulaire) — on récupère donc le
    * RDV courant pour compléter les champs non fournis par l'appelant.
    */
-  async update(id: string, data: Partial<RendezVous>): Promise<RendezVous> {
+  async update(id: string, data: Partial<RendezVous> & { forcer?: boolean }): Promise<RendezVous> {
     const current = await this.getById(id);
     const merged = { ...current, ...data };
     return apiFetch<RendezVous>(`/rendez-vous/${id}`, {
@@ -44,6 +49,7 @@ export class RdvServiceReal implements RdvService {
         dateHeure: versLocalDateTime(merged.dateHeure),
         dureeMinutes: merged.dureeMinutes,
         notes: merged.notes,
+        forcer: data.forcer ?? false,
       }),
     });
   }

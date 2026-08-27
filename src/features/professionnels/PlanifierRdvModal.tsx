@@ -4,6 +4,7 @@ import { Alert, App, DatePicker, Form, Input, InputNumber, Modal, Select } from 
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { UserRole } from '@/lib/constants';
 import { professionnelService, rdvService, supportService } from '@/services';
 import type { ProfessionnelSante, SupportCommercial } from '@/types';
 import { estDisponibleCeJour, formatJoursConsultation, jourSemaineDepuisDate, JOUR_LABELS } from './utils';
@@ -38,11 +39,13 @@ export function PlanifierRdvModal({ open, professionnel, onClose, onSaved }: Pro
     }
   }, [open, form]);
 
+  const isDelegue = user?.role === UserRole.DELEGUE;
   const jourChoisi = dateValue ? jourSemaineDepuisDate(dateValue.format('YYYY-MM-DD')) : null;
   const disponible = jourChoisi ? estDisponibleCeJour(professionnel.joursConsultation, jourChoisi) : true;
+  const bloque = isDelegue && jourChoisi && !disponible;
 
   async function handleOk() {
-    if (!user) return;
+    if (!user || bloque) return;
     const values = await form.validateFields();
     setSaving(true);
     try {
@@ -50,9 +53,12 @@ export function PlanifierRdvModal({ open, professionnel, onClose, onSaved }: Pro
         professionnelId: professionnel.id,
         delegueId: user.id,
         supportId: values.supportId,
-        dateHeure: values.date.toISOString(),
+        // Le DatePicker fournit un dayjs local ; on formate en LocalDateTime ISO ('T',
+        // sans fuseau) plutôt que toISOString() qui convertit en UTC (heure décalée).
+        dateHeure: values.date.format('YYYY-MM-DDTHH:mm:ss'),
         dureeMinutes: values.dureeMinutes,
         notes: values.notes,
+        forcer: !isDelegue,
       });
       if (!professionnel.aDejaEuContact) {
         await professionnelService.marquerContactEffectue(professionnel.id);
@@ -75,20 +81,34 @@ export function PlanifierRdvModal({ open, professionnel, onClose, onSaved }: Pro
       onOk={handleOk}
       confirmLoading={saving}
       okText="Planifier"
+      okButtonProps={{ disabled: bloque }}
       cancelText="Annuler"
       destroyOnClose
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
         <Form.Item name="date" label="Date et heure" rules={[{ required: true, message: 'Obligatoire.' }]}>
-          <DatePicker showTime style={{ width: '100%' }} format="DD/MM/YYYY HH:mm" />
+          <DatePicker
+            showTime
+            style={{ width: '100%' }}
+            format="DD/MM/YYYY HH:mm"
+            disabledDate={(current) => {
+              if (!isDelegue || !current) return false;
+              const jour = jourSemaineDepuisDate(current.format('YYYY-MM-DD'));
+              return !estDisponibleCeJour(professionnel.joursConsultation, jour);
+            }}
+          />
         </Form.Item>
 
         {jourChoisi && !disponible && (
           <Alert
-            type="warning"
+            type={isDelegue ? 'error' : 'warning'}
             showIcon
             style={{ marginBottom: 16 }}
-            message={`Attention : ${JOUR_LABELS[jourChoisi]} n'est pas un jour de consultation habituel.`}
+            message={
+              isDelegue
+                ? `${JOUR_LABELS[jourChoisi]} n'est pas un jour de consultation pour ce professionnel.`
+                : `Attention : ${JOUR_LABELS[jourChoisi]} n'est pas un jour de consultation habituel (autorisé pour votre rôle).`
+            }
             description={`Ce professionnel consulte : ${formatJoursConsultation(professionnel.joursConsultation)}.`}
           />
         )}

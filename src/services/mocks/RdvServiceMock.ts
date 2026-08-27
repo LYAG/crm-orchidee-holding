@@ -23,11 +23,14 @@ export class RdvServiceMock implements RdvService {
   }
 
   async create(
-    data: Omit<RendezVous, 'id' | 'dateCreation' | 'qualifie' | 'statut'>,
+    data: Omit<RendezVous, 'id' | 'dateCreation' | 'qualifie' | 'statut'> & { forcer?: boolean },
   ): Promise<RendezVous> {
     await delay();
+    // `forcer` ne fait pas partie du modèle RendezVous — c'est un indicateur de requête
+    // (contournement du blocage jours de consultation, appliqué côté backend réel).
+    const { forcer: _forcer, ...donneesRdv } = data;
     const rdv: RendezVous = {
-      ...data,
+      ...donneesRdv,
       id: generateId('rdv'),
       dateCreation: new Date().toISOString().split('T')[0],
       statut: RdvStatut.PLANIFIE,
@@ -37,11 +40,12 @@ export class RdvServiceMock implements RdvService {
     return rdv;
   }
 
-  async update(id: string, data: Partial<RendezVous>): Promise<RendezVous> {
+  async update(id: string, data: Partial<RendezVous> & { forcer?: boolean }): Promise<RendezVous> {
     await delay();
     const idx = rendezvous.findIndex((r) => r.id === id);
     if (idx === -1) notFound('RendezVous', id);
-    rendezvous[idx] = { ...rendezvous[idx], ...data };
+    const { forcer: _forcer, ...donneesRdv } = data;
+    rendezvous[idx] = { ...rendezvous[idx], ...donneesRdv };
     return rendezvous[idx];
   }
 
