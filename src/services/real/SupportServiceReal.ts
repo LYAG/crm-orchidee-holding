@@ -24,6 +24,16 @@ export class SupportServiceReal implements SupportService {
     await apiFetch<void>(`/supports/${id}`, { method: 'DELETE' });
   }
 
+  async uploaderFichier(id: string, fichier: File): Promise<SupportCommercial> {
+    const formData = new FormData();
+    formData.append('file', fichier);
+    return apiFetch<SupportCommercial>(`/supports/${id}/fichier`, { method: 'POST', body: formData });
+  }
+
+  async getFichier(id: string): Promise<Blob> {
+    return apiFetchBlob(`/supports/${id}/fichier`);
+  }
+
   async getParametres(): Promise<ParametresApp> {
     return apiFetch<ParametresApp>('/parametres');
   }

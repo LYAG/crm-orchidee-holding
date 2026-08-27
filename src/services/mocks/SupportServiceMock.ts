@@ -45,6 +45,25 @@ export class SupportServiceMock implements SupportService {
     supports[idx].actif = false;
   }
 
+  /** Mock : pas de vrai PDF stocké, on simule juste l'incrément de version/taille. */
+  async uploaderFichier(id: string, fichier: File): Promise<SupportCommercial> {
+    await delay();
+    const idx = supports.findIndex((s) => s.id === id);
+    if (idx === -1) notFound('SupportCommercial', id);
+    supports[idx] = {
+      ...supports[idx],
+      version: supports[idx].version + 1,
+      tailleFichier: fichier.size,
+      nombreSlides: Math.min(30, Math.max(1, Math.round(fichier.size / 50000))),
+    };
+    return supports[idx];
+  }
+
+  async getFichier(): Promise<Blob> {
+    await delay();
+    throw new Error('Aperçu PDF non disponible en mode démo (mocks).');
+  }
+
   async getParametres(): Promise<ParametresApp> {
     await delay(100);
     return { ...parametres };

@@ -22,29 +22,35 @@ export function ImportSupportModal({ open, onOpenChange, onSuccess }: Props) {
 
   async function handleUpload(file: File) {
     setLoading(true);
+    let created: SupportCommercial | null = null;
     try {
-      const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
-      if (!['pdf', 'ppt', 'pptx'].includes(extension)) {
-        message.error('Format non pris en charge. Utilisez un fichier PDF ou PPT.');
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        message.error('Seul le format PDF est pris en charge pour l’instant.');
         return false;
       }
 
-      const type = extension === 'pdf' ? SupportType.PDF : SupportType.PPT;
       const titre = file.name.replace(/\.[^.]+$/, '');
-      const nombreSlides = Math.min(20, Math.max(4, Math.round(file.size / 100000)));
-      const support = await supportService.create({
+      // Métadonnées d'abord (nombreSlides=0, provisoire) — le fichier réel est ensuite
+      // uploadé séparément (POST /supports/{id}/fichier), le backend y recalcule le
+      // nombre de pages réel du PDF et incrémente la version.
+      created = await supportService.create({
         titre,
-        type,
-        nombreSlides,
+        type: SupportType.PDF,
+        nombreSlides: 0,
         dateVersion: new Date().toISOString().slice(0, 10),
         actif: true,
+        version: 0,
       });
+      const support = await supportService.uploaderFichier(created.id, file);
 
       setCreatedSupport(support);
       onSuccess(support);
       message.success('Support importé avec succès.');
-    } catch {
-      message.error('Erreur lors de l’import du support.');
+    } catch (err) {
+      // Si l'upload du fichier échoue après la création des métadonnées, on supprime
+      // la fiche orpheline plutôt que de laisser un support sans contenu dans la bibliothèque.
+      if (created) await supportService.delete(created.id).catch(() => {});
+      message.error(err instanceof Error ? err.message : 'Erreur lors de l’import du support.');
     } finally {
       setLoading(false);
     }
@@ -76,10 +82,10 @@ export function ImportSupportModal({ open, onOpenChange, onSuccess }: Props) {
           <Alert
             type="info"
             showIcon
-            message="Déposez un fichier PDF ou PPT/PPTX. Le contenu du document est simulé pour cette maquette."
+            message="Déposez un fichier PDF. C'est ce document qui sera utilisé pour la présentation (web et mobile)."
           />
           <Dragger
-            accept=".pdf,.ppt,.pptx"
+            accept=".pdf"
             beforeUpload={handleUpload}
             showUploadList={false}
             disabled={loading}
@@ -87,8 +93,8 @@ export function ImportSupportModal({ open, onOpenChange, onSuccess }: Props) {
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
-            <p className="ant-upload-text">Cliquez ou déposez un fichier ici</p>
-            <p className="ant-upload-hint">PDF, PPT ou PPTX — fichier simulé pour l’import</p>
+            <p className="ant-upload-text">{loading ? 'Import en cours…' : 'Cliquez ou déposez un fichier ici'}</p>
+            <p className="ant-upload-hint">PDF uniquement</p>
           </Dragger>
         </Space>
       ) : (
@@ -99,7 +105,7 @@ export function ImportSupportModal({ open, onOpenChange, onSuccess }: Props) {
             message={`Support "${createdSupport.titre}" importé avec succès.`}
           />
           <Text>Type : {createdSupport.type}</Text>
-          <Text>Nombre de slides estimé : {createdSupport.nombreSlides}</Text>
+          <Text>Nombre de slides (pages du PDF) : {createdSupport.nombreSlides}</Text>
           <Text>Date de version : {createdSupport.dateVersion}</Text>
         </Space>
       )}
