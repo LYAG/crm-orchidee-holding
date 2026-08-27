@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import {
   CheckCircleOutlined,
@@ -20,11 +20,11 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { supportService } from '@/services';
 import type { MetriquePresentation, SupportCommercial } from '@/types';
-import { getSlidesForSupport } from './slides';
 
 const { Title, Text } = Typography;
 
@@ -44,7 +44,13 @@ interface Props {
 
 export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) {
   const router = useRouter();
-  const slides = getSlidesForSupport(support);
+
+  const [pdfState, setPdfState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const [numPages, setNumPages] = useState(0);
+  const [pageAspect, setPageAspect] = useState(4 / 3);
+  const pdfDocRef = useRef<PDFDocumentProxy | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [phase, setPhase] = useState<'presenting' | 'summary'>('presenting');
@@ -54,11 +60,65 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
 
   const globalRef = useRef(0);
   const slideRef = useRef(0);
-  const timingsRef = useRef<number[]>(new Array(slides.length).fill(0));
+  const timingsRef = useRef<number[]>([]);
+
+  // Chargement du PDF réel du support (une seule fois) — rendu page par page via pdf.js,
+  // plus de contenu simulé : le nombre de pages fait foi (support.nombreSlides vient du
+  // backend mais peut être obsolète si le fichier a changé entre-temps hors de ce flux).
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const pdfjsLib = await import('pdfjs-dist');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+          'pdfjs-dist/build/pdf.worker.min.mjs',
+          import.meta.url,
+        ).toString();
+        const blob = await supportService.getFichier(support.id);
+        const buffer = await blob.arrayBuffer();
+        const doc = await pdfjsLib.getDocument({ data: buffer }).promise;
+        if (cancelled) return;
+        pdfDocRef.current = doc;
+        timingsRef.current = new Array(doc.numPages).fill(0);
+        setNumPages(doc.numPages);
+        setPdfState('ready');
+      } catch (err) {
+        if (cancelled) return;
+        setPdfError(err instanceof Error ? err.message : 'Impossible de charger le document.');
+        setPdfState('error');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [support.id]);
+
+  // Rendu de la page courante sur le canvas.
+  useEffect(() => {
+    if (pdfState !== 'ready' || !pdfDocRef.current) return;
+    let cancelled = false;
+    (async () => {
+      const page = await pdfDocRef.current!.getPage(currentSlide + 1);
+      if (cancelled || !canvasRef.current) return;
+      const baseViewport = page.getViewport({ scale: 1 });
+      setPageAspect(baseViewport.width / baseViewport.height);
+      const scale = 1400 / baseViewport.width;
+      const viewport = page.getViewport({ scale });
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [pdfState, currentSlide]);
 
   // Timer
   useEffect(() => {
-    if (phase !== 'presenting') return;
+    if (phase !== 'presenting' || pdfState !== 'ready') return;
     const id = setInterval(() => {
       globalRef.current += 1;
       slideRef.current += 1;
@@ -66,11 +126,11 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
       setDisplaySlide(slideRef.current);
     }, 1000);
     return () => clearInterval(id);
-  }, [phase]);
+  }, [phase, pdfState]);
 
   // Keyboard navigation
   useEffect(() => {
-    if (phase !== 'presenting') return;
+    if (phase !== 'presenting' || pdfState !== 'ready') return;
     function onKey(e: KeyboardEvent) {
       if (e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault();
@@ -85,12 +145,12 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, currentSlide]);
+  }, [phase, currentSlide, pdfState]);
 
   // Save metric when entering summary phase
   useEffect(() => {
     if (phase !== 'summary') return;
-    const dureeMinimale = support.nombreSlides * tempsMoyenParSlide;
+    const dureeMinimale = numPages * tempsMoyenParSlide;
     const dureeTotal = globalRef.current;
     supportService
       .enregistrerMetrique({
@@ -100,9 +160,9 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
         dureeTotal,
         dureeMinimaleAttendue: dureeMinimale,
         conforme: dureeTotal >= dureeMinimale,
-        slides: slides.map((s, i) => ({
+        slides: Array.from({ length: numPages }, (_, i) => ({
           slideIndex: i,
-          titreSlide: s.titre,
+          titreSlide: `Page ${i + 1}`,
           tempsPasse: timingsRef.current[i] ?? 0,
         })),
       })
@@ -113,7 +173,7 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
 
   function handleNext() {
     timingsRef.current[currentSlide] = slideRef.current;
-    if (currentSlide >= slides.length - 1) {
+    if (currentSlide >= numPages - 1) {
       setPhase('summary');
       return;
     }
@@ -141,25 +201,31 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
     });
   }
 
+  if (pdfState === 'loading') {
+    return (
+      <FullscreenMessage>
+        <Spin size="large" />
+        <Text style={{ color: '#888' }}>Chargement du document…</Text>
+      </FullscreenMessage>
+    );
+  }
+
+  if (pdfState === 'error') {
+    return (
+      <FullscreenMessage>
+        <Text style={{ color: '#e05252', fontSize: 16 }}>{pdfError}</Text>
+        <Button onClick={() => router.back()}>Retour</Button>
+      </FullscreenMessage>
+    );
+  }
+
   if (phase === 'summary') {
     if (!savedMetrique) {
       return (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: '#111',
-            zIndex: 9999,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 16,
-          }}
-        >
+        <FullscreenMessage>
           <Spin size="large" />
           <Text style={{ color: '#888' }}>Enregistrement des résultats…</Text>
-        </div>
+        </FullscreenMessage>
       );
     }
     return (
@@ -170,8 +236,6 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
       />
     );
   }
-
-  const slide = slides[currentSlide];
 
   return (
     <div
@@ -261,76 +325,39 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
           }}
         />
 
-        {/* Slide body */}
+        {/* Slide body — rendu réel du PDF (page courante) */}
         <div
           style={{
-            background: slide.couleur,
             width: '100%',
-            maxWidth: 900,
-            aspectRatio: '16/9',
+            maxWidth: 1100,
+            aspectRatio: pageAspect,
             borderRadius: 12,
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: '0 8px 40px rgba(0,0,0,0.6)',
             position: 'relative',
             overflow: 'hidden',
+            background: '#fff',
           }}
         >
+          <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+
           {/* Slide number badge */}
           <div
             style={{
               position: 'absolute',
               top: 20,
               right: 24,
-              background: 'rgba(0,0,0,0.35)',
+              background: 'rgba(0,0,0,0.55)',
               borderRadius: 20,
               padding: '2px 12px',
             }}
           >
-            <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>
-              {currentSlide + 1} / {slides.length}
+            <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>
+              {currentSlide + 1} / {numPages}
             </Text>
           </div>
-
-          {/* Decorative background circle */}
-          <div
-            style={{
-              position: 'absolute',
-              width: 420,
-              height: 420,
-              background: 'rgba(255,255,255,0.06)',
-              borderRadius: '50%',
-              top: -80,
-              right: -80,
-              pointerEvents: 'none',
-            }}
-          />
-
-          <Title
-            level={2}
-            style={{
-              color: '#fff',
-              textAlign: 'center',
-              margin: 0,
-              padding: '0 48px',
-              textShadow: '0 2px 8px rgba(0,0,0,0.3)',
-              fontWeight: 600,
-              lineHeight: 1.3,
-            }}
-          >
-            {slide.titre}
-          </Title>
-          <Text
-            style={{
-              color: 'rgba(255,255,255,0.6)',
-              marginTop: 16,
-              fontSize: 15,
-            }}
-          >
-            Slide {currentSlide + 1}
-          </Text>
         </div>
 
         {/* Next button */}
@@ -351,7 +378,7 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
       {/* Bottom progress bar */}
       <div style={{ padding: '0 24px 16px' }}>
         <Progress
-          percent={Math.round(((currentSlide + 1) / slides.length) * 100)}
+          percent={numPages > 0 ? Math.round(((currentSlide + 1) / numPages) * 100) : 0}
           showInfo={false}
           strokeColor="#0F6E52"
           trailColor="rgba(255,255,255,0.1)"
@@ -361,6 +388,26 @@ export function PresentationMode({ support, rdvId, tempsMoyenParSlide }: Props) 
           Utilisez ← → ou Espace pour naviguer
         </Text>
       </div>
+    </div>
+  );
+}
+
+function FullscreenMessage({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: '#111',
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 16,
+      }}
+    >
+      {children}
     </div>
   );
 }
