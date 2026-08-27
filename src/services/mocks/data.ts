@@ -125,6 +125,7 @@ export const supports: SupportCommercial[] = [
     dateVersion: '2026-01-15',
     apercu: '/placeholders/support-1.png',
     actif: true,
+    version: 1,
   },
   {
     id: 'support-2',
@@ -134,6 +135,7 @@ export const supports: SupportCommercial[] = [
     dateVersion: '2026-03-01',
     apercu: '/placeholders/support-2.png',
     actif: true,
+    version: 1,
   },
   {
     id: 'support-3',
@@ -143,6 +145,7 @@ export const supports: SupportCommercial[] = [
     dateVersion: '2026-04-20',
     apercu: '/placeholders/support-3.png',
     actif: true,
+    version: 1,
   },
 ];
 

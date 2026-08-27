@@ -6,6 +6,10 @@ export interface SupportService {
   create(data: Omit<SupportCommercial, 'id'>): Promise<SupportCommercial>;
   update(id: string, data: Partial<SupportCommercial>): Promise<SupportCommercial>;
   delete(id: string): Promise<void>;
+  /** Upload multipart du fichier (PDF uniquement) — le backend recalcule `nombreSlides` (pages réelles) et incrémente `version`. */
+  uploaderFichier(id: string, fichier: File): Promise<SupportCommercial>;
+  /** Récupère le PDF du support (authentifié) pour un rendu local (pdf.js) — ex. mode présentation. */
+  getFichier(id: string): Promise<Blob>;
 
   getParametres(): Promise<ParametresApp>;
   updateParametres(params: Partial<ParametresApp>): Promise<ParametresApp>;

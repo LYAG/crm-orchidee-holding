@@ -42,6 +42,10 @@ export interface SupportCommercial {
   dateVersion: string;
   apercu?: string;
   actif: boolean;
+  /** Incrémenté à chaque upload de fichier (POST /supports/{id}/fichier) — compare pour détecter une mise à jour. */
+  version: number;
+  /** Absent tant qu'aucun fichier n'a été mis en ligne. */
+  tailleFichier?: number;
 }
 
 export interface SlideMetrique {

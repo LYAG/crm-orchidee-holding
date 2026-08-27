@@ -1,6 +1,6 @@
 import type { SupportService } from '@/services/api/SupportService';
 import type { MetriquePresentation, ParametresApp, SupportCommercial } from '@/types';
-import { ApiError, apiFetch } from './httpClient';
+import { ApiError, apiFetch, apiFetchBlob } from './httpClient';
 
 export class SupportServiceReal implements SupportService {
   async getAll(): Promise<SupportCommercial[]> {

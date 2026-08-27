@@ -91,7 +91,10 @@ function withAuthHeaders(options: RequestInit): Headers {
   const headers = new Headers(options.headers);
   const token = getToken();
   if (token) headers.set('Authorization', `Bearer ${token}`);
-  if (options.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+  // FormData (upload multipart) ne doit jamais recevoir un Content-Type manuel : le navigateur
+  // doit fixer lui-même le boundary multipart/form-data, sans quoi la requête est illisible côté serveur.
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
+  if (options.body && !isFormData && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
   return headers;
 }
 
@@ -115,6 +118,16 @@ export async function apiFetchText(path: string, options: RequestInit = {}): Pro
     throw new ApiError(await parseErrorMessage(res), res.status);
   }
   return res.text();
+}
+
+/** Téléchargement binaire authentifié (ex. PDF d'un support) — renvoie un Blob. */
+export async function apiFetchBlob(path: string, options: RequestInit = {}): Promise<Blob> {
+  const res = await fetch(`${baseUrl()}${path}`, { ...options, headers: withAuthHeaders(options) });
+  if (!res.ok) {
+    gererSessionExpiree(path, res.status);
+    throw new ApiError(await parseErrorMessage(res), res.status);
+  }
+  return res.blob();
 }
 
 /** Construit une query string en omettant les valeurs undefined/null/''. */
