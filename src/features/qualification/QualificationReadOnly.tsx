@@ -100,7 +100,7 @@ export function QualificationReadOnly({ qualification: q, userRole, onEdit }: Pr
         <ProDescriptions.Item label="Qualification">
           <Tag color={opp.color}>{opp.label}</Tag>
         </ProDescriptions.Item>
-        {q.montantEstimeDevis !== undefined && (
+        {q.montantEstimeDevis != null && (
           <ProDescriptions.Item label="Montant estimé">
             {q.montantEstimeDevis.toLocaleString('fr-FR')} €
           </ProDescriptions.Item>
