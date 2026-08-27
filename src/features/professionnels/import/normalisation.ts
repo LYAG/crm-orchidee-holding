@@ -213,7 +213,8 @@ export function parserJoursConsultation(brut: string): JoursConsultation | null 
   if (!t) return null;
   const majuscule = t.toUpperCase();
 
-  if (/TOUS\s+LES\s+JOURS/.test(majuscule)) {
+  // "TOUS LES JOURS", et son abréviation terrain "TS LES JOUR(S)".
+  if (/\b(?:TOUS|TS)\s+LES\s+JOURS?\b/.test(majuscule)) {
     return { mode: ModeJoursConsultation.FREQUENCE, frequenceParSemaine: 6 };
   }
 
