@@ -39,7 +39,6 @@ export function ImportSupportModal({ open, onOpenChange, onSuccess }: Props) {
         nombreSlides: 0,
         dateVersion: new Date().toISOString().slice(0, 10),
         actif: true,
-        version: 0,
       });
       const support = await supportService.uploaderFichier(created.id, file);
 

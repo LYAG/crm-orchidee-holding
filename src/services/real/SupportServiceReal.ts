@@ -11,7 +11,7 @@ export class SupportServiceReal implements SupportService {
     return apiFetch<SupportCommercial>(`/supports/${id}`);
   }
 
-  async create(data: Omit<SupportCommercial, 'id'>): Promise<SupportCommercial> {
+  async create(data: Omit<SupportCommercial, 'id' | 'version' | 'tailleFichier'>): Promise<SupportCommercial> {
     return apiFetch<SupportCommercial>('/supports', { method: 'POST', body: JSON.stringify(data) });
   }
 

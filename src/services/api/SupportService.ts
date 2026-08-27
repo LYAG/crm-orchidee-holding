@@ -3,7 +3,8 @@ import type { MetriquePresentation, ParametresApp, SupportCommercial } from '@/t
 export interface SupportService {
   getAll(): Promise<SupportCommercial[]>;
   getById(id: string): Promise<SupportCommercial>;
-  create(data: Omit<SupportCommercial, 'id'>): Promise<SupportCommercial>;
+  /** `version`/`tailleFichier` sont attribués par le backend (voir uploaderFichier), jamais fournis à la création. */
+  create(data: Omit<SupportCommercial, 'id' | 'version' | 'tailleFichier'>): Promise<SupportCommercial>;
   update(id: string, data: Partial<SupportCommercial>): Promise<SupportCommercial>;
   delete(id: string): Promise<void>;
   /** Upload multipart du fichier (PDF uniquement) — le backend recalcule `nombreSlides` (pages réelles) et incrémente `version`. */

@@ -22,9 +22,9 @@ export class SupportServiceMock implements SupportService {
     return supports.find((s) => s.id === id) ?? notFound('SupportCommercial', id);
   }
 
-  async create(data: Omit<SupportCommercial, 'id'>): Promise<SupportCommercial> {
+  async create(data: Omit<SupportCommercial, 'id' | 'version' | 'tailleFichier'>): Promise<SupportCommercial> {
     await delay();
-    const support: SupportCommercial = { ...data, id: generateId('support') };
+    const support: SupportCommercial = { ...data, id: generateId('support'), version: 1 };
     supports.push(support);
     return support;
   }
