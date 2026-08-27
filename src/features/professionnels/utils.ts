@@ -63,7 +63,9 @@ export function jourSemaineDepuisDate(date: string): JourSemaine {
 
 export function estDisponibleCeJour(jc: JoursConsultation, jour: JourSemaine): boolean {
   if (jc.mode === ModeJoursConsultation.JOURS_EXPLICITES) {
-    return jc.jours?.includes(jour) ?? true;
+    // Liste vide = donnée non renseignée (jamais "disponible aucun jour") : pas de blocage.
+    if (!jc.jours || jc.jours.length === 0) return true;
+    return jc.jours.includes(jour);
   }
   // Mode FREQUENCE : pas de jour précis connu, on ne bloque pas.
   return true;
