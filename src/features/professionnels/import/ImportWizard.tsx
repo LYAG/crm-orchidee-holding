@@ -61,6 +61,8 @@ export function ImportWizard() {
 
   const [zones, setZones] = useState<Zone[]>([]);
   const [zoneId, setZoneId] = useState<string | null>(null);
+  // Zones créées pendant ce wizard : sélectionnables même si pas (encore) couvertes par le délégué.
+  const [zonesCreeesIds, setZonesCreeesIds] = useState<string[]>([]);
   const [zoneModalOpen, setZoneModalOpen] = useState(false);
   const [creationZoneEnCours, setCreationZoneEnCours] = useState(false);
   const [zoneForm] = Form.useForm<{ nom: string; region: string }>();
@@ -104,6 +106,13 @@ export function ImportWizard() {
   const delegueChoisi = delegues.find((d) => d.id === delegueChoisiId);
   const delegueId = estGestionnaire ? delegueChoisiId ?? undefined : user?.id;
 
+  // On ne propose que les zones couvertes par le délégué concerné (plus celles créées ici),
+  // pour ne pas rattacher des centres à une zone hors de son périmètre.
+  const zoneIdsCouvertes = estGestionnaire ? delegueChoisi?.zoneIds ?? [] : user?.zoneIds ?? [];
+  const zonesSelectionnables = zones.filter(
+    (z) => zoneIdsCouvertes.includes(z.id) || zonesCreeesIds.includes(z.id),
+  );
+
   function handleDelegueChange(id: string) {
     setDelegueChoisiId(id);
     const personne = delegues.find((d) => d.id === id);
@@ -115,6 +124,7 @@ export function ImportWizard() {
     try {
       const zone = await zoneService.create(values);
       setZones((prev) => [...prev, zone]);
+      setZonesCreeesIds((prev) => [...prev, zone.id]);
       setZoneId(zone.id);
       setZoneModalOpen(false);
       zoneForm.resetFields();
@@ -319,7 +329,7 @@ export function ImportWizard() {
               <span>{resultatPartiel(job).miseAJour} fiche(s) mise(s) à jour</span>
               <span>{resultatPartiel(job).centresCrees} nouveau(x) centre(s) créé(s)</span>
               <span>{resultatPartiel(job).ignorees} ligne(s) ignorée(s)</span>
-              <span>{resultatPartiel(job).demandesValidation} demande(s) envoyée(s) à l'administrateur</span>
+              <span>{resultatPartiel(job).demandesValidation} demande(s) envoyée(s) à l&apos;administrateur</span>
             </Space>
           }
           extra={
@@ -417,10 +427,21 @@ export function ImportWizard() {
                   onChange={setZoneId}
                   showSearch
                   optionFilterProp="label"
-                  options={zones.map((z) => ({ value: z.id, label: `${z.nom} — ${z.region}` }))}
+                  options={zonesSelectionnables.map((z) => ({ value: z.id, label: `${z.nom} — ${z.region}` }))}
                 />
                 <Button onClick={() => setZoneModalOpen(true)}>Créer une zone</Button>
               </Space>
+              {zonesSelectionnables.length === 0 && (
+                <Alert
+                  type="warning"
+                  showIcon
+                  message={
+                    estGestionnaire
+                      ? 'Ce délégué ne couvre aucune zone — créez une zone ou affectez-lui-en une dans Utilisateurs & Zones.'
+                      : 'Aucune zone ne vous est affectée — créez une zone ou rapprochez-vous de votre manager.'
+                  }
+                />
+              )}
               {!zoneId && <Alert type="warning" showIcon message="Aucune zone sélectionnée — l'import ne pourra pas être lancé." />}
             </Space>
           )}
@@ -497,7 +518,7 @@ export function ImportWizard() {
           />
 
           <Button type="primary" onClick={handleSoumettre} disabled={lignes.length === 0}>
-            Soumettre l'import
+            Soumettre l&apos;import
           </Button>
         </Space>
       )}
