@@ -113,16 +113,42 @@ export function ImportWizard() {
     (z) => zoneIdsCouvertes.includes(z.id) || zonesCreeesIds.includes(z.id),
   );
 
+  // Trace du filtrage des zones (diagnostic) — se déclenche quand le délégué ou les zones changent.
+  useEffect(() => {
+    if (!estGestionnaire && !user) return;
+    console.log(
+      '[ImportWizard] Délégué concerné :',
+      estGestionnaire ? (delegueChoisi ? `${delegueChoisi.prenom} ${delegueChoisi.nom}` : '(aucun)') : `${user?.prenom} ${user?.nom} (self-import)`,
+      '· zoneIds couvertes :',
+      zoneIdsCouvertes,
+      '· zones proposées :',
+      zonesSelectionnables.map((z) => `${z.nom} — ${z.region}`),
+      '· zones créées pendant le wizard :',
+      zonesCreeesIds,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delegueChoisiId, zones, zonesCreeesIds, estGestionnaire]);
+
   function handleDelegueChange(id: string) {
     setDelegueChoisiId(id);
     const personne = delegues.find((d) => d.id === id);
-    setZoneId(personne?.zoneIds?.[0] ?? null);
+    const zonePreselectionnee = personne?.zoneIds?.[0] ?? null;
+    console.log(
+      '[ImportWizard] Changement de délégué :',
+      personne ? `${personne.prenom} ${personne.nom}` : id,
+      '· zoneIds :',
+      personne?.zoneIds ?? [],
+      '· zone présélectionnée :',
+      zonePreselectionnee,
+    );
+    setZoneId(zonePreselectionnee);
   }
 
   async function handleCreerZone(values: { nom: string; region: string }) {
     setCreationZoneEnCours(true);
     try {
       const zone = await zoneService.create(values);
+      console.log('[ImportWizard] Zone créée pendant le wizard :', `${zone.nom} — ${zone.region}`, '· id :', zone.id, '(sélectionnée)');
       setZones((prev) => [...prev, zone]);
       setZonesCreeesIds((prev) => [...prev, zone.id]);
       setZoneId(zone.id);
@@ -424,7 +450,11 @@ export function ImportWizard() {
                   style={{ width: 280 }}
                   placeholder="Sélectionner une zone"
                   value={zoneId}
-                  onChange={setZoneId}
+                  onChange={(id) => {
+                    const zone = zones.find((z) => z.id === id);
+                    console.log('[ImportWizard] Zone choisie manuellement :', zone ? `${zone.nom} — ${zone.region}` : id);
+                    setZoneId(id);
+                  }}
                   showSearch
                   optionFilterProp="label"
                   options={zonesSelectionnables.map((z) => ({ value: z.id, label: `${z.nom} — ${z.region}` }))}
