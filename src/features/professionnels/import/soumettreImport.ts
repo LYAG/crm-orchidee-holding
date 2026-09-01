@@ -69,12 +69,16 @@ export interface ContexteSoumission {
   /**
    * Référentiels spécialités/gestes, rafraîchis au (re)démarrage de l'exécution (voir
    * rafraichirReferentiels) — plus complets, potentiellement, que le référentiel utilisé à la
-   * normalisation (étape 2) si des demandes ont été approuvées entre-temps. Chaque ligne est
-   * re-résolue contre cette version fraîche au moment de la soumission, pas contre l'ancienne
-   * (ligne.specialiteIds / ligne.specialitesInconnues), pour ne jamais proposer un code déjà connu.
+   * normalisation (étape 2) si des demandes ont été approuvées entre-temps.
    */
   specialitesRef: Specialite[];
   gestesRef: GesteMarketing[];
+  /** Code (normalisé) -> id, pour les spécialités créées PENDANT ce lot — même principe que
+   * centresCreesParNom : une seule création (et une seule demande informative) par code, même
+   * si plusieurs lignes le référencent ; chaque professionnel concerné reçoit l'id directement. */
+  specialitesCreesParCode: Record<string, string>;
+  /** Idem pour les gestes marketing (libellé en minuscules -> id). */
+  gestesCreesParLibelle: Record<string, string>;
 }
 
 export function nouveauContexte(delegueId: string, zoneId: string): ContexteSoumission {
@@ -86,6 +90,8 @@ export function nouveauContexte(delegueId: string, zoneId: string): ContexteSoum
     planningParJour: {},
     specialitesRef: [],
     gestesRef: [],
+    specialitesCreesParCode: {},
+    gestesCreesParLibelle: {},
   };
 }
 
@@ -99,35 +105,76 @@ export async function rafraichirReferentiels(ctx: ContexteSoumission): Promise<v
   ctx.gestesRef = gestes;
 }
 
-/** Crée une demande par code non reconnu, rattachée au professionnel concerné quand il est
- * connu — permet, à l'approbation, de relier automatiquement la nouvelle spécialité/le nouveau
- * geste à la fiche d'origine plutôt que de laisser un simple libellé texte sans lien. */
-async function proposerCodesInconnus(
-  ligne: ProfessionnelAImporter,
-  ctx: ContexteSoumission,
-  specialitesInconnues: string[],
-  gestesInconnus: string[],
-  professionnelId: string | undefined,
-): Promise<void> {
-  const { delegueId, resultat } = ctx;
-  for (const code of specialitesInconnues) {
+/**
+ * Résout les codes de spécialité d'une ligne en ids réels — comme pour le centre, un code
+ * inconnu est créé directement dans le référentiel (une seule fois par code sur tout le lot)
+ * plutôt que laissé de côté derrière une demande de validation qui ne rattache jamais rien.
+ */
+async function resoudreSpecialites(ligne: ProfessionnelAImporter, ctx: ContexteSoumission): Promise<string[]> {
+  const { specialiteIds, inconnues } = mapperSpecialites(ligne.specialiteBrut, ctx.specialitesRef);
+  const ids = [...specialiteIds];
+  for (const code of inconnues) {
+    let id = ctx.specialitesCreesParCode[code];
+    if (!id) {
+      const specialite = await creerOuRecupererSpecialite(code, ctx);
+      id = specialite.id;
+      ctx.specialitesCreesParCode[code] = id;
+      ctx.specialitesRef = [...ctx.specialitesRef, specialite];
+    }
+    if (!ids.includes(id)) ids.push(id);
+  }
+  return ids;
+}
+
+async function creerOuRecupererSpecialite(code: string, ctx: ContexteSoumission): Promise<Specialite> {
+  try {
+    const specialite = await professionnelService.createSpecialite({ code, libelle: code, actif: true });
     await professionnelService.creerDemandeValidation({
       type: TypeDemandeValidation.NOUVELLE_SPECIALITE,
-      delegueId,
-      libelle: `Nouvelle spécialité proposée : "${code}" (ligne ${ligne.ligneExcel})`,
+      delegueId: ctx.delegueId,
+      libelle: `Nouvelle spécialité créée à l'import : "${code}"`,
       donnees: { code, libelle: code, actif: true },
-      professionnelExistantId: professionnelId,
     });
-    resultat.demandesValidation++;
+    ctx.resultat.demandesValidation++;
+    return specialite;
+  } catch {
+    // Course avec un autre import ayant créé ce même code entre-temps : on le récupère au lieu d'échouer.
+    const existante = (await professionnelService.getSpecialites()).find((s) => s.code.toUpperCase() === code);
+    if (!existante) throw new Error(`Impossible de créer ou retrouver la spécialité "${code}".`);
+    return existante;
   }
-  for (const geste of gestesInconnus) {
-    await professionnelService.creerDemandeValidation({
-      type: TypeDemandeValidation.NOUVEAU_GESTE,
-      delegueId,
-      libelle: `Nouveau geste proposé : "${geste}" (ligne ${ligne.ligneExcel})`,
-      donnees: { libelle: geste, actif: true },
-    });
-    resultat.demandesValidation++;
+}
+
+/**
+ * Même principe que resoudreSpecialites pour les gestes marketing (colonne ACTION) — alimente
+ * le référentiel à l'import ; aucun rattachement au professionnel n'existe pour les gestes
+ * (ce ne sont pas un attribut de la fiche, contrairement aux spécialités).
+ */
+async function resoudreGestes(ligne: ProfessionnelAImporter, ctx: ContexteSoumission): Promise<void> {
+  const { inconnus } = mapperGestes(ligne.actionBrut, ctx.gestesRef);
+  for (const libelleBrut of inconnus) {
+    const clef = libelleBrut.toLowerCase();
+    if (ctx.gestesCreesParLibelle[clef]) continue;
+    try {
+      const geste = await professionnelService.createGesteMarketing({ libelle: libelleBrut, actif: true });
+      ctx.gestesCreesParLibelle[clef] = geste.id;
+      ctx.gestesRef = [...ctx.gestesRef, geste];
+      await professionnelService.creerDemandeValidation({
+        type: TypeDemandeValidation.NOUVEAU_GESTE,
+        delegueId: ctx.delegueId,
+        libelle: `Nouveau geste créé à l'import : "${libelleBrut}"`,
+        donnees: { libelle: libelleBrut, actif: true },
+      });
+      ctx.resultat.demandesValidation++;
+    } catch {
+      const existant = (await professionnelService.getGestesMarketing()).find(
+        (g) => g.libelle.trim().toLowerCase() === clef,
+      );
+      if (existant) {
+        ctx.gestesCreesParLibelle[clef] = existant.id;
+        ctx.gestesRef = [...ctx.gestesRef, existant];
+      }
+    }
   }
 }
 
@@ -160,17 +207,14 @@ export async function traiterLigne(ligne: ProfessionnelAImporter, ctx: ContexteS
     if (!liste.includes(ligne.centreId)) liste.push(ligne.centreId);
   }
 
-  // Re-résolution contre le référentiel frais (pas celui, potentiellement périmé, figé à la
-  // normalisation) : un code approuvé entre-temps est directement rattaché, sans repasser
-  // par une nouvelle demande.
-  const { specialiteIds, inconnues: specialitesInconnues } = mapperSpecialites(ligne.specialiteBrut, ctx.specialitesRef);
-  const { inconnus: gestesInconnus } = mapperGestes(ligne.actionBrut, ctx.gestesRef);
+  // Comme pour le centre ci-dessus : les codes inconnus sont créés directement dans le
+  // référentiel (une seule fois par code sur tout le lot), pas laissés de côté derrière une
+  // demande de validation qui ne rattacherait jamais rien au professionnel.
+  const specialiteIds = await resoudreSpecialites(ligne, ctx);
+  await resoudreGestes(ligne, ctx);
 
   if (ligne.statut === 'DOUBLON') {
     if (ligne.actionDoublon === 'IGNORER' || !ligne.actionDoublon) {
-      // La ligne ne crée pas de fiche, mais représente le même professionnel réel que le
-      // doublon détecté : on y rattache donc les codes nouvellement approuvés.
-      await proposerCodesInconnus(ligne, ctx, specialitesInconnues, gestesInconnus, ligne.doublonProfessionnelId);
       resultat.ignorees++;
       return;
     }
@@ -180,7 +224,6 @@ export async function traiterLigne(ligne: ProfessionnelAImporter, ctx: ContexteS
         await professionnelService.updateProfessionnel(ligne.doublonProfessionnelId, dto);
         resultat.miseAJour++;
       }
-      await proposerCodesInconnus(ligne, ctx, specialitesInconnues, gestesInconnus, ligne.doublonProfessionnelId);
       return;
     }
     if (ligne.actionDoublon === 'CREER_QUAND_MEME') {
@@ -195,21 +238,16 @@ export async function traiterLigne(ligne: ProfessionnelAImporter, ctx: ContexteS
         });
         resultat.demandesValidation++;
       }
-      // La fiche n'existe pas encore (création différée à l'approbation de la demande
-      // ci-dessus) : pas d'id à rattacher pour l'instant, la proposition reste informative.
-      await proposerCodesInconnus(ligne, ctx, specialitesInconnues, gestesInconnus, undefined);
       return;
     }
   }
 
   const dto = await construireDto(ligne, delegueId, specialiteIds);
   if (dto) {
-    const cree = await professionnelService.importerProfessionnel(dto);
+    await professionnelService.importerProfessionnel(dto);
     resultat.creees++;
-    await proposerCodesInconnus(ligne, ctx, specialitesInconnues, gestesInconnus, cree.id);
   } else {
     resultat.ignorees++;
-    await proposerCodesInconnus(ligne, ctx, specialitesInconnues, gestesInconnus, undefined);
   }
 }
 
