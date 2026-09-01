@@ -16,6 +16,7 @@ import { App, Avatar, Button, Radio, Space, Tag, Tooltip } from 'antd';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useZoneFilter } from '@/components/ZoneFilterContext';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, utilisateurService, zoneService } from '@/services';
 import type { Centre, DemandeValidation, GesteRealise, ProfessionnelSante, Specialite, Utilisateur, Zone } from '@/types';
@@ -38,6 +39,7 @@ const IMPORT_STATUT_STYLE: Record<string, { color: string; label: (curseur: numb
 
 export function ProfessionnelsPage() {
   const { user } = useAuth();
+  const { zoneFiltreId } = useZoneFilter();
   const { message, modal } = App.useApp();
   const actionRef = useRef<ActionType | undefined>(undefined);
   const importJob = useImportJob();
@@ -84,7 +86,7 @@ export function ProfessionnelsPage() {
     if (!user) return;
     setKanbanLoading(true);
     try {
-      let data = await professionnelService.getProfessionnels({});
+      let data = await professionnelService.getProfessionnels({ zoneId: zoneFiltreId });
       if (user.role === UserRole.DELEGUE) {
         data = data.filter((p) => p.delegueId === user.id);
       } else if (user.role === UserRole.MANAGER) {
@@ -98,13 +100,18 @@ export function ProfessionnelsPage() {
     } finally {
       setKanbanLoading(false);
     }
-  }, [user]);
+  }, [user, zoneFiltreId]);
 
   useEffect(() => {
     if (viewMode !== 'kanban') return;
     // Le tick différé évite d'appeler un setState de façon synchrone dans le corps de l'effet.
     queueMicrotask(() => { loadKanbanData(); });
   }, [viewMode, loadKanbanData]);
+
+  // Recharge la table quand la zone du header change (le filtre est appliqué dans loadData).
+  useEffect(() => {
+    actionRef.current?.reload();
+  }, [zoneFiltreId]);
 
   if (!user) return null;
   const currentUser = user;
@@ -343,7 +350,8 @@ export function ProfessionnelsPage() {
   }
 
   async function loadData(params: Record<string, unknown> & { current?: number; pageSize?: number }) {
-    const zoneId = params.zoneId as string | undefined;
+    // La zone du formulaire de recherche prime sur la zone globale du header.
+    const zoneId = (params.zoneId as string | undefined) ?? zoneFiltreId;
     let centreId = params.centreId as string | undefined;
     // Le centre choisi peut appartenir à une zone différente de la zone sélectionnée
     // ensuite (le champ n'est pas réinitialisé automatiquement) : on l'ignore alors.

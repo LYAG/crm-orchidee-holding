@@ -128,11 +128,11 @@ export function ParametresPage() {
             <ProFormDigit
               name="tempsMoyenParSlide"
               label="Temps moyen par slide (secondes)"
-              min={10}
+              min={5}
               max={600}
-              fieldProps={{ step: 10 }}
+              fieldProps={{ step: 5 }}
               rules={[{ required: true, message: 'Ce champ est obligatoire.' }]}
-              extra={`De 10 s (présentation rapide) à 600 s (très détaillée).`}
+              extra={`De 5 s (présentation rapide) à 600 s (très détaillée).`}
             />
           </ProForm>
         </div>

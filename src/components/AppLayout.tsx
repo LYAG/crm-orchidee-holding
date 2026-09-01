@@ -12,6 +12,7 @@ import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { zoneService } from '@/services';
 import type { Zone } from '@/types';
 import { HeaderNotifications } from './HeaderNotifications';
+import { useZoneFilter } from './ZoneFilterContext';
 
 const { Text } = Typography;
 
@@ -27,7 +28,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [zones, setZones] = useState<Zone[]>([]);
-  const [selectedZone, setSelectedZone] = useState<string | undefined>();
+  // Filtre global partagé avec les pages de données via ZoneFilterContext.
+  const { zoneFiltreId, setZoneFiltreId } = useZoneFilter();
 
   useEffect(() => {
     if (user?.role === UserRole.MANAGER || user?.role === UserRole.ADMIN) {
@@ -92,8 +94,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               allowClear
               size="small"
               style={{ minWidth: 150 }}
-              value={selectedZone}
-              onChange={setSelectedZone}
+              value={zoneFiltreId}
+              onChange={setZoneFiltreId}
               options={zones.map((z) => ({ value: z.id, label: z.nom }))}
             />
           ) : null,

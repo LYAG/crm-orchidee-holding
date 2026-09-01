@@ -11,6 +11,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import 'dayjs/locale/fr';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useZoneFilter } from '@/components/ZoneFilterContext';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, rdvService, utilisateurService } from '@/services';
 import type { FiltresRdv, ProfessionnelSante, RendezVous, Utilisateur } from '@/types';
@@ -297,6 +298,7 @@ function ContactsPanel({
 
 export function RdvPage() {
   const { user } = useAuth();
+  const { zoneFiltreId } = useZoneFilter();
   const [rdvList, setRdvList] = useState<RendezVous[]>([]);
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
   const [selectedDelegueId, setSelectedDelegueId] = useState<string | null>(null);
@@ -329,8 +331,20 @@ export function RdvPage() {
       dateFin: fin.toISOString(),
       ...(effectiveDelegueId ? { delegueId: effectiveDelegueId } : {}),
     };
-    rdvService.getAll(filtres).then(setRdvList).catch(() => {});
-  }, [effectiveDelegueId, calendarViewMode, calendarCurrentDate]);
+    rdvService
+      .getAll(filtres)
+      .then(async (liste) => {
+        // Zone globale du header : pas de zoneId dans FiltresRdv côté backend —
+        // on restreint aux RDV des professionnels de la zone.
+        if (zoneFiltreId) {
+          const prosZone = await professionnelService.getProfessionnels({ zoneId: zoneFiltreId });
+          const idsZone = new Set(prosZone.map((p) => p.id));
+          liste = liste.filter((r) => idsZone.has(r.professionnelId));
+        }
+        setRdvList(liste);
+      })
+      .catch(() => {});
+  }, [effectiveDelegueId, calendarViewMode, calendarCurrentDate, zoneFiltreId]);
 
   useEffect(() => { load(); }, [load]);
 

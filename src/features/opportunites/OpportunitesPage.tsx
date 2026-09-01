@@ -6,6 +6,7 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { App, Button, Progress, Radio, Select, Tag } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useZoneFilter } from '@/components/ZoneFilterContext';
 import { UserRole } from '@/lib/constants';
 import { opportuniteService, professionnelService, utilisateurService } from '@/services';
 import { OpportuniteEtape } from '@/types';
@@ -19,6 +20,7 @@ type ViewMode = 'table' | 'kanban';
 
 export function OpportunitesPage() {
   const { user } = useAuth();
+  const { zoneFiltreId } = useZoneFilter();
   const { message } = App.useApp();
   const tableRef = useRef<ActionType | undefined>(undefined);
 
@@ -47,7 +49,14 @@ export function OpportunitesPage() {
         etape: filterEtape,
         delegueId: effectiveDelegueId,
       };
-      const opps = await opportuniteService.getAll(filtres);
+      let opps = await opportuniteService.getAll(filtres);
+      // Zone globale du header : le backend ne filtre pas les opportunités par zone —
+      // on restreint aux opportunités des professionnels de la zone.
+      if (zoneFiltreId) {
+        const prosZone = await professionnelService.getProfessionnels({ zoneId: zoneFiltreId });
+        const idsZone = new Set(prosZone.map((p) => p.id));
+        opps = opps.filter((o) => idsZone.has(o.professionnelId));
+      }
       setAllOpps(opps);
 
       // Build professionnel map
@@ -61,7 +70,12 @@ export function OpportunitesPage() {
     } finally {
       setLoading(false);
     }
-  }, [effectiveDelegueId, filterEtape, message]);
+  }, [effectiveDelegueId, filterEtape, zoneFiltreId, message]);
+
+  // Recharge la vue Tableau quand la zone du header change (appliquée dans loadTableData).
+  useEffect(() => {
+    tableRef.current?.reload();
+  }, [zoneFiltreId]);
 
   // La vue Kanban a besoin de l'ensemble des opportunités filtrées ; la vue Tableau
   // se charge elle-même via son propre `request` paginé (loadTableData ci-dessous).
@@ -121,11 +135,24 @@ export function OpportunitesPage() {
   async function loadTableData(params: Record<string, unknown> & { current?: number; pageSize?: number }) {
     const page = (params.current ?? 1) - 1;
     const pageSize = params.pageSize ?? 20;
-    const resultat = await opportuniteService.getAllPagine(
-      { etape: filterEtape, delegueId: effectiveDelegueId },
-      page,
-      pageSize,
-    );
+    let resultat: { contenu: Opportunite[]; total: number };
+    if (zoneFiltreId) {
+      // La pagination serveur ne sait pas filtrer par zone : on repasse par la liste
+      // complète filtrée côté client, paginée localement, pour garder un total exact.
+      const [toutes, prosZone] = await Promise.all([
+        opportuniteService.getAll({ etape: filterEtape, delegueId: effectiveDelegueId }),
+        professionnelService.getProfessionnels({ zoneId: zoneFiltreId }),
+      ]);
+      const idsZone = new Set(prosZone.map((p) => p.id));
+      const filtrees = toutes.filter((o) => idsZone.has(o.professionnelId));
+      resultat = { contenu: filtrees.slice(page * pageSize, (page + 1) * pageSize), total: filtrees.length };
+    } else {
+      resultat = await opportuniteService.getAllPagine(
+        { etape: filterEtape, delegueId: effectiveDelegueId },
+        page,
+        pageSize,
+      );
+    }
 
     const idsManquants = [...new Set(resultat.contenu.map((o) => o.professionnelId))].filter(
       (id) => !professionnelMap[id],

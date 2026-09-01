@@ -26,6 +26,7 @@ import {
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useZoneFilter } from '@/components/ZoneFilterContext';
 import { UserRole } from '@/lib/constants';
 import {
   professionnelService,
@@ -129,12 +130,15 @@ function MiniKpi({
 
 export function ReportingPage() {
   const { user } = useAuth();
+  const { zoneFiltreId } = useZoneFilter();
   const { message } = App.useApp();
 
   const [zones, setZones] = useState<Zone[]>([]);
   const [centres, setCentres] = useState<Centre[]>([]);
   const [delegues, setDelegues] = useState<Utilisateur[]>([]);
   const [filterZoneId, setFilterZoneId] = useState<string | undefined>();
+  // Le select local de la page prime sur la zone globale du header.
+  const zoneEffectiveId = filterZoneId ?? zoneFiltreId;
   const [filterDelegueId, setFilterDelegueId] = useState<string | undefined>();
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
 
@@ -167,13 +171,13 @@ export function ReportingPage() {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterZoneId, filterDelegueId, dateRange]);
+  }, [zoneEffectiveId, filterDelegueId, dateRange]);
 
   async function load() {
     setLoading(true);
     try {
       const allProfessionnels = await professionnelService.getProfessionnels({
-        zoneId: filterZoneId,
+        zoneId: zoneEffectiveId,
         delegueId: filterDelegueId,
       });
 
@@ -221,7 +225,7 @@ export function ReportingPage() {
     setExporting(true);
     try {
       const csv = await reportingService.exporterCsv({
-        zoneId: filterZoneId,
+        zoneId: zoneEffectiveId,
         delegueId: filterDelegueId,
         periode: dateRange
           ? { debut: dateRange[0].format('YYYY-MM-DD'), fin: dateRange[1].format('YYYY-MM-DD') }
