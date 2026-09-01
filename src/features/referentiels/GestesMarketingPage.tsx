@@ -1,6 +1,6 @@
 'use client';
 
-import { DeleteOutlined, EditOutlined, GiftOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, GiftOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   ModalForm,
   PageContainer,
@@ -20,6 +20,7 @@ import type { StatistiquesGestes } from '@/services/api/ProfessionnelService';
 import { professionnelService } from '@/services';
 import type { GesteMarketing } from '@/types';
 import { CategorieGeste } from '@/types';
+import { ImportGestesModal } from './ImportGestesModal';
 
 const CATEGORIE_LABELS: Record<CategorieGeste, string> = {
   [CategorieGeste.REPAS]: 'Repas',
@@ -43,6 +44,7 @@ export function GestesMarketingPage() {
 
   const [stats, setStats] = useState<StatistiquesGestes | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [editing, setEditing] = useState<GesteMarketing | null>(null);
 
   const isAdmin = user?.role === UserRole.ADMIN;
@@ -185,6 +187,9 @@ export function GestesMarketingPage() {
         toolBarRender={() =>
           isAdmin
             ? [
+                <Button key="import" icon={<UploadOutlined />} onClick={() => setImportOpen(true)}>
+                  Importer
+                </Button>,
                 <Button
                   key="create"
                   type="primary"
@@ -199,6 +204,12 @@ export function GestesMarketingPage() {
               ]
             : []
         }
+      />
+
+      <ImportGestesModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={() => actionRef.current?.reload()}
       />
 
       <ModalForm<GesteFormValues>

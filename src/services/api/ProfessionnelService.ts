@@ -27,6 +27,14 @@ export type UpdateProfessionnelDto = Partial<Omit<ProfessionnelSante, 'id' | 'da
 
 export type CreateGesteRealiseDto = Omit<GesteRealise, 'id'>;
 
+/** Bilan renvoyé par POST /gestes-marketing/importer — les libellés déjà existants sont ignorés. */
+export interface ImportGestesResultat {
+  crees: number;
+  ignores: number;
+  libellesIgnores: string[];
+  gestesCrees: GesteMarketing[];
+}
+
 export interface StatistiquesGestes {
   nbGestesCeMois: number;
   coutTotalFcfaCeMois: number;
@@ -55,6 +63,10 @@ export interface ProfessionnelService {
   updateGesteMarketing(id: string, data: UpdateGesteMarketingDto): Promise<GesteMarketing>;
   deleteGesteMarketing(id: string): Promise<void>;
   getStatistiquesGestes(): Promise<StatistiquesGestes>;
+  /** Prévisualisation d'import : renvoie, parmi les libellés fournis, ceux déjà en base (insensible à la casse). */
+  verifierGestesExistants(libelles: string[]): Promise<string[]>;
+  /** Import idempotent : crée les gestes absents, ignore ceux dont le libellé existe déjà. */
+  importerGestesMarketing(gestes: CreateGesteMarketingDto[]): Promise<ImportGestesResultat>;
 
   // Professionnels de santé
   getProfessionnels(filtres?: FiltresProfessionnel): Promise<ProfessionnelSante[]>;

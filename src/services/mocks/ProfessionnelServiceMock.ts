@@ -4,6 +4,7 @@ import type {
   CreateGesteRealiseDto,
   CreateProfessionnelDto,
   CreateSpecialiteDto,
+  ImportGestesResultat,
   ProfessionnelService,
   StatistiquesGestes,
   UpdateCentreDto,
@@ -186,6 +187,31 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
     const idx = gestesMarketing.findIndex((g) => g.id === id);
     if (idx < 0) notFound('Geste marketing', id);
     gestesMarketing.splice(idx, 1);
+  }
+
+  async verifierGestesExistants(libelles: string[]): Promise<string[]> {
+    await delay();
+    const cherches = new Set(libelles.map((l) => l.trim().toLowerCase()).filter(Boolean));
+    return gestesMarketing.filter((g) => cherches.has(g.libelle.trim().toLowerCase())).map((g) => g.libelle);
+  }
+
+  async importerGestesMarketing(gestes: CreateGesteMarketingDto[]): Promise<ImportGestesResultat> {
+    await delay();
+    const gestesCrees: GesteMarketing[] = [];
+    const libellesIgnores: string[] = [];
+    const vus = new Set(gestesMarketing.map((g) => g.libelle.trim().toLowerCase()));
+    for (const data of gestes) {
+      const libelle = data.libelle.trim();
+      if (vus.has(libelle.toLowerCase())) {
+        libellesIgnores.push(libelle);
+        continue;
+      }
+      vus.add(libelle.toLowerCase());
+      const geste: GesteMarketing = { ...data, libelle, id: generateId('geste') };
+      gestesMarketing.push(geste);
+      gestesCrees.push(geste);
+    }
+    return { crees: gestesCrees.length, ignores: libellesIgnores.length, libellesIgnores, gestesCrees };
   }
 
   async getStatistiquesGestes(): Promise<StatistiquesGestes> {

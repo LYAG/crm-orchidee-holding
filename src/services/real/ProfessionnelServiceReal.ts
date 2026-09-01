@@ -4,6 +4,7 @@ import type {
   CreateGesteRealiseDto,
   CreateProfessionnelDto,
   CreateSpecialiteDto,
+  ImportGestesResultat,
   ProfessionnelService,
   StatistiquesGestes,
   UpdateCentreDto,
@@ -115,6 +116,20 @@ export class ProfessionnelServiceReal implements ProfessionnelService {
     const geste = (await this.getGestesMarketing()).find((g) => g.id === id);
     if (!geste) throw new Error(`Geste marketing introuvable : ${id}`);
     await this.updateGesteMarketing(id, { ...geste, actif: false });
+  }
+
+  async verifierGestesExistants(libelles: string[]): Promise<string[]> {
+    return apiFetch<string[]>('/gestes-marketing/verifier-existants', {
+      method: 'POST',
+      body: JSON.stringify({ libelles }),
+    });
+  }
+
+  async importerGestesMarketing(gestes: CreateGesteMarketingDto[]): Promise<ImportGestesResultat> {
+    return apiFetch<ImportGestesResultat>('/gestes-marketing/importer', {
+      method: 'POST',
+      body: JSON.stringify({ gestes }),
+    });
   }
 
   /** Pas d'endpoint d'agrégation dédié — recalculé côté client depuis les gestes réalisés (comme le mock). */
