@@ -1,7 +1,14 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { finaliserPlanning, nouveauContexte, traiterLigne, type ContexteSoumission, type ResultatSoumission } from './soumettreImport';
+import {
+  finaliserPlanning,
+  nouveauContexte,
+  rafraichirReferentiels,
+  traiterLigne,
+  type ContexteSoumission,
+  type ResultatSoumission,
+} from './soumettreImport';
 import type { ProfessionnelAImporter } from './types';
 
 export type StatutJobImport = 'EN_COURS' | 'INTERROMPU' | 'TERMINE' | 'ERREUR';
@@ -83,6 +90,9 @@ async function executer() {
   const curseurDebutSession = actuel.curseur;
   notifier();
   try {
+    // Référentiel spécialités/gestes rafraîchi à chaque (re)démarrage — couvre le cas où des
+    // demandes ont été approuvées depuis la normalisation, ou pendant une pause de reprise.
+    await rafraichirReferentiels(actuel.ctx);
     while (actuel.curseur < actuel.lignes.length) {
       await traiterLigne(actuel.lignes[actuel.curseur], actuel.ctx);
 

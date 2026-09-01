@@ -440,9 +440,23 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
         );
         if (!dejaExistant) await this.createCentre(donnees);
       } else if (demande.type === 'NOUVELLE_SPECIALITE') {
-        await this.createSpecialite(demande.donnees as unknown as CreateSpecialiteDto);
+        const donnees = demande.donnees as unknown as CreateSpecialiteDto;
+        // Idempotent, comme NOUVEAU_CENTRE ci-dessus : un autre import a pu faire approuver
+        // ce même code entre-temps.
+        const existante = specialites.find((s) => s.code.trim().toUpperCase() === donnees.code.trim().toUpperCase());
+        const specialite = existante ?? (await this.createSpecialite(donnees));
+        // Rattache la spécialité au professionnel qui l'avait proposée à l'import — sinon
+        // elle reste dans le référentiel sans jamais être liée à sa fiche (bug d'origine).
+        if (demande.professionnelExistantId) {
+          const pro = professionnels.find((p) => p.id === demande.professionnelExistantId);
+          if (pro && !pro.specialiteIds.includes(specialite.id)) {
+            pro.specialiteIds = [...pro.specialiteIds, specialite.id];
+          }
+        }
       } else if (demande.type === 'NOUVEAU_GESTE') {
-        await this.createGesteMarketing(demande.donnees as unknown as CreateGesteMarketingDto);
+        const donnees = demande.donnees as unknown as CreateGesteMarketingDto;
+        const existant = gestesMarketing.find((g) => g.libelle.trim().toLowerCase() === donnees.libelle.trim().toLowerCase());
+        if (!existant) await this.createGesteMarketing(donnees);
       } else if (demande.type === 'DOUBLON_PROFESSIONNEL') {
         await this.createProfessionnel(demande.donnees as unknown as CreateProfessionnelDto);
       } else if (demande.type === 'CHANGEMENT_CLASSIFICATION' && demande.professionnelExistantId) {
