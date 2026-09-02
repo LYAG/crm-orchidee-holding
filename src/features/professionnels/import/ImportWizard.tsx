@@ -349,7 +349,7 @@ export function ImportWizard() {
           status="success"
           title="Import terminé"
           subTitle={
-            <Space direction="vertical">
+            <Space orientation="vertical">
               <span>Pour {job.delegueNom}</span>
               <span>{resultatPartiel(job).creees} fiche(s) créée(s)</span>
               <span>{resultatPartiel(job).miseAJour} fiche(s) mise(s) à jour</span>
@@ -367,7 +367,7 @@ export function ImportWizard() {
       )}
 
       {job && job.statut !== 'TERMINE' && (
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
+        <Space orientation="vertical" style={{ width: '100%' }} size="large">
           <Descriptions bordered size="small" column={2}>
             <Descriptions.Item label="Délégué">{job.delegueNom}</Descriptions.Item>
             <Descriptions.Item label="Progression">
@@ -376,7 +376,7 @@ export function ImportWizard() {
           </Descriptions>
 
           {job.statut === 'EN_COURS' && (
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space orientation="vertical" style={{ width: '100%' }}>
               <Progress percent={Math.round((job.curseur / job.total) * 100)} status="active" />
               <Text type="secondary">
                 {job.curseur} / {job.total} ligne{job.total > 1 ? 's' : ''} importée{job.curseur > 1 ? 's' : ''}
@@ -417,14 +417,14 @@ export function ImportWizard() {
       )}
 
       {!job && step === 0 && (
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
+        <Space orientation="vertical" style={{ width: '100%' }} size="large">
           <Alert
             type="info"
             showIcon
             message="Format attendu : colonnes JOUR, CENTRE, SPECIALITE, NOM ET PRENOM, NUMERO, JRS/CONS, NBRE DE CAS, ACTION, OBSERVATION."
           />
           {estGestionnaire && (
-            <Space direction="vertical">
+            <Space orientation="vertical">
               <Text strong>Délégué concerné par ce fichier</Text>
               <Select
                 style={{ width: 280 }}
@@ -437,7 +437,7 @@ export function ImportWizard() {
           )}
 
           {(!estGestionnaire || delegueChoisiId) && (
-            <Space direction="vertical">
+            <Space orientation="vertical">
               <Text strong>Zone pour les nouveaux centres</Text>
               <Alert
                 type="info"
@@ -489,7 +489,7 @@ export function ImportWizard() {
           </Dragger>
 
           {feuilles.length > 0 && (
-            <Space direction="vertical">
+            <Space orientation="vertical">
               <Text strong>Feuille à importer</Text>
               <Select
                 style={{ width: 280 }}
@@ -506,7 +506,7 @@ export function ImportWizard() {
       )}
 
       {!job && step === 1 && (
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
+        <Space orientation="vertical" style={{ width: '100%' }} size="large">
           <Descriptions bordered size="small" column={2}>
             <Descriptions.Item label="Lignes lues">{lignesBrutes.length}</Descriptions.Item>
             <Descriptions.Item label="Lignes ignorées (sections parasites)">{lignesIgnorees}</Descriptions.Item>
@@ -526,7 +526,7 @@ export function ImportWizard() {
       )}
 
       {!job && step === 2 && (
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
+        <Space orientation="vertical" style={{ width: '100%' }} size="large">
           <Descriptions bordered size="small" column={4}>
             <Descriptions.Item label="Prêtes">{rapport.pretes}</Descriptions.Item>
             <Descriptions.Item label="Doublons">{rapport.doublons}</Descriptions.Item>

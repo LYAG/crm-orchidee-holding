@@ -113,7 +113,7 @@ export function PurgeDatabasePage() {
           Actualiser
         </Button>,
       ]}>
-      <Space direction="vertical" style={{ width: '100%' }} size="large">
+      <Space orientation="vertical" style={{ width: '100%' }} size="large">
         <Alert
           type="error"
           showIcon
@@ -168,7 +168,7 @@ export function PurgeDatabasePage() {
         cancelText="Annuler"
         onOk={handlePurger}
         destroyOnHidden>
-        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+        <Space orientation="vertical" style={{ width: '100%' }} size="middle">
           <Alert
             type="error"
             showIcon

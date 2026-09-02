@@ -10,7 +10,7 @@ import {
   UploadOutlined,
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Col, Empty, Modal, Row, Skeleton, Tag, Typography, message } from 'antd';
+import { App, Button, Col, Empty, Modal, Row, Skeleton, Tag, Typography } from 'antd';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { supportService } from '@/services';
@@ -215,6 +215,7 @@ function SupportCard({
 }
 
 export function SupportsPage() {
+  const { message } = App.useApp();
   const [supports, setSupports] = useState<SupportCommercial[]>([]);
   const [parametres, setParametres] = useState<ParametresApp>({ tempsMoyenParSlide: 120 });
   const [loading, setLoading] = useState(true);

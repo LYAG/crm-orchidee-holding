@@ -166,7 +166,7 @@ export function ProfessionnelsPage() {
             <Avatar size={34} style={{ background: '#E8F5E9', color: '#2E6B5B', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
               {initiales}
             </Avatar>
-            <Space direction="vertical" size={0}>
+            <Space orientation="vertical" size={0}>
               <strong style={{ color: '#123832' }}>
                 {p.titre ? `${p.titre} ` : ''}
                 {p.nom} {p.prenom ?? ''}
@@ -205,7 +205,7 @@ export function ProfessionnelsPage() {
       render: (_, p) => {
         const { centre, zone } = centreEtZone(p.centreId);
         return (
-          <Space direction="vertical" size={0}>
+          <Space orientation="vertical" size={0}>
             <span>{centre?.nom ?? p.centreId}</span>
             <span style={{ color: '#8FB0A8', fontSize: 11 }}>{zone?.nom}</span>
           </Space>

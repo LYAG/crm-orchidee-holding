@@ -1,6 +1,6 @@
 'use client';
 
-import { Form, Input, Modal, message } from 'antd';
+import { App, Form, Input, Modal } from 'antd';
 import { useState } from 'react';
 import { rdvService } from '@/services';
 import type { RendezVous } from '@/types';
@@ -13,6 +13,7 @@ interface Props {
 }
 
 export function AnnulationModal({ open, onOpenChange, rdv, onSuccess }: Props) {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 

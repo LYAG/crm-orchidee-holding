@@ -203,7 +203,7 @@ export function CentresPage() {
               });
             });
             return (
-              <Space direction="vertical" size={10} style={{ width: '100%', padding: '4px 0' }}>
+              <Space orientation="vertical" size={10} style={{ width: '100%', padding: '4px 0' }}>
                 {[...parSpecialite.entries()].map(([sid, pros]) => {
                   const libelle = specialites.find((s) => s.id === sid)?.libelle ?? 'Sans spécialité';
                   return (

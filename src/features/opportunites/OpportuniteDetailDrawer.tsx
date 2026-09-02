@@ -258,7 +258,7 @@ export function OpportuniteDetailDrawer({
         )
       }
     >
-      <Space direction="vertical" style={{ width: '100%' }} size="large">
+      <Space orientation="vertical" style={{ width: '100%' }} size="large">
         {/* KPI row */}
         <Descriptions column={2} size="small">
           <Descriptions.Item label="Professionnel de santé">
@@ -410,7 +410,7 @@ export function OpportuniteDetailDrawer({
               dataSource={[...opp.notes].reverse()}
               renderItem={(note) => (
                 <List.Item>
-                  <Space direction="vertical" size={0} style={{ width: '100%' }}>
+                  <Space orientation="vertical" size={0} style={{ width: '100%' }}>
                     <Text style={{ fontSize: 13 }}>{note.contenu}</Text>
                     <Text type="secondary" style={{ fontSize: 11 }}>
                       {utilisateurMap[note.auteurId]

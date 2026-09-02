@@ -1,7 +1,7 @@
 'use client';
 
 import { InboxOutlined } from '@ant-design/icons';
-import { Alert, Button, message, Modal, Space, Typography, Upload } from 'antd';
+import { Alert, App, Button, Modal, Space, Typography, Upload } from 'antd';
 import { useState } from 'react';
 import { supportService } from '@/services';
 import { SupportType } from '@/types';
@@ -17,6 +17,7 @@ interface Props {
 }
 
 export function ImportSupportModal({ open, onOpenChange, onSuccess }: Props) {
+  const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [createdSupport, setCreatedSupport] = useState<SupportCommercial | null>(null);
 
@@ -77,7 +78,7 @@ export function ImportSupportModal({ open, onOpenChange, onSuccess }: Props) {
       width={640}
     >
       {!createdSupport ? (
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space orientation="vertical" size="large" style={{ width: '100%' }}>
           <Alert
             type="info"
             showIcon
@@ -97,7 +98,7 @@ export function ImportSupportModal({ open, onOpenChange, onSuccess }: Props) {
           </Dragger>
         </Space>
       ) : (
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+        <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
           <Alert
             type="success"
             showIcon

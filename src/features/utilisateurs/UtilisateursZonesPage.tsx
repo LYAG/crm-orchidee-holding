@@ -289,7 +289,7 @@ function CredentialsModal({
         Communiquez ces identifiants au collaborateur. Le mot de passe ne sera plus affiché ensuite —
         pensez à le copier maintenant.
       </Text>
-      <Space direction="vertical" size={12} style={{ width: '100%' }}>
+      <Space orientation="vertical" size={12} style={{ width: '100%' }}>
         <div>
           <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
             Adresse e-mail
@@ -570,7 +570,7 @@ function ZoneCard({
               Aucun délégué affecté
             </Text>
           ) : (
-            <Space direction="vertical" size={6} style={{ width: '100%' }}>
+            <Space orientation="vertical" size={6} style={{ width: '100%' }}>
               {zoneDelegues.map((d) => {
                 const mgr = managers.find((m) => m.id === d.managerId);
                 return (

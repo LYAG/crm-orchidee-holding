@@ -205,7 +205,7 @@ export function ImportGestesModal({ open, onClose, onImported }: Props) {
           status="success"
           title="Import terminé"
           subTitle={
-            <Space direction="vertical">
+            <Space orientation="vertical">
               <span>{resultat.crees} geste(s) créé(s)</span>
               <span>{resultat.ignores} déjà existant(s) ignoré(s)</span>
               {resultat.libellesIgnores.length > 0 && (
@@ -220,7 +220,7 @@ export function ImportGestesModal({ open, onClose, onImported }: Props) {
           }
         />
       ) : lignes.length === 0 ? (
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
+        <Space orientation="vertical" style={{ width: '100%' }} size="large">
           <Alert
             type="info"
             showIcon
@@ -235,7 +235,7 @@ export function ImportGestesModal({ open, onClose, onImported }: Props) {
           </Dragger>
         </Space>
       ) : (
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
+        <Space orientation="vertical" style={{ width: '100%' }} size="large">
           <Alert
             type={nbACreer > 0 ? 'success' : 'warning'}
             showIcon

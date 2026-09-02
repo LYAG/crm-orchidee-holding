@@ -7,7 +7,7 @@ import {
   ProFormSelect,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { Alert, Form, message } from 'antd';
+import { Alert, App, Form } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -34,6 +34,7 @@ interface FormValues {
 }
 
 export function RdvDrawerForm({ open, onOpenChange, rdv, delegueId, onSuccess, prefill }: Props) {
+  const { message } = App.useApp();
   const { user } = useAuth();
   const isEdit = !!rdv;
   const isDelegue = user?.role === UserRole.DELEGUE;

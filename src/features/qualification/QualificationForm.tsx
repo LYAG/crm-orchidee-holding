@@ -64,7 +64,7 @@ export function QualificationFormFields({ initialValues, watched, onValuesChange
     watched.transformation === QualificationTransformation.RELANCE_NECESSAIRE;
 
   return (
-    <Space direction="vertical" style={{ width: '100%' }} size="middle">
+    <Space orientation="vertical" style={{ width: '100%' }} size="middle">
       {/* ── Axe 1 ── */}
       <ProCard
         title={
@@ -80,7 +80,7 @@ export function QualificationFormFields({ initialValues, watched, onValuesChange
           rules={[{ required: true, message: 'Veuillez sélectionner une option.' }]}
         >
           <Radio.Group onChange={(e) => onValuesChange({ productif: e.target.value })}>
-            <Space direction="vertical">
+            <Space orientation="vertical">
               <Radio value={QualificationProductif.PRODUCTIF}>
                 <Text strong>Productif</Text>
                 <Text type="secondary" style={{ marginLeft: 8 }}>
@@ -147,7 +147,7 @@ export function QualificationFormFields({ initialValues, watched, onValuesChange
           rules={[{ required: true, message: 'Veuillez sélectionner une option.' }]}
         >
           <Radio.Group onChange={(e) => onValuesChange({ opportunite: e.target.value })}>
-            <Space direction="vertical">
+            <Space orientation="vertical">
               <Radio value={QualificationOpportunite.AUCUNE}>
                 <Text strong>Aucune opportunité</Text>
               </Radio>
@@ -214,7 +214,7 @@ export function QualificationFormFields({ initialValues, watched, onValuesChange
           rules={[{ required: true, message: 'Veuillez sélectionner une option.' }]}
         >
           <Radio.Group onChange={(e) => onValuesChange({ transformation: e.target.value })}>
-            <Space direction="vertical">
+            <Space orientation="vertical">
               <Radio value={QualificationTransformation.TRANSFORME_CLIENT}>
                 <Space>
                   <CheckCircleOutlined style={{ color: '#0F6E52' }} />

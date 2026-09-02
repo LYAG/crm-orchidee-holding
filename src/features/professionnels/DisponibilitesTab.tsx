@@ -98,7 +98,7 @@ export function DisponibilitesTab({ professionnel, onSaved }: Props) {
 
       <Form form={form} layout="vertical" disabled={verrouille && !editing}>
         <Form.Item label="Jours de consultation">
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <Space orientation="vertical" style={{ width: '100%' }}>
             <Form.Item name="mode" noStyle>
               <Radio.Group disabled={!editing}>
                 <Radio value={ModeJoursConsultation.JOURS_EXPLICITES}>Jours précis</Radio>
