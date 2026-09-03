@@ -1,8 +1,9 @@
 ﻿import type { ReportingService } from '@/services/api/ReportingService';
-import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport, TopDelegue } from '@/types';
+import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport, ProgressionConversion, TopDelegue } from '@/types';
 import { OpportuniteEtape, QualificationTransformation, RdvStatut, StatutProfessionnel } from '@/types';
 import { delay } from './_utils';
 import { opportunites, qualifications, rendezvous, utilisateurs } from './data';
+import { getObjectifEffectifMock } from './ObjectifConversionServiceMock';
 import { centres, historiqueChangementsStatut, professionnels } from './professionnelsData';
 
 function now() {
@@ -169,5 +170,29 @@ export class ReportingServiceMock implements ReportingService {
         `${p.id},"${p.nom}","${p.prenom ?? ''}",${p.centreId},${p.statut},${p.delegueId ?? ''},${p.dateCreation}`,
     );
     return [header, ...rows].join('\n');
+  }
+
+  async getProgressionConversions(annee: number, mois: number): Promise<ProgressionConversion[]> {
+    await delay();
+    const objectif = getObjectifEffectifMock(annee, mois);
+    const debut = new Date(annee, mois - 1, 1);
+    const fin = new Date(annee, mois, 1);
+
+    return utilisateurs
+      .filter((u) => u.role === 'DELEGUE')
+      .map((u) => {
+        const nbConversions = historiqueChangementsStatut.filter((h) => {
+          const d = new Date(h.date);
+          return (
+            h.delegueId === u.id &&
+            h.statutAvant === StatutProfessionnel.T1 &&
+            h.statutApres === StatutProfessionnel.ST &&
+            d >= debut &&
+            d < fin
+          );
+        }).length;
+        return { delegueId: u.id, nomDelegue: `${u.prenom} ${u.nom}`, nbConversions, objectif };
+      })
+      .sort((a, b) => a.nomDelegue.localeCompare(b.nomDelegue));
   }
 }

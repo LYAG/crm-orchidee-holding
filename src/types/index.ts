@@ -259,6 +259,30 @@ export interface KpiAdmin {
   topDelegues: TopDelegue[];
 }
 
+// ─── Objectifs de conversion T1 → ST ──────────────────────────────────────────
+
+export interface ObjectifMois {
+  mois: number; // 1-12
+  /** null = pas d'override ce mois-ci : il hérite de valeurParDefaut. */
+  valeurSpecifique: number | null;
+  /** Valeur réellement appliquée (valeurSpecifique, sinon valeurParDefaut, sinon 0). */
+  valeurEffective: number;
+}
+
+export interface ObjectifAnnee {
+  annee: number;
+  /** null si aucun objectif par défaut n'a encore été fixé pour cette année. */
+  valeurParDefaut: number | null;
+  mois: ObjectifMois[];
+}
+
+export interface ProgressionConversion {
+  delegueId: string;
+  nomDelegue: string;
+  nbConversions: number;
+  objectif: number;
+}
+
 // ─── Filtres génériques ───────────────────────────────────────────────────────
 
 export interface FiltresRdv {

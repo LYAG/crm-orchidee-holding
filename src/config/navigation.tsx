@@ -1,4 +1,5 @@
 import {
+  AimOutlined,
   BarChartOutlined,
   CalendarOutlined,
   DashboardOutlined,
@@ -109,6 +110,12 @@ const allRoutes: MenuRoute[] = [
         roles: ['ADMIN'],
       },
       {
+        path: '/parametres/objectifs',
+        name: 'Objectifs de conversion',
+        icon: <AimOutlined />,
+        roles: ['ADMIN'],
+      },
+      {
         path: '/parametres/roles',
         name: 'Rôles & permissions',
         icon: <SafetyCertificateOutlined />,
@@ -150,6 +157,7 @@ export const PAGE_TITLES: Record<string, string> = {
   '/referentiels/gestes': 'Gestes marketing',
   '/parametres': 'Paramètres',
   '/parametres/presentation': 'Présentation commerciale',
+  '/parametres/objectifs': 'Objectifs de conversion',
   '/parametres/roles': 'Rôles & permissions',
   '/parametres/purge': 'Purge base de données',
 };

@@ -8,13 +8,14 @@ import {
   WalletOutlined,
 } from '@ant-design/icons';
 import { PageContainer, ProCard } from '@ant-design/pro-components';
-import { Button, Col, Empty, Row, Skeleton, Tag, Typography } from 'antd';
+import { Button, Col, Empty, Progress, Row, Skeleton, Tag, Typography } from 'antd';
+import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { qualificationService, rdvService, reportingService } from '@/services';
 import { QualificationTransformation } from '@/types';
-import type { KpiDelegue, QualificationRDV, RendezVous, Utilisateur } from '@/types';
+import type { KpiDelegue, ProgressionConversion, QualificationRDV, RendezVous, Utilisateur } from '@/types';
 import { SimpleBarChart } from './SimpleBarChart';
 
 const { Text } = Typography;
@@ -113,6 +114,7 @@ export function DashboardDelegue({ user }: Props) {
   const [kpi, setKpi] = useState<KpiDelegue | null>(null);
   const [relances, setRelances] = useState<{ rdv: RendezVous; qual: QualificationRDV }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [conversion, setConversion] = useState<ProgressionConversion | null>(null);
 
   useEffect(() => {
     reportingService
@@ -120,6 +122,14 @@ export function DashboardDelegue({ user }: Props) {
       .then(setKpi)
       .catch(() => {})
       .finally(() => setLoading(false));
+  }, [user.id]);
+
+  useEffect(() => {
+    const maintenant = dayjs();
+    reportingService
+      .getProgressionConversions(maintenant.year(), maintenant.month() + 1)
+      .then((liste) => setConversion(liste.find((p) => p.delegueId === user.id) ?? null))
+      .catch(() => {});
   }, [user.id]);
 
   useEffect(() => {
@@ -213,6 +223,34 @@ export function DashboardDelegue({ user }: Props) {
           />
         </Col>
       </Row>
+
+      {conversion && conversion.objectif > 0 && (
+        <ProCard bordered style={{ borderRadius: 12, marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <Progress
+              type="circle"
+              size={64}
+              percent={Math.min(100, Math.round((conversion.nbConversions / conversion.objectif) * 100))}
+              strokeColor={conversion.nbConversions >= conversion.objectif ? '#0F6E52' : '#1565C0'}
+              format={() => (
+                <span style={{ fontSize: 15, fontWeight: 800, color: '#123832' }}>
+                  {conversion.nbConversions}/{conversion.objectif}
+                </span>
+              )}
+            />
+            <div>
+              <Text strong style={{ display: 'block', color: '#123832' }}>
+                Objectif de conversion T1 → ST ce mois-ci
+              </Text>
+              <Text type="secondary" style={{ fontSize: 13 }}>
+                {conversion.nbConversions >= conversion.objectif
+                  ? 'Objectif atteint — bravo !'
+                  : `Encore ${conversion.objectif - conversion.nbConversions} conversion(s) pour atteindre l'objectif.`}
+              </Text>
+            </div>
+          </div>
+        </ProCard>
+      )}
 
       <Row gutter={[16, 16]}>
         {/* ── Activité chart ── */}

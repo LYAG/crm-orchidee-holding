@@ -3,6 +3,8 @@
 import { LockOutlined } from '@ant-design/icons';
 import { App, Button, Form, Input, Select, Space, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { UserRole } from '@/lib/constants';
 import { professionnelService } from '@/services';
 import type { Centre, ProfessionnelSante, Specialite } from '@/types';
 import { CategorieEtablissement, TitreProfessionnel } from '@/types';
@@ -34,11 +36,15 @@ interface FormValues {
 
 export function InformationsTab({ professionnel, centres, specialites, onSaved }: Props) {
   const { message } = App.useApp();
+  const { user } = useAuth();
   const [form] = Form.useForm<FormValues>();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const verrouille = professionnel.aDejaEuContact;
+  const role = user?.role as UserRole | undefined;
+  // Le verrou (RDV déjà eu) ne s'applique qu'au délégué — manager/admin peuvent toujours corriger la fiche.
+  const peutOutrepasserVerrou = role === UserRole.MANAGER || role === UserRole.ADMIN;
+  const verrouille = professionnel.aDejaEuContact && !peutOutrepasserVerrou;
 
   useEffect(() => {
     queueMicrotask(() => {

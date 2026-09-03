@@ -37,6 +37,7 @@ import {
 } from '@/services';
 import { RdvStatut, StatutProfessionnel } from '@/types';
 import type { Centre, ProfessionnelSante, RendezVous, Utilisateur, Zone } from '@/types';
+import { ConversionsTab } from './ConversionsTab';
 import { SuiviProfessionnelsTab } from './SuiviProfessionnelsTab';
 
 const { Text } = Typography;
@@ -470,6 +471,7 @@ export function ReportingPage() {
         items={[
           { key: 'professionnels', label: 'Professionnels', children: professionnelsTab },
           { key: 'suivi', label: 'Suivi Professionnels', children: <SuiviProfessionnelsTab /> },
+          { key: 'conversions', label: 'Objectifs de conversion', children: <ConversionsTab /> },
         ]}
       />
     </PageContainer>

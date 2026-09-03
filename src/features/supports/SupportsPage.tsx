@@ -223,12 +223,13 @@ export function SupportsPage() {
 
   const refreshSupports = () => {
     setLoading(true);
-    Promise.all([supportService.getAll(), supportService.getParametres()])
+    // Fetchs indépendants : un paramétrage indisponible ne doit jamais effacer une liste
+    // de supports pourtant bien récupérée (Promise.all échouerait globalement sinon).
+    Promise.allSettled([supportService.getAll(), supportService.getParametres()])
       .then(([s, p]) => {
-        setSupports(s);
-        setParametres(p);
+        if (s.status === 'fulfilled') setSupports(s.value);
+        if (p.status === 'fulfilled') setParametres(p.value);
       })
-      .catch(() => {})
       .finally(() => setLoading(false));
   };
 
