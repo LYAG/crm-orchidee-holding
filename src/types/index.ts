@@ -165,6 +165,38 @@ export interface QualificationRDV {
   modifiePar?: string;
   dateModification?: string;
   logModification?: string;
+  // Suivi mensuel (fiche papier "Planning Mensuel — Fiche de Suivi") — voir mobile-crm-oh,
+  // renseigné uniquement depuis l'app mobile délégué (pas de saisie web pour l'instant).
+  numeroVisiteMois?: number;
+  produitConnuEtPrescrit?: boolean;
+  nombreDeCas?: number;
+  engagementChiffre?: number;
+  engagementRespecte?: boolean;
+  retourEngagement?: string;
+  tousCasBeneficient?: boolean;
+  remerciement?: string;
+  pourquoiNonRespecte?: string;
+}
+
+export interface VisiteMensuelle {
+  numeroVisite: number;
+  dateVisite: string;
+  produitConnuEtPrescrit?: boolean;
+  nombreDeCas?: number;
+  engagementChiffre?: number;
+  engagementRespecte?: boolean;
+  retourEngagement?: string;
+  tousCasBeneficient?: boolean;
+  remerciement?: string;
+  pourquoiNonRespecte?: string;
+}
+
+export interface FicheMensuelleProfessionnel {
+  professionnelId: string;
+  professionnelNom: string;
+  centreId: string | null;
+  centreNom: string;
+  visites: VisiteMensuelle[];
 }
 
 // ─── Opportunité & Devis ──────────────────────────────────────────────────────

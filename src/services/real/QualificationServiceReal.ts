@@ -1,6 +1,6 @@
 import type { QualificationService } from '@/services/api/QualificationService';
-import type { QualificationRDV } from '@/types';
-import { ApiError, apiFetch } from './httpClient';
+import type { FicheMensuelleProfessionnel, QualificationRDV } from '@/types';
+import { ApiError, apiFetch, qs } from './httpClient';
 
 export class QualificationServiceReal implements QualificationService {
   async getByRdv(rdvId: string): Promise<QualificationRDV | null> {
@@ -20,5 +20,9 @@ export class QualificationServiceReal implements QualificationService {
   /** managerId ignoré : le backend trace modifiePar depuis le JWT de l'appelant (rôle MANAGER/ADMIN requis). */
   async update(id: string, data: Partial<QualificationRDV>, _managerId: string): Promise<QualificationRDV> {
     return apiFetch<QualificationRDV>(`/qualifications/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+  }
+
+  async getFicheMensuelle(delegueId: string, annee: number, mois: number): Promise<FicheMensuelleProfessionnel[]> {
+    return apiFetch<FicheMensuelleProfessionnel[]>(`/qualifications/fiche-mensuelle${qs({ delegueId, annee, mois })}`);
   }
 }
