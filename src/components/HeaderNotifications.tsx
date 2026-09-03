@@ -6,7 +6,6 @@ import {
   CalendarOutlined,
   CheckCircleOutlined,
   CloudUploadOutlined,
-  MergeCellsOutlined,
   SafetyCertificateOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
@@ -85,17 +84,6 @@ export function HeaderNotifications({ user }: Props) {
 
       if (user.role === UserRole.ADMIN) {
         const kpi = await reportingService.getKpiAdmin();
-
-        if (kpi.doublonsEnAttente > 0) {
-          items.push({
-            key: 'doublons',
-            icon: <MergeCellsOutlined />,
-            type: 'error',
-            title: `${kpi.doublonsEnAttente} doublon${kpi.doublonsEnAttente > 1 ? 's' : ''} en attente`,
-            description: 'Des prospects importés nécessitent une validation.',
-            link: '/doublons',
-          });
-        }
 
         if (kpi.professionnelsNonAttribuesSup30j > 0) {
           items.push({

@@ -60,9 +60,11 @@ interface Props {
   qualification: QualificationRDV;
   userRole?: string;
   onEdit?: () => void;
+  /** Nom complet de l'auteur (résolu depuis qualification.qualifiePar, un id utilisateur) — affiche l'id brut tant qu'il n'est pas encore résolu. */
+  nomQualifiePar?: string;
 }
 
-export function QualificationReadOnly({ qualification: q, userRole, onEdit }: Props) {
+export function QualificationReadOnly({ qualification: q, userRole, onEdit, nomQualifiePar }: Props) {
   const canEdit = userRole === UserRole.MANAGER;
   const opp = OPPORTUNITE_LABELS[q.opportunite];
   const prod = PRODUCTIF_LABELS[q.productif];
@@ -132,7 +134,7 @@ export function QualificationReadOnly({ qualification: q, userRole, onEdit }: Pr
 
       <ProDescriptions column={2} size="small" title="Informations de saisie">
         <ProDescriptions.Item label="Qualifié par">
-          <Text code>{q.qualifiePar}</Text>
+          {nomQualifiePar ?? <Text code>{q.qualifiePar}</Text>}
         </ProDescriptions.Item>
         <ProDescriptions.Item label="Date de qualification">
           {new Date(q.dateQualification).toLocaleString('fr-FR')}

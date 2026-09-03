@@ -1,12 +1,14 @@
 'use client';
 
-import { DollarOutlined, HeartOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
+import { DollarOutlined, HeartOutlined, PrinterOutlined, RiseOutlined, TeamOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { App, Col, Row, Select, Skeleton, Space, Table, Tag, Typography } from 'antd';
+import { App, Button, Col, Row, Select, Skeleton, Space, Table, Tag, Typography } from 'antd';
+import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { formatFcfa } from '@/lib/format';
 import { UserRole } from '@/lib/constants';
+import { construireLigneFiltres, construireTableauHtml, imprimerRapport } from '@/lib/impression';
 import { professionnelService, rdvService, utilisateurService, zoneService } from '@/services';
 import type {
   Centre,
@@ -231,6 +233,74 @@ export function SuiviProfessionnelsTab() {
       .sort((a, b) => b.coutPro - a.coutPro);
   }, [professionnelsScope, gestesRealises, rdvs, centres]);
 
+  const resumeFiltres = construireLigneFiltres([
+    { label: 'Zone', valeur: zones.find((z) => z.id === filterZoneId)?.nom },
+    { label: 'Centre', valeur: centres.find((c) => c.id === filterCentreId)?.nom },
+    { label: 'Spécialité', valeur: specialites.find((s) => s.id === filterSpecialiteId)?.libelle },
+    {
+      label: 'Délégué',
+      valeur: delegues.find((d) => d.id === filterDelegueId)
+        ? `${delegues.find((d) => d.id === filterDelegueId)!.prenom} ${delegues.find((d) => d.id === filterDelegueId)!.nom}`
+        : undefined,
+    },
+  ]);
+
+  function imprimerTableauSuivi(titre: string, entetes: string[], lignes: (string | number)[][]) {
+    const corps = `
+      <h1 style="font-size:18px; margin:0;">${titre}</h1>
+      <p style="color:#6B8A82; font-size:13px; margin:4px 0 16px;">
+        ${resumeFiltres} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
+      </p>
+      ${construireTableauHtml(entetes, lignes)}
+    `;
+    imprimerRapport(titre, corps);
+  }
+
+  function handleImprimerCouverture() {
+    imprimerTableauSuivi(
+      'Couverture par zone',
+      ['Zone', 'Visités / Total', 'Couverture'],
+      couvertureParZone.map((r) => [r.zone, `${r.visites} / ${r.total}`, `${r.pct} %`])
+    );
+  }
+
+  function handleImprimerTopGestes() {
+    imprimerTableauSuivi(
+      'Top 5 des gestes utilisés',
+      ['Geste', 'Nombre', 'Coût cumulé'],
+      topGestes.map((r) => [r.libelle, r.nb, formatFcfa(r.cout)])
+    );
+  }
+
+  function handleImprimerPotentielParCentre() {
+    imprimerTableauSuivi(
+      'Potentiel par centre',
+      ['Centre', 'Zone', 'Potentiel (cas/semaine)', 'Visités / Total', 'Alerte'],
+      potentielParCentre.map((r) => [
+        r.centre.nom,
+        r.zoneNom,
+        Math.round(r.potentiel),
+        `${r.visites} / ${r.total}`,
+        r.potentiel > maxPotentiel * 0.4 && r.visites === 0 ? 'Fort potentiel non visité' : '—',
+      ])
+    );
+  }
+
+  function handleImprimerRatio() {
+    imprimerTableauSuivi(
+      'Investissement vs activité par professionnel',
+      ['Professionnel', 'Centre', 'Coût gestes', 'RDV réalisés', 'Coût / RDV réalisé', 'Potentiel'],
+      ratioParProfessionnel.map((r) => [
+        `${r.professionnel.titre ? r.professionnel.titre + ' ' : ''}${r.professionnel.nom} ${r.professionnel.prenom ?? ''}`.trim(),
+        r.centreNom,
+        formatFcfa(r.coutPro),
+        r.rdvRealises,
+        r.rdvRealises > 0 ? formatFcfa(Math.round(r.coutPro / r.rdvRealises)) : '—',
+        r.professionnel.potentielCas ? formatPotentielCas(r.professionnel.potentielCas) : '—',
+      ])
+    );
+  }
+
   return (
     <div>
       {/* Filtres croisés */}
@@ -267,7 +337,14 @@ export function SuiviProfessionnelsTab() {
       <Row gutter={[16, 16]}>
         {/* Couverture par zone */}
         <Col xs={24} lg={12}>
-          <ProCard title="Couverture par zone" bordered style={{ borderRadius: 12, height: '100%' }}>
+          <ProCard
+            title="Couverture par zone"
+            bordered
+            style={{ borderRadius: 12, height: '100%' }}
+            extra={
+              <Button size="small" icon={<PrinterOutlined />} onClick={handleImprimerCouverture} disabled={couvertureParZone.length === 0} />
+            }
+          >
             <Table
               size="small"
               loading={loading}
@@ -292,7 +369,14 @@ export function SuiviProfessionnelsTab() {
 
         {/* Top gestes */}
         <Col xs={24} lg={12}>
-          <ProCard title="Top 5 des gestes utilisés" bordered style={{ borderRadius: 12, height: '100%' }}>
+          <ProCard
+            title="Top 5 des gestes utilisés"
+            bordered
+            style={{ borderRadius: 12, height: '100%' }}
+            extra={
+              <Button size="small" icon={<PrinterOutlined />} onClick={handleImprimerTopGestes} disabled={topGestes.length === 0} />
+            }
+          >
             <Table
               size="small"
               loading={loading}
@@ -310,7 +394,14 @@ export function SuiviProfessionnelsTab() {
 
         {/* Potentiel par centre (carte de chaleur simplifiée) */}
         <Col xs={24}>
-          <ProCard title="Potentiel par centre — centres à fort potentiel peu visités en évidence" bordered style={{ borderRadius: 12 }}>
+          <ProCard
+            title="Potentiel par centre — centres à fort potentiel peu visités en évidence"
+            bordered
+            style={{ borderRadius: 12 }}
+            extra={
+              <Button size="small" icon={<PrinterOutlined />} onClick={handleImprimerPotentielParCentre} disabled={potentielParCentre.length === 0} />
+            }
+          >
             <Table
               size="small"
               loading={loading}
@@ -350,7 +441,14 @@ export function SuiviProfessionnelsTab() {
 
         {/* Ratio investissement / activité */}
         <Col xs={24}>
-          <ProCard title="Investissement vs activité par professionnel" bordered style={{ borderRadius: 12 }}>
+          <ProCard
+            title="Investissement vs activité par professionnel"
+            bordered
+            style={{ borderRadius: 12 }}
+            extra={
+              <Button size="small" icon={<PrinterOutlined />} onClick={handleImprimerRatio} disabled={ratioParProfessionnel.length === 0} />
+            }
+          >
             <Table
               size="small"
               loading={loading}

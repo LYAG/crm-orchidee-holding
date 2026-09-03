@@ -17,6 +17,7 @@ import type {
   Centre,
   DemandeValidation,
   DonneesChangementClassification,
+  DonneesModificationProfessionnel,
   FiltresProfessionnel,
   GesteMarketing,
   GesteRealise,
@@ -462,6 +463,18 @@ export class ProfessionnelServiceMock implements ProfessionnelService {
       } else if (demande.type === 'CHANGEMENT_CLASSIFICATION' && demande.professionnelExistantId) {
         const donnees = demande.donnees as unknown as DonneesChangementClassification;
         await this.updateProfessionnel(demande.professionnelExistantId, { statut: donnees.statutDemande });
+      } else if (demande.type === 'MODIFICATION_PROFESSIONNEL' && demande.professionnelExistantId) {
+        const donnees = demande.donnees as unknown as DonneesModificationProfessionnel;
+        await this.updateProfessionnel(demande.professionnelExistantId, {
+          nom: donnees.nom,
+          prenom: donnees.prenom,
+          titre: donnees.titre,
+          categorie: donnees.categorie,
+          centreId: donnees.centreId,
+          specialiteIds: donnees.specialiteIds,
+          telephones: donnees.telephones,
+          observations: donnees.observations,
+        });
       }
     }
 

@@ -6,14 +6,12 @@ import {
   BarChartOutlined,
   CalendarOutlined,
   CheckCircleOutlined,
-  MergeCellsOutlined,
   RiseOutlined,
   SettingOutlined,
   SwapOutlined,
   TeamOutlined,
   TrophyOutlined,
   UserOutlined,
-  WarningOutlined,
 } from '@ant-design/icons';
 import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { Alert, Button, Col, Row, Skeleton, Space, Tag, Typography } from 'antd';
@@ -279,27 +277,6 @@ export function DashboardAdmin({ user }: Props) {
       {/* ── Alertes ── */}
       {kpi && (
         <Space orientation="vertical" style={{ width: '100%', marginBottom: 20 }} size={8}>
-          {kpi.doublonsEnAttente > 0 && (
-            <Alert
-              type="warning"
-              icon={<WarningOutlined />}
-              showIcon
-              style={{ borderRadius: 10 }}
-              title={
-                <Space>
-                  <span>
-                    <strong>{kpi.doublonsEnAttente}</strong> doublon
-                    {kpi.doublonsEnAttente > 1 ? 's' : ''} en attente de validation
-                  </span>
-                  <Link href="/doublons">
-                    <Button size="small" type="link" style={{ fontWeight: 600, padding: 0 }}>
-                      Traiter →
-                    </Button>
-                  </Link>
-                </Space>
-              }
-            />
-          )}
           {kpi.professionnelsNonAttribuesSup30j > 0 && (
             <Alert
               type="info"
@@ -322,7 +299,7 @@ export function DashboardAdmin({ user }: Props) {
               }
             />
           )}
-          {kpi.doublonsEnAttente === 0 && kpi.professionnelsNonAttribuesSup30j === 0 && (
+          {kpi.professionnelsNonAttribuesSup30j === 0 && (
             <Alert
               type="success"
               icon={<CheckCircleOutlined />}
@@ -336,18 +313,7 @@ export function DashboardAdmin({ user }: Props) {
 
       {/* ── KPI Cards ── */}
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <KpiCard
-            loading={loading}
-            icon={<MergeCellsOutlined />}
-            label="Doublons en attente"
-            value={kpi?.doublonsEnAttente ?? 0}
-            accent="#E65100"
-            bg="#FFF3E0"
-            alert
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <KpiCard
             loading={loading}
             icon={<UserOutlined />}
@@ -358,7 +324,7 @@ export function DashboardAdmin({ user }: Props) {
             alert
           />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <KpiCard
             loading={loading}
             icon={<CalendarOutlined />}
@@ -369,7 +335,7 @@ export function DashboardAdmin({ user }: Props) {
             bg="#E8F5E9"
           />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <KpiCard
             loading={loading}
             icon={<RiseOutlined />}
@@ -491,18 +457,7 @@ export function DashboardAdmin({ user }: Props) {
         </Title>
       </div>
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <QuickLinkCard
-            href="/doublons"
-            icon={<MergeCellsOutlined />}
-            title="Gestion des doublons"
-            description="Valider, fusionner ou ignorer les doublons détectés lors des imports."
-            accent="#E65100"
-            bg="#FFF3E0"
-            badge={kpi?.doublonsEnAttente}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <QuickLinkCard
             href="/utilisateurs"
             icon={<TeamOutlined />}
@@ -512,7 +467,7 @@ export function DashboardAdmin({ user }: Props) {
             bg="#E3F2FD"
           />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <QuickLinkCard
             href="/reporting"
             icon={<BarChartOutlined />}
@@ -522,7 +477,7 @@ export function DashboardAdmin({ user }: Props) {
             bg="#E8F5E9"
           />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={8}>
           <QuickLinkCard
             href="/parametres"
             icon={<SettingOutlined />}

@@ -26,7 +26,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
-import { professionnelService, qualificationService, rdvService } from '@/services';
+import { professionnelService, qualificationService, rdvService, utilisateurService } from '@/services';
 import {
   MotifNonProductif,
   QualificationOpportunite,
@@ -64,6 +64,7 @@ export function QualificationPage() {
   const [rdv, setRdv] = useState<RendezVous | null>(null);
   const [professionnel, setProfessionnel] = useState<ProfessionnelSante | null>(null);
   const [existingQual, setExistingQual] = useState<QualificationRDV | null>(null);
+  const [nomQualifiePar, setNomQualifiePar] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingAsManager, setEditingAsManager] = useState(false);
@@ -85,6 +86,18 @@ export function QualificationPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [rdvId]);
+
+  useEffect(() => {
+    if (!existingQual) {
+      setNomQualifiePar(undefined);
+      return;
+    }
+    // L'id brut reste affiché tant que la résolution n'a pas abouti (voir QualificationReadOnly).
+    utilisateurService
+      .getById(existingQual.qualifiePar)
+      .then((u) => setNomQualifiePar(`${u.prenom} ${u.nom}`))
+      .catch(() => {});
+  }, [existingQual]);
 
   function startEditing(qual: QualificationRDV) {
     setEditingAsManager(true);
@@ -353,6 +366,7 @@ export function QualificationPage() {
             qualification={existingQual}
             userRole={user?.role}
             onEdit={() => startEditing(existingQual)}
+            nomQualifiePar={nomQualifiePar}
           />
         </ProCard>
       )}

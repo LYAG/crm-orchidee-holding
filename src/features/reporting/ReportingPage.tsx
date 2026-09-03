@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   DownloadOutlined,
   FilterOutlined,
+  PrinterOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -28,6 +29,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useZoneFilter } from '@/components/ZoneFilterContext';
 import { UserRole } from '@/lib/constants';
+import { construireLigneFiltres, construireTableauHtml, imprimerRapport } from '@/lib/impression';
 import {
   professionnelService,
   rdvService,
@@ -247,6 +249,43 @@ export function ReportingPage() {
     }
   }
 
+  function handleImprimerProfessionnels() {
+    const resumeFiltres = construireLigneFiltres([
+      { label: 'Zone', valeur: zones.find((z) => z.id === zoneEffectiveId)?.nom },
+      { label: 'Délégué', valeur: delegues.find((d) => d.id === filterDelegueId) ? `${delegues.find((d) => d.id === filterDelegueId)!.prenom} ${delegues.find((d) => d.id === filterDelegueId)!.nom}` : undefined },
+      {
+        label: 'Période',
+        valeur: dateRange ? `${dateRange[0].format('DD/MM/YYYY')} — ${dateRange[1].format('DD/MM/YYYY')}` : undefined,
+      },
+    ]);
+    const entetes = ['Professionnel de santé', 'Centre', 'Zone', 'Statut', 'RDV total', 'RDV réalisés', 'Qualifiés'];
+    const lignes = rows.map((r) => {
+      const centre = centres.find((c) => c.id === r.professionnel.centreId);
+      const zoneNom = zones.find((z) => z.id === centre?.zoneId)?.nom ?? '—';
+      return [
+        `${r.professionnel.titre ? r.professionnel.titre + ' ' : ''}${r.professionnel.nom} ${r.professionnel.prenom ?? ''}`.trim(),
+        centre?.nom ?? '—',
+        zoneNom,
+        STATUT_CONFIG[r.professionnel.statut].label,
+        r.rdvCount,
+        r.rdvRealises,
+        `${r.qualifieCount} / ${r.rdvRealises}`,
+      ];
+    });
+    const corps = `
+      <h1 style="font-size:18px; margin:0;">Reporting équipe — Professionnels</h1>
+      <p style="color:#6B8A82; font-size:13px; margin:4px 0 0;">
+        ${resumeFiltres} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
+      </p>
+      <p style="font-size:13px; margin:16px 0 8px;">
+        <strong>${summaryStats.totalProfessionnels}</strong> professionnel(s) · <strong>${summaryStats.totalRdv}</strong> RDV ·
+        <strong>${summaryStats.rdvRealises}</strong> réalisés · <strong>${tauxQual} %</strong> qualifiés
+      </p>
+      ${construireTableauHtml(entetes, lignes)}
+    `;
+    imprimerRapport('Reporting équipe — Professionnels', corps);
+  }
+
   const tauxQual =
     summaryStats.rdvRealises > 0
       ? Math.round(
@@ -439,7 +478,17 @@ export function ReportingPage() {
       </Row>
 
       {/* ── Table ── */}
-      <ProCard bordered style={{ borderRadius: 12 }} bodyStyle={{ padding: 0 }}>
+      <ProCard
+        title="Professionnels"
+        bordered
+        style={{ borderRadius: 12 }}
+        bodyStyle={{ padding: 0 }}
+        extra={
+          <Button size="small" icon={<PrinterOutlined />} onClick={handleImprimerProfessionnels} disabled={rows.length === 0}>
+            Imprimer / PDF
+          </Button>
+        }
+      >
         <Table<ProfessionnelRow>
           dataSource={rows}
           columns={columns}

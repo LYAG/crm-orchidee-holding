@@ -17,6 +17,7 @@ const TYPE_LABELS: Record<TypeDemandeValidation, string> = {
   [TypeDemandeValidation.NOUVELLE_SPECIALITE]: 'Nouvelle spécialité',
   [TypeDemandeValidation.NOUVEAU_GESTE]: 'Nouveau geste',
   [TypeDemandeValidation.CHANGEMENT_CLASSIFICATION]: 'Changement de classification',
+  [TypeDemandeValidation.MODIFICATION_PROFESSIONNEL]: 'Modification de fiche',
 };
 
 export function ValidationsPage() {
@@ -30,7 +31,9 @@ export function ValidationsPage() {
   const isDelegue = user?.role === UserRole.DELEGUE;
   const isManager = user?.role === UserRole.MANAGER;
   const typesVisibles =
-    isDelegue || isManager ? [TypeDemandeValidation.CHANGEMENT_CLASSIFICATION] : Object.values(TypeDemandeValidation);
+    isDelegue || isManager
+      ? [TypeDemandeValidation.CHANGEMENT_CLASSIFICATION, TypeDemandeValidation.MODIFICATION_PROFESSIONNEL]
+      : Object.values(TypeDemandeValidation);
 
   // Chargée une fois indépendamment de la pagination — sert uniquement au libellé de la colonne Délégué.
   useEffect(() => {
@@ -131,9 +134,9 @@ export function ValidationsPage() {
       title="File de validation"
       subTitle={
         isDelegue
-          ? 'Vos demandes de changement de classification'
+          ? 'Vos demandes de classification et de modification de fiche'
           : isManager
-            ? "Demandes de changement de classification de votre équipe"
+            ? 'Demandes de classification et de modification de fiche de votre équipe'
             : 'Doublons et nouveaux référentiels issus des imports'
       }
     >

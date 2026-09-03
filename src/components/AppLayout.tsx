@@ -3,6 +3,7 @@
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-components';
 import { Avatar, Divider, Dropdown, Select, Space, Tag, Typography } from 'antd';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -46,23 +47,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <ProLayout
         title="Orchidée Holding"
         logo={
-          <div
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              background: '#0F6E52',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 14,
-              color: '#fff',
-              fontWeight: 800,
-              flexShrink: 0,
-            }}
-          >
-            O
-          </div>
+          <Image
+            src="/images/logo-orchidee-holding.png"
+            alt="Orchidée Holding"
+            width={30}
+            height={30}
+            style={{ borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+          />
         }
         /*
          * layout="mix" :

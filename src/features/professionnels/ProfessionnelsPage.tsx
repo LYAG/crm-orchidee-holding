@@ -6,6 +6,7 @@ import {
   DeleteOutlined,
   PhoneOutlined,
   PlusOutlined,
+  PrinterOutlined,
   TableOutlined,
   UploadOutlined,
   UserAddOutlined,
@@ -13,13 +14,15 @@ import {
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { App, Avatar, Button, Radio, Space, Tag, Tooltip } from 'antd';
+import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useZoneFilter } from '@/components/ZoneFilterContext';
 import { UserRole } from '@/lib/constants';
+import { construireLigneFiltres, construireTableauHtml, imprimerRapport } from '@/lib/impression';
 import { professionnelService, utilisateurService, zoneService } from '@/services';
-import type { Centre, DemandeValidation, GesteRealise, ProfessionnelSante, Specialite, Utilisateur, Zone } from '@/types';
+import type { Centre, DemandeValidation, FiltresProfessionnel, GesteRealise, ProfessionnelSante, Specialite, Utilisateur, Zone } from '@/types';
 import { JourSemaine, StatutDemandeValidation, StatutProfessionnel, TypeDemandeValidation } from '@/types';
 import type { DonneesChangementClassification } from '@/types';
 import { AttributionModal } from './AttributionModal';
@@ -61,6 +64,11 @@ export function ProfessionnelsPage() {
   const [kanbanData, setKanbanData] = useState<ProfessionnelSante[]>([]);
   const [demandesClassification, setDemandesClassification] = useState<DemandeValidation[]>([]);
   const [kanbanLoading, setKanbanLoading] = useState(false);
+  // Filtres de recherche ProTable actuellement appliqués — mis à jour à chaque appel de loadData
+  // (déclenché par ProTable lui-même), lus par handleImprimer pour imprimer selon le même filtre
+  // que celui affiché à l'écran plutôt que de dupliquer la lecture du formulaire de recherche.
+  const derniersFiltresRef = useRef<FiltresProfessionnel>({});
+  const [imprimerLoading, setImprimerLoading] = useState(false);
 
   useEffect(() => {
     professionnelService.getCentres().then(setCentres).catch(() => {});
@@ -362,21 +370,71 @@ export function ProfessionnelsPage() {
     // de re-filtrer ici, sauf pour forcer explicitement "mes propres fiches" pour un délégué.
     const page = (params.current ?? 1) - 1;
     const pageSize = params.pageSize ?? 10;
-    const resultat = await professionnelService.getProfessionnelsPagine(
-      {
-        centreId,
-        zoneId,
-        specialiteId: params.specialiteIds as string | undefined,
-        jourConsultation: params.jourConsultation as JourSemaine | undefined,
-        delegueId:
-          (params.delegueId as string | undefined) ?? (role === UserRole.DELEGUE ? currentUser.id : undefined),
-        statut: params.statut as StatutProfessionnel | undefined,
-      },
-      page,
-      pageSize,
-    );
+    const filtres: FiltresProfessionnel = {
+      centreId,
+      zoneId,
+      specialiteId: params.specialiteIds as string | undefined,
+      jourConsultation: params.jourConsultation as JourSemaine | undefined,
+      delegueId:
+        (params.delegueId as string | undefined) ?? (role === UserRole.DELEGUE ? currentUser.id : undefined),
+      statut: params.statut as StatutProfessionnel | undefined,
+    };
+    derniersFiltresRef.current = filtres;
+    const resultat = await professionnelService.getProfessionnelsPagine(filtres, page, pageSize);
 
     return { data: resultat.contenu, success: true, total: resultat.total };
+  }
+
+  async function handleImprimer() {
+    setImprimerLoading(true);
+    try {
+      const filtres = derniersFiltresRef.current;
+      const professionnels = await professionnelService.getProfessionnels(filtres);
+
+      const resumeFiltres = construireLigneFiltres([
+        { label: 'Zone', valeur: zones.find((z) => z.id === filtres.zoneId)?.nom },
+        { label: 'Centre', valeur: centres.find((c) => c.id === filtres.centreId)?.nom },
+        { label: 'Spécialité', valeur: specialites.find((s) => s.id === filtres.specialiteId)?.libelle },
+        { label: 'Jours de consultation', valeur: filtres.jourConsultation ? JOUR_LABELS[filtres.jourConsultation] : undefined },
+        {
+          label: 'Délégué',
+          valeur: delegues.find((d) => d.id === filtres.delegueId)
+            ? `${delegues.find((d) => d.id === filtres.delegueId)!.prenom} ${delegues.find((d) => d.id === filtres.delegueId)!.nom}`
+            : undefined,
+        },
+        { label: 'Statut', valeur: filtres.statut ? STATUT_CONFIG[filtres.statut].label : undefined },
+      ]);
+
+      const entetes = ['Professionnel', ...(role !== UserRole.DELEGUE ? ['Délégué'] : []), 'Centre', 'Zone', 'Spécialités', 'Jours de consultation', 'Statut'];
+      const lignes = professionnels.map((p) => {
+        const { centre, zone } = centreEtZone(p.centreId);
+        const delegue = delegues.find((d) => d.id === p.delegueId);
+        const ligne = [
+          `${p.titre ? p.titre + ' ' : ''}${p.nom} ${p.prenom ?? ''}`.trim(),
+          ...(role !== UserRole.DELEGUE ? [delegue ? `${delegue.prenom} ${delegue.nom}` : '—'] : []),
+          centre?.nom ?? '—',
+          zone?.nom ?? '—',
+          p.specialiteIds.map((sid) => specialites.find((s) => s.id === sid)?.code ?? sid).join(', ') || '—',
+          formatJoursConsultation(p.joursConsultation),
+          STATUT_CONFIG[p.statut].label,
+        ];
+        return ligne;
+      });
+
+      const corps = `
+        <h1 style="font-size:18px; margin:0;">Professionnels de santé</h1>
+        <p style="color:#6B8A82; font-size:13px; margin:4px 0 0;">
+          ${resumeFiltres} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
+        </p>
+        <p style="font-size:13px; margin:16px 0 8px;"><strong>${professionnels.length}</strong> professionnel(s)</p>
+        ${construireTableauHtml(entetes, lignes)}
+      `;
+      imprimerRapport('Professionnels de santé', corps);
+    } catch {
+      message.error("Erreur lors de la préparation de l'impression.");
+    } finally {
+      setImprimerLoading(false);
+    }
   }
 
   const toolbarButtons = [
@@ -398,6 +456,11 @@ export function ProfessionnelsPage() {
     <Link key="import" href="/professionnels/import">
       <Button icon={<UploadOutlined />}>Importer Excel</Button>
     </Link>,
+    viewMode === 'table' && (
+      <Button key="imprimer" icon={<PrinterOutlined />} loading={imprimerLoading} onClick={handleImprimer}>
+        Imprimer / PDF
+      </Button>
+    ),
     <Radio.Group
       key="view-toggle"
       value={viewMode}

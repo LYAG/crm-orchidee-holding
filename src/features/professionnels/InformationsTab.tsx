@@ -1,13 +1,13 @@
 'use client';
 
-import { LockOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, LockOutlined } from '@ant-design/icons';
 import { App, Button, Form, Input, Select, Space, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { UserRole } from '@/lib/constants';
 import { professionnelService } from '@/services';
-import type { Centre, ProfessionnelSante, Specialite } from '@/types';
-import { CategorieEtablissement, TitreProfessionnel } from '@/types';
+import type { Centre, DonneesModificationProfessionnel, ProfessionnelSante, Specialite } from '@/types';
+import { CategorieEtablissement, TitreProfessionnel, TypeDemandeValidation } from '@/types';
 
 const CATEGORIE_LABELS: Record<CategorieEtablissement, string> = {
   [CategorieEtablissement.MEDECIN]: 'Médecin',
@@ -45,6 +45,9 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
   // Le verrou (RDV déjà eu) ne s'applique qu'au délégué — manager/admin peuvent toujours corriger la fiche.
   const peutOutrepasserVerrou = role === UserRole.MANAGER || role === UserRole.ADMIN;
   const verrouille = professionnel.aDejaEuContact && !peutOutrepasserVerrou;
+  // Le délégué ne modifie plus la fiche directement : sa modification est une PROPOSITION soumise
+  // à validation du manager/admin (même mécanisme que la reclassification T1/ST du Kanban).
+  const soumisAValidation = role === UserRole.DELEGUE;
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -66,7 +69,7 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
     const values = await form.validateFields();
     setSaving(true);
     try {
-      const updated = await professionnelService.updateProfessionnel(professionnel.id, {
+      const patch = {
         nom: values.nom,
         prenom: values.prenom,
         titre: values.titre,
@@ -75,10 +78,24 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
         specialiteIds: values.specialiteIds,
         telephones: values.telephones.split(',').map((t) => t.trim()).filter(Boolean),
         observations: values.observations,
-      });
-      message.success('Fiche mise à jour.');
-      onSaved(updated);
-      setEditing(false);
+      };
+      if (soumisAValidation && user) {
+        const donnees: DonneesModificationProfessionnel = patch;
+        await professionnelService.creerDemandeValidation({
+          type: TypeDemandeValidation.MODIFICATION_PROFESSIONNEL,
+          delegueId: professionnel.delegueId ?? user.id,
+          libelle: `Modification de fiche proposée : ${values.nom} ${values.prenom ?? ''}`.trim(),
+          donnees: donnees as unknown as Record<string, unknown>,
+          professionnelExistantId: professionnel.id,
+        });
+        message.success('Modification proposée — en attente de validation par le manager/administrateur.');
+        setEditing(false);
+      } else {
+        const updated = await professionnelService.updateProfessionnel(professionnel.id, patch);
+        message.success('Fiche mise à jour.');
+        onSaved(updated);
+        setEditing(false);
+      }
     } catch (err) {
       message.error(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde.');
     } finally {
@@ -104,6 +121,25 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
         >
           <LockOutlined />
           Ce professionnel a déjà eu un RDV : la modification est réservée au manager/administrateur.
+        </div>
+      )}
+
+      {!verrouille && soumisAValidation && editing && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: '#E3F2FD',
+            color: '#1565C0',
+            padding: '8px 12px',
+            borderRadius: 8,
+            fontSize: 13,
+            marginBottom: 16,
+          }}
+        >
+          <InfoCircleOutlined />
+          Cette modification sera soumise à validation du manager/administrateur avant d&apos;être appliquée.
         </div>
       )}
 
@@ -156,7 +192,7 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
         ) : (
           <>
             <Button type="primary" loading={saving} onClick={handleSave}>
-              Enregistrer
+              {soumisAValidation ? 'Proposer la modification' : 'Enregistrer'}
             </Button>
             <Button onClick={() => { setEditing(false); form.resetFields(); }}>Annuler</Button>
           </>

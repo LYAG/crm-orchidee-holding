@@ -1,8 +1,25 @@
-import type { StatutProfessionnel } from './professionnels';
+import type { CategorieEtablissement, StatutProfessionnel, TitreProfessionnel } from './professionnels';
 
 export interface DonneesChangementClassification {
   statutActuel: StatutProfessionnel;
   statutDemande: StatutProfessionnel;
+}
+
+/**
+ * Sous-ensemble volontaire des champs de ProfessionnelSante (identité/coordonnées) — jamais
+ * statut/delegueId/actif, qui ne doivent pas pouvoir être écrasés par une proposition en attente
+ * qui daterait d'avant un autre changement entre-temps. Miroir de ModificationProfessionnelRequest
+ * côté backend.
+ */
+export interface DonneesModificationProfessionnel {
+  nom: string;
+  prenom?: string;
+  titre?: TitreProfessionnel;
+  categorie?: CategorieEtablissement;
+  centreId: string;
+  specialiteIds: string[];
+  telephones: string[];
+  observations?: string;
 }
 
 export enum TypeDemandeValidation {
@@ -11,6 +28,7 @@ export enum TypeDemandeValidation {
   NOUVELLE_SPECIALITE = 'NOUVELLE_SPECIALITE',
   NOUVEAU_GESTE = 'NOUVEAU_GESTE',
   CHANGEMENT_CLASSIFICATION = 'CHANGEMENT_CLASSIFICATION',
+  MODIFICATION_PROFESSIONNEL = 'MODIFICATION_PROFESSIONNEL',
 }
 
 export enum StatutDemandeValidation {
