@@ -1,0 +1,45 @@
+name: Deploy CRM Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐳 Build Docker image
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+            -t crm-frontend:latest .
+
+      - name: 💾 Sauvegarder l'image
+        run: docker save crm-frontend:latest | gzip > crm-frontend.tar.gz
+
+      - name: 📁 Envoyer sur le serveur
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "crm-frontend.tar.gz"
+          target: "/opt/orchidee/"
+
+      - name: 🚀 Déployer
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/orchidee
+            docker load < crm-frontend.tar.gz
+            docker compose up -d --no-deps crm-frontend
+            docker image prune -f
+            echo "✅ Frontend déployé !"
