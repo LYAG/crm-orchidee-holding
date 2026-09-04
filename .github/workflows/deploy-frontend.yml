@@ -17,6 +17,7 @@ jobs:
         run: |
           docker build \
             --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+            --build-arg NEXT_PUBLIC_USE_MOCKS=false \
             -t crm-frontend:latest .
 
       - name: 💾 Sauvegarder l'image
