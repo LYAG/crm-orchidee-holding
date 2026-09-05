@@ -48,8 +48,8 @@ export function usePermission(code: string): boolean {
     loadPermissionModules()
       .then((modules) => {
         if (cancelled) return;
-        const module = modules.find((m) => m.code === code);
-        const access = module?.access[user.role as UserRole];
+        const found = modules.find((m) => m.code === code);
+        const access = found?.access[user.role as UserRole];
         setHasAccess(access === 'full' || access === 'partial');
       })
       .catch(() => setHasAccess(false));
