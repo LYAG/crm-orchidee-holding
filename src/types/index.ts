@@ -89,6 +89,8 @@ export interface PermissionModule {
   id: string;
   module: string;
   icon: string;
+  /** Null pour un module de page purement déclaratif — non nul pour une règle métier réellement appliquée (voir PermissionChecker côté backend). */
+  code: string | null;
   access: Record<UserRole, PermissionAccess>;
   labels: Partial<Record<UserRole, string>>;
 }

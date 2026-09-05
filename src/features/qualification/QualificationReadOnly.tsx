@@ -3,7 +3,6 @@
 import { EditOutlined, LockOutlined } from '@ant-design/icons';
 import { ProDescriptions } from '@ant-design/pro-components';
 import { Alert, Button, Space, Tag, Typography } from 'antd';
-import { UserRole } from '@/lib/constants';
 import {
   CanalRelance,
   MotifNonProductif,
@@ -58,14 +57,15 @@ const CANAL_LABELS: Record<CanalRelance, string> = {
 
 interface Props {
   qualification: QualificationRDV;
-  userRole?: string;
+  /** Accès configurable (Paramètres > Rôles & permissions, module MODIFICATION_QUALIFICATION). */
+  peutModifier: boolean;
   onEdit?: () => void;
   /** Nom complet de l'auteur (résolu depuis qualification.qualifiePar, un id utilisateur) — affiche l'id brut tant qu'il n'est pas encore résolu. */
   nomQualifiePar?: string;
 }
 
-export function QualificationReadOnly({ qualification: q, userRole, onEdit, nomQualifiePar }: Props) {
-  const canEdit = userRole === UserRole.MANAGER;
+export function QualificationReadOnly({ qualification: q, peutModifier, onEdit, nomQualifiePar }: Props) {
+  const canEdit = peutModifier;
   const opp = OPPORTUNITE_LABELS[q.opportunite];
   const prod = PRODUCTIF_LABELS[q.productif];
   const transfo = TRANSFORMATION_LABELS[q.transformation];

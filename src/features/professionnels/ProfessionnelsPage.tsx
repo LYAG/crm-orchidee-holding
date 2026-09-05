@@ -18,6 +18,7 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { usePermission } from '@/hooks/usePermission';
 import { useZoneFilter } from '@/components/ZoneFilterContext';
 import { UserRole } from '@/lib/constants';
 import { construireLigneFiltres, construireTableauHtml, imprimerRapport } from '@/lib/impression';
@@ -42,6 +43,7 @@ const IMPORT_STATUT_STYLE: Record<string, { color: string; label: (curseur: numb
 
 export function ProfessionnelsPage() {
   const { user } = useAuth();
+  const peutDragDropClassification = usePermission('DRAG_DROP_CLASSIFICATION');
   const { zoneFiltreId } = useZoneFilter();
   const { message, modal } = App.useApp();
   const actionRef = useRef<ActionType | undefined>(undefined);
@@ -495,7 +497,7 @@ export function ProfessionnelsPage() {
           professionnels={kanbanData}
           centreMap={centreMap}
           demandesEnAttente={demandesEnAttenteParPro}
-          readOnly={role !== UserRole.DELEGUE}
+          readOnly={!peutDragDropClassification}
           onSelect={openDetail}
           onDemanderChangement={handleDemanderChangement}
         />

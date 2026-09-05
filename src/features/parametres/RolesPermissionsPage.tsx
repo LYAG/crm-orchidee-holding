@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  AimOutlined,
   AppstoreOutlined,
   BarChartOutlined,
   BellOutlined,
@@ -37,6 +38,7 @@ import {
   Typography,
 } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
+import { invalidatePermissionModulesCache } from '@/hooks/usePermission';
 import { UserRole } from '@/lib/constants';
 import { roleService } from '@/services';
 import type { PermissionAccess, PermissionModule, RoleDefinition } from '@/types';
@@ -46,6 +48,8 @@ const { Text } = Typography;
 /* ── Icônes de module ────────────────────────────────────────────────────── */
 
 const ICON_MAP: Record<string, React.ReactNode> = {
+  AimOutlined: <AimOutlined />,
+  EditOutlined: <EditOutlined />,
   DashboardOutlined: <DashboardOutlined />,
   TeamOutlined: <TeamOutlined />,
   CalendarOutlined: <CalendarOutlined />,
@@ -76,6 +80,35 @@ const ACCESS_OPTIONS: { value: PermissionAccess; label: string }[] = [
   { value: 'none', label: 'Aucun accès' },
   { value: 'partial', label: 'Accès partiel' },
   { value: 'full', label: 'Accès complet' },
+];
+
+/* ── Catalogue des modules connus ────────────────────────────────────────────
+ * Sert à peupler la liste déroulante "Nom du module" à la création : les pages de l'app
+ * (décoratif, non appliqué en backend) et les règles métier réellement enforced côté serveur
+ * (voir orchideeholding.api_crm.identity.service.PermissionChecker et les `code` seedés en V15).
+ * Un module de page est identifié par son nom (`code: null`), un module métier par son `code`. */
+interface ModuleCatalogEntry {
+  code: string | null;
+  module: string;
+  icon: string;
+}
+
+const MODULE_CATALOG: ModuleCatalogEntry[] = [
+  { code: null, module: 'Tableau de bord', icon: 'DashboardOutlined' },
+  { code: null, module: 'Professionnels de santé', icon: 'TeamOutlined' },
+  { code: null, module: 'Rendez-vous', icon: 'CalendarOutlined' },
+  { code: null, module: 'Opportunités', icon: 'TrophyOutlined' },
+  { code: null, module: 'Supports commerciaux', icon: 'FileTextOutlined' },
+  { code: null, module: 'Reporting équipe', icon: 'BarChartOutlined' },
+  { code: null, module: 'File de validation', icon: 'SafetyCertificateOutlined' },
+  { code: null, module: 'Utilisateurs & Zones', icon: 'UsergroupAddOutlined' },
+  { code: null, module: 'Référentiels', icon: 'DatabaseOutlined' },
+  { code: null, module: 'Paramètres', icon: 'SettingOutlined' },
+  { code: 'OBJECTIFS_CONVERSION', module: 'Objectifs de conversion (qui peut les fixer)', icon: 'AimOutlined' },
+  { code: 'OBJECTIFS_RDV', module: 'Objectifs de RDV (qui peut les fixer)', icon: 'CalendarOutlined' },
+  { code: 'DRAG_DROP_CLASSIFICATION', module: 'Glisser-déposer classification (T1 ↔ ST)', icon: 'MergeCellsOutlined' },
+  { code: 'MODIFICATION_QUALIFICATION', module: "Modification d'une qualification verrouillée", icon: 'SafetyCertificateOutlined' },
+  { code: 'EDITION_FICHE_PROFESSIONNEL', module: 'Édition directe de fiche professionnel', icon: 'EditOutlined' },
 ];
 
 /** Assombrit (percent < 0) ou éclaircit (percent > 0) une couleur hex. */
@@ -230,6 +263,7 @@ function RoleModal({
 interface PermissionFormValues {
   module: string;
   icon: string;
+  code: string | null;
   access: Record<UserRole, PermissionAccess>;
   labels: Partial<Record<UserRole, string>>;
 }
@@ -238,12 +272,14 @@ function PermissionModal({
   open,
   editing,
   roles,
+  permissions,
   onClose,
   onSaved,
 }: {
   open: boolean;
   editing: PermissionModule | null;
   roles: RoleDefinition[];
+  permissions: PermissionModule[];
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -251,12 +287,27 @@ function PermissionModal({
   const [form] = Form.useForm<PermissionFormValues>();
   const [saving, setSaving] = useState(false);
 
+  /** Grisé si un module portant déjà ce nom (page décorative) ou ce code (règle métier) existe. */
+  const moduleOptions = MODULE_CATALOG.map((entry) => ({
+    value: entry.module,
+    label: entry.module,
+    disabled: permissions.some((p) => (entry.code ? p.code === entry.code : p.module === entry.module)),
+  }));
+
+  function handleModuleSelect(moduleName: string) {
+    const entry = MODULE_CATALOG.find((e) => e.module === moduleName);
+    if (entry) {
+      form.setFieldsValue({ icon: entry.icon, code: entry.code });
+    }
+  }
+
   useEffect(() => {
     if (open) {
       if (editing) {
         form.setFieldsValue({
           module: editing.module,
           icon: editing.icon,
+          code: editing.code,
           access: editing.access,
           labels: editing.labels,
         });
@@ -264,6 +315,7 @@ function PermissionModal({
         form.resetFields();
         form.setFieldsValue({
           icon: 'AppstoreOutlined',
+          code: null,
           access: { DELEGUE: 'none', MANAGER: 'none', ADMIN: 'none' },
         });
       }
@@ -277,6 +329,7 @@ function PermissionModal({
       const data = {
         module: values.module,
         icon: values.icon,
+        code: values.code ?? null,
         access: values.access,
         labels: values.labels ?? {},
       };
@@ -329,16 +382,33 @@ function PermissionModal({
       width={560}
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-        <Space.Compact style={{ width: '100%' }}>
+        {editing ? (
           <Form.Item
             name="module"
             label="Nom du module"
             rules={[{ required: true, message: 'Obligatoire.' }]}
-            style={{ flex: 1 }}
           >
-            <Input placeholder="Facturation" />
+            <Input />
           </Form.Item>
-        </Space.Compact>
+        ) : (
+          <Form.Item
+            name="module"
+            label="Nom du module"
+            rules={[{ required: true, message: 'Obligatoire.' }]}
+            extra="Les modules déjà présents dans la matrice sont grisés."
+          >
+            <Select
+              placeholder="Choisir un module à ajouter à la matrice"
+              options={moduleOptions}
+              onSelect={handleModuleSelect}
+              showSearch
+              optionFilterProp="label"
+            />
+          </Form.Item>
+        )}
+        <Form.Item name="code" hidden>
+          <Input />
+        </Form.Item>
         <Form.Item name="icon" label="Icône" rules={[{ required: true, message: 'Obligatoire.' }]}>
           <Select options={ICON_OPTIONS} />
         </Form.Item>
@@ -452,6 +522,7 @@ export function RolesPermissionsPage() {
 
   const load = useCallback(() => {
     setLoading(true);
+    invalidatePermissionModulesCache();
     Promise.all([roleService.getRoles(), roleService.getPermissionModules()])
       .then(([r, p]) => {
         setRoles(r);
@@ -747,6 +818,7 @@ export function RolesPermissionsPage() {
         open={permModalOpen}
         editing={editingPerm}
         roles={roles}
+        permissions={permissions}
         onClose={() => setPermModalOpen(false)}
         onSaved={load}
       />

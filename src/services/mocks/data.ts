@@ -192,6 +192,7 @@ export const permissionModules: PermissionModule[] = [
     id: 'perm-dashboard',
     module: 'Tableau de bord',
     icon: 'DashboardOutlined',
+    code: null,
     access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
     labels: {
       DELEGUE: 'Ses propres KPIs',
@@ -203,6 +204,7 @@ export const permissionModules: PermissionModule[] = [
     id: 'perm-prospects',
     module: 'Prospects',
     icon: 'TeamOutlined',
+    code: null,
     access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
     labels: {
       DELEGUE: 'Sa zone (PNA + attribués)',
@@ -214,6 +216,7 @@ export const permissionModules: PermissionModule[] = [
     id: 'perm-rdv',
     module: 'Rendez-vous',
     icon: 'CalendarOutlined',
+    code: null,
     access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
     labels: {
       DELEGUE: 'Ses propres RDV',
@@ -225,6 +228,7 @@ export const permissionModules: PermissionModule[] = [
     id: 'perm-opportunites',
     module: 'Opportunités',
     icon: 'TrophyOutlined',
+    code: null,
     access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
     labels: {
       DELEGUE: 'Ses propres opportunités',
@@ -236,6 +240,7 @@ export const permissionModules: PermissionModule[] = [
     id: 'perm-supports',
     module: 'Supports commerciaux',
     icon: 'FileTextOutlined',
+    code: null,
     access: { DELEGUE: 'partial', MANAGER: 'partial', ADMIN: 'full' },
     labels: {
       DELEGUE: 'Consultation + présentation',
@@ -247,6 +252,7 @@ export const permissionModules: PermissionModule[] = [
     id: 'perm-reporting',
     module: 'Reporting équipe',
     icon: 'BarChartOutlined',
+    code: null,
     access: { DELEGUE: 'none', MANAGER: 'full', ADMIN: 'full' },
     labels: {
       MANAGER: 'Son équipe',
@@ -257,6 +263,7 @@ export const permissionModules: PermissionModule[] = [
     id: 'perm-utilisateurs',
     module: 'Utilisateurs & Zones',
     icon: 'UsergroupAddOutlined',
+    code: null,
     access: { DELEGUE: 'none', MANAGER: 'none', ADMIN: 'full' },
     labels: { ADMIN: 'CRUD complet' },
   },
@@ -264,8 +271,56 @@ export const permissionModules: PermissionModule[] = [
     id: 'perm-parametres',
     module: 'Paramètres',
     icon: 'SettingOutlined',
+    code: null,
     access: { DELEGUE: 'none', MANAGER: 'none', ADMIN: 'full' },
     labels: { ADMIN: 'Configuration globale' },
+  },
+  {
+    id: 'perm-objectifs-conversion',
+    module: 'Objectifs de conversion (qui peut les fixer)',
+    icon: 'AimOutlined',
+    code: 'OBJECTIFS_CONVERSION',
+    access: { DELEGUE: 'none', MANAGER: 'none', ADMIN: 'full' },
+    labels: { ADMIN: "Fixe l'objectif T1 → ST pour tous les délégués" },
+  },
+  {
+    id: 'perm-objectifs-rdv',
+    module: 'Objectifs de RDV (qui peut les fixer)',
+    icon: 'CalendarOutlined',
+    code: 'OBJECTIFS_RDV',
+    access: { DELEGUE: 'none', MANAGER: 'full', ADMIN: 'none' },
+    labels: { MANAGER: 'Fixe l\'objectif de chaque délégué de son équipe' },
+  },
+  {
+    id: 'perm-drag-drop-classification',
+    module: 'Glisser-déposer classification (T1 ↔ ST)',
+    icon: 'MergeCellsOutlined',
+    code: 'DRAG_DROP_CLASSIFICATION',
+    access: { DELEGUE: 'full', MANAGER: 'none', ADMIN: 'none' },
+    labels: { DELEGUE: 'Propose un changement de classification par glisser-déposer' },
+  },
+  {
+    id: 'perm-modification-qualification',
+    module: 'Modification d\'une qualification verrouillée',
+    icon: 'SafetyCertificateOutlined',
+    code: 'MODIFICATION_QUALIFICATION',
+    access: { DELEGUE: 'none', MANAGER: 'full', ADMIN: 'full' },
+    labels: {
+      MANAGER: 'Rouvre une qualification déjà verrouillée',
+      ADMIN: 'Rouvre une qualification déjà verrouillée',
+    },
+  },
+  {
+    id: 'perm-edition-fiche-professionnel',
+    module: 'Édition directe de fiche professionnel',
+    icon: 'EditOutlined',
+    code: 'EDITION_FICHE_PROFESSIONNEL',
+    access: { DELEGUE: 'none', MANAGER: 'full', ADMIN: 'full' },
+    labels: {
+      DELEGUE: 'Doit passer par une demande de validation',
+      MANAGER: 'Modifie directement',
+      ADMIN: 'Modifie directement',
+    },
   },
 ];
 

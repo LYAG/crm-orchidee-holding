@@ -4,7 +4,7 @@ import { InfoCircleOutlined, LockOutlined } from '@ant-design/icons';
 import { App, Button, Form, Input, Select, Space, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { UserRole } from '@/lib/constants';
+import { usePermission } from '@/hooks/usePermission';
 import { professionnelService } from '@/services';
 import type { Centre, DonneesModificationProfessionnel, ProfessionnelSante, Specialite } from '@/types';
 import { CategorieEtablissement, TitreProfessionnel, TypeDemandeValidation } from '@/types';
@@ -41,13 +41,13 @@ export function InformationsTab({ professionnel, centres, specialites, onSaved }
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const role = user?.role as UserRole | undefined;
-  // Le verrou (RDV déjà eu) ne s'applique qu'au délégué — manager/admin peuvent toujours corriger la fiche.
-  const peutOutrepasserVerrou = role === UserRole.MANAGER || role === UserRole.ADMIN;
-  const verrouille = professionnel.aDejaEuContact && !peutOutrepasserVerrou;
-  // Le délégué ne modifie plus la fiche directement : sa modification est une PROPOSITION soumise
-  // à validation du manager/admin (même mécanisme que la reclassification T1/ST du Kanban).
-  const soumisAValidation = role === UserRole.DELEGUE;
+  // Accès configurable (Paramètres > Rôles & permissions, module EDITION_FICHE_PROFESSIONNEL) :
+  // sans cet accès, la modification passe par une demande de validation manager/admin (même
+  // mécanisme que la reclassification T1/ST du Kanban) plutôt que de s'appliquer directement.
+  const peutEditerDirectement = usePermission('EDITION_FICHE_PROFESSIONNEL');
+  const soumisAValidation = !peutEditerDirectement;
+  // Le verrou (RDV déjà eu) ne s'applique qu'à qui n'a pas l'édition directe.
+  const verrouille = professionnel.aDejaEuContact && soumisAValidation;
 
   useEffect(() => {
     queueMicrotask(() => {

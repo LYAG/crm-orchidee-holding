@@ -25,6 +25,7 @@ import dayjs from 'dayjs';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { usePermission } from '@/hooks/usePermission';
 import { UserRole } from '@/lib/constants';
 import { professionnelService, qualificationService, rdvService, utilisateurService } from '@/services';
 import {
@@ -58,6 +59,7 @@ export function QualificationPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const peutModifierQualification = usePermission('MODIFICATION_QUALIFICATION');
   const { message } = App.useApp();
   const [form] = Form.useForm();
 
@@ -364,7 +366,7 @@ export function QualificationPage() {
           </Text>
           <QualificationReadOnly
             qualification={existingQual}
-            userRole={user?.role}
+            peutModifier={peutModifierQualification}
             onEdit={() => startEditing(existingQual)}
             nomQualifiePar={nomQualifiePar}
           />
