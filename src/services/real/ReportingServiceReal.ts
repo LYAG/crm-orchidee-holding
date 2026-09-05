@@ -1,5 +1,5 @@
 import type { ReportingService } from '@/services/api/ReportingService';
-import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport, ProgressionConversion } from '@/types';
+import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport, ProgressionConversion, ProgressionRdv } from '@/types';
 import { apiFetch, apiFetchText, qs } from './httpClient';
 
 /** `periode` n'est pas encore exploité côté backend (aucun des 3 endpoints KPI ne l'accepte) — ignoré, comme dans le mock. */
@@ -23,5 +23,9 @@ export class ReportingServiceReal implements ReportingService {
 
   async getProgressionConversions(annee: number, mois: number): Promise<ProgressionConversion[]> {
     return apiFetch<ProgressionConversion[]>(`/reporting/progression-conversions${qs({ annee, mois })}`);
+  }
+
+  async getProgressionRdv(annee: number, mois: number): Promise<ProgressionRdv[]> {
+    return apiFetch<ProgressionRdv[]>(`/reporting/progression-rdv${qs({ annee, mois })}`);
   }
 }

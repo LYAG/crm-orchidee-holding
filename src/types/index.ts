@@ -315,6 +315,23 @@ export interface ProgressionConversion {
   objectif: number;
 }
 
+// ─── Objectifs de RDV (par délégué, fixés par son manager) ────────────────────
+
+export interface ObjectifRdvAnnee {
+  delegueId: string;
+  annee: number;
+  /** null si aucun objectif par défaut n'a encore été fixé pour cette année. */
+  valeurParDefaut: number | null;
+  mois: ObjectifMois[];
+}
+
+export interface ProgressionRdv {
+  delegueId: string;
+  nomDelegue: string;
+  nbRdvRealises: number;
+  objectif: number;
+}
+
 // ─── Filtres génériques ───────────────────────────────────────────────────────
 
 export interface FiltresRdv {

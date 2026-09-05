@@ -9,6 +9,7 @@
 
 import type { AuthService } from './api/AuthService';
 import type { ObjectifConversionService } from './api/ObjectifConversionService';
+import type { ObjectifRdvService } from './api/ObjectifRdvService';
 import type { OpportuniteService } from './api/OpportuniteService';
 import type { ProfessionnelService } from './api/ProfessionnelService';
 import type { PurgeService } from './api/PurgeService';
@@ -29,6 +30,7 @@ const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS !== 'false';
 function loadMocks() {
   const { AuthServiceMock } = require('./mocks/AuthServiceMock');
   const { ObjectifConversionServiceMock } = require('./mocks/ObjectifConversionServiceMock');
+  const { ObjectifRdvServiceMock } = require('./mocks/ObjectifRdvServiceMock');
   const { OpportuniteServiceMock } = require('./mocks/OpportuniteServiceMock');
   const { ProfessionnelServiceMock } = require('./mocks/ProfessionnelServiceMock');
   const { QualificationServiceMock } = require('./mocks/QualificationServiceMock');
@@ -53,12 +55,14 @@ function loadMocks() {
     zoneService: new ZoneServiceMock() as ZoneService,
     purgeService: new PurgeServiceMock() as PurgeService,
     objectifConversionService: new ObjectifConversionServiceMock() as ObjectifConversionService,
+    objectifRdvService: new ObjectifRdvServiceMock() as ObjectifRdvService,
   };
 }
 
 function loadReal() {
   const { AuthServiceReal } = require('./real/AuthServiceReal');
   const { ObjectifConversionServiceReal } = require('./real/ObjectifConversionServiceReal');
+  const { ObjectifRdvServiceReal } = require('./real/ObjectifRdvServiceReal');
   const { OpportuniteServiceReal } = require('./real/OpportuniteServiceReal');
   const { ProfessionnelServiceReal } = require('./real/ProfessionnelServiceReal');
   const { QualificationServiceReal } = require('./real/QualificationServiceReal');
@@ -83,6 +87,7 @@ function loadReal() {
     zoneService: new ZoneServiceReal() as ZoneService,
     purgeService: new PurgeServiceReal() as PurgeService,
     objectifConversionService: new ObjectifConversionServiceReal() as ObjectifConversionService,
+    objectifRdvService: new ObjectifRdvServiceReal() as ObjectifRdvService,
   };
 }
 
@@ -100,3 +105,4 @@ export const utilisateurService = services.utilisateurService;
 export const zoneService = services.zoneService;
 export const purgeService = services.purgeService;
 export const objectifConversionService = services.objectifConversionService;
+export const objectifRdvService = services.objectifRdvService;

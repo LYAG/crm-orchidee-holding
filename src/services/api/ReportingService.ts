@@ -1,4 +1,4 @@
-import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport, ProgressionConversion } from '@/types';
+import type { KpiAdmin, KpiDelegue, KpiManager, PeriodeRapport, ProgressionConversion, ProgressionRdv } from '@/types';
 
 export interface ReportingService {
   getKpiDelegue(delegueId: string, periode?: PeriodeRapport): Promise<KpiDelegue>;
@@ -7,4 +7,6 @@ export interface ReportingService {
   exporterCsv(filtres?: { zoneId?: string; delegueId?: string; periode?: PeriodeRapport }): Promise<string>;
   /** Jauge de conversion T1 → ST par délégué pour le mois donné, scopée par rôle (voir backend). */
   getProgressionConversions(annee: number, mois: number): Promise<ProgressionConversion[]>;
+  /** Jauge de RDV réalisés par délégué pour le mois donné, comparée à l'objectif fixé par son manager. */
+  getProgressionRdv(annee: number, mois: number): Promise<ProgressionRdv[]>;
 }

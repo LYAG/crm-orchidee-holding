@@ -41,6 +41,7 @@ import { RdvStatut, StatutProfessionnel } from '@/types';
 import type { Centre, ProfessionnelSante, RendezVous, Utilisateur, Zone } from '@/types';
 import { ConversionsTab } from './ConversionsTab';
 import { FicheMensuelleTab } from './FicheMensuelleTab';
+import { ObjectifsRdvTab } from './ObjectifsRdvTab';
 import { SuiviProfessionnelsTab } from './SuiviProfessionnelsTab';
 
 const { Text } = Typography;
@@ -523,6 +524,7 @@ export function ReportingPage() {
           { key: 'suivi', label: 'Suivi Professionnels', children: <SuiviProfessionnelsTab /> },
           { key: 'fiche-mensuelle', label: 'Fiche mensuelle', children: <FicheMensuelleTab /> },
           { key: 'conversions', label: 'Objectifs de conversion', children: <ConversionsTab /> },
+          { key: 'objectifs-rdv', label: 'Objectifs de RDV', children: <ObjectifsRdvTab /> },
         ]}
       />
     </PageContainer>

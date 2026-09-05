@@ -101,7 +101,7 @@ const allRoutes: MenuRoute[] = [
     path: '/parametres',
     name: 'Paramètres',
     icon: <SettingOutlined />,
-    roles: ['ADMIN'],
+    roles: ['ADMIN', 'MANAGER'],
     routes: [
       {
         path: '/parametres/presentation',
@@ -114,6 +114,12 @@ const allRoutes: MenuRoute[] = [
         name: 'Objectifs de conversion',
         icon: <AimOutlined />,
         roles: ['ADMIN'],
+      },
+      {
+        path: '/parametres/objectifs-rdv',
+        name: 'Objectifs de RDV',
+        icon: <CalendarOutlined />,
+        roles: ['MANAGER'],
       },
       {
         path: '/parametres/roles',
@@ -131,13 +137,19 @@ const allRoutes: MenuRoute[] = [
   },
 ];
 
+/** Filtre récursif : un item sans `roles` est visible par tous, un sous-item hérite de sa propre
+ * restriction indépendamment de son parent (ex. un manager voit "Paramètres" mais seulement
+ * "Objectifs de RDV" à l'intérieur, pas les pages réservées à l'admin). */
+function filtrerParRole(routes: MenuRoute[], role: UserRole): MenuRoute[] {
+  return routes
+    .filter((r) => !r.roles || r.roles.includes(role))
+    .map((r) => (r.routes ? { ...r, routes: filtrerParRole(r.routes, role) } : r));
+}
+
 export function getMenuRoutes(role: UserRole) {
-  const filtered = allRoutes.filter(
-    (r) => !r.roles || r.roles.includes(role),
-  );
   return {
     path: '/',
-    routes: filtered,
+    routes: filtrerParRole(allRoutes, role),
   };
 }
 
@@ -158,6 +170,7 @@ export const PAGE_TITLES: Record<string, string> = {
   '/parametres': 'Paramètres',
   '/parametres/presentation': 'Présentation commerciale',
   '/parametres/objectifs': 'Objectifs de conversion',
+  '/parametres/objectifs-rdv': 'Objectifs de RDV',
   '/parametres/roles': 'Rôles & permissions',
   '/parametres/purge': 'Purge base de données',
 };
