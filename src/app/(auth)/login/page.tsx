@@ -3,6 +3,7 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { ProFormText } from '@ant-design/pro-components';
 import { Alert, Button, Form, Typography } from 'antd';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -109,14 +110,12 @@ function LoginForm() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 26,
-              color: '#fff',
-              fontWeight: 800,
               marginBottom: 24,
               backdropFilter: 'blur(8px)',
+              overflow: 'hidden',
             }}
           >
-            O
+            <Image src="/images/logo-orchidee-holding.png" alt="Orchidée Holding" width={40} height={40} style={{ objectFit: 'contain' }} />
           </div>
           <Title
             level={2}
@@ -167,64 +166,7 @@ function LoginForm() {
           </Text>
         </div>
 
-        {/* Test accounts */}
-        <div
-          style={{
-            background: 'rgba(255,255,255,0.07)',
-            borderRadius: 10,
-            padding: '14px 16px',
-            border: '1px solid rgba(255,255,255,0.1)',
-            position: 'relative',
-          }}
-        >
-          <Text
-            style={{
-              color: 'rgba(255,255,255,0.5)',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              display: 'block',
-              marginBottom: 10,
-            }}
-          >
-            Comptes de test
-          </Text>
-          {[
-            { role: 'Délégué', email: 'k.nguessan@orchidee-holding.ci', pwd: 'delegue2026' },
-            { role: 'Manager', email: 'f.kone@orchidee-holding.ci', pwd: 'manager2026' },
-            { role: 'Admin', email: 'admin@orchidee-holding.ci', pwd: 'admin2026' },
-          ].map((acc) => (
-            <button
-              key={acc.role}
-              type="button"
-              onClick={() => {
-                form.setFieldsValue({ email: acc.email, password: acc.pwd });
-              }}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '4px 0',
-                marginBottom: 4,
-              }}
-            >
-              <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, fontWeight: 600 }}>
-                {acc.role}
-              </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: 'monospace' }}>
-                {acc.pwd}
-              </Text>
-            </button>
-          ))}
-          <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 4, display: 'block' }}>
-            Cliquez sur un compte pour le pré-remplir
-          </Text>
-        </div>
+        <div />
       </div>
 
       {/* ── Right form panel ────────────────────────────────────── */}
