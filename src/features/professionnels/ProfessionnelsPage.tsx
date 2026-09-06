@@ -167,6 +167,15 @@ export function ProfessionnelsPage() {
 
   const columns: ProColumns<ProfessionnelSante>[] = [
     {
+      // Colonne dédiée à la recherche : la colonne "Professionnel" ci-dessous a un rendu
+      // personnalisé (avatar + nom + téléphone) et ne peut pas porter elle-même un champ de
+      // recherche ProTable — recherche par nom/prénom, voir ProfessionnelSpecifications côté backend.
+      title: 'Recherche',
+      dataIndex: 'recherche',
+      hideInTable: true,
+      fieldProps: { placeholder: 'Nom ou prénom' },
+    },
+    {
       title: 'Professionnel',
       dataIndex: 'nom',
       render: (_, p) => {
@@ -380,6 +389,7 @@ export function ProfessionnelsPage() {
       delegueId:
         (params.delegueId as string | undefined) ?? (role === UserRole.DELEGUE ? currentUser.id : undefined),
       statut: params.statut as StatutProfessionnel | undefined,
+      recherche: params.recherche as string | undefined,
     };
     derniersFiltresRef.current = filtres;
     const resultat = await professionnelService.getProfessionnelsPagine(filtres, page, pageSize);
