@@ -66,10 +66,8 @@ export class ReportingServiceMock implements ReportingService {
 
   async getKpiManager(managerId: string, _periode?: PeriodeRapport): Promise<KpiManager> {
     await delay();
-    const manager = utilisateurs.find((u) => u.id === managerId);
-    const zoneIds = manager?.zoneIds ?? [];
     const delegueIds = utilisateurs
-      .filter((u) => u.role === 'DELEGUE' && u.zoneIds?.some((z) => zoneIds.includes(z)))
+      .filter((u) => u.role === 'DELEGUE' && u.managerId === managerId)
       .map((u) => u.id);
 
     const delegues = await Promise.all(

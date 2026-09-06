@@ -233,7 +233,7 @@ function UtilisateurModal({
           <Form.Item
             name="zoneIds"
             label="Zone(s) supervisée(s)"
-            extra="Le manager hérite automatiquement de tous les délégués rattachés à ces zones."
+            extra="Utilisées pour le reporting territorial. Les délégués supervisés sont définis individuellement via leur champ « Manager responsable », pas par ces zones."
           >
             <Select
               mode="multiple"
@@ -859,9 +859,7 @@ export function UtilisateursZonesPage() {
         if (u.role !== UserRole.MANAGER) {
           return <Text type="secondary">—</Text>;
         }
-        const equipe = utilisateurs.filter(
-          (d) => d.role === UserRole.DELEGUE && d.zoneIds?.some((z) => u.zoneIds?.includes(z)),
-        );
+        const equipe = utilisateurs.filter((d) => d.role === UserRole.DELEGUE && d.managerId === u.id);
         if (equipe.length === 0) {
           return <Text type="secondary">—</Text>;
         }

@@ -35,15 +35,10 @@ export class UtilisateurServiceMock implements UtilisateurService {
     return utilisateurs.filter((u) => u.role === role).map((u) => ({ ...u }));
   }
 
-  /** L'équipe d'un manager = les délégués dont au moins une zone est supervisée par ce manager. */
+  /** L'équipe d'un manager = les délégués explicitement rattachés à lui (champ managerId), pas un chevauchement de zones. */
   async getDeleguesByManager(managerId: string): Promise<Utilisateur[]> {
     await delay();
-    const manager = utilisateurs.find((u) => u.id === managerId);
-    const zoneIds = manager?.zoneIds ?? [];
-    if (zoneIds.length === 0) return [];
-    return utilisateurs
-      .filter((u) => u.role === 'DELEGUE' && u.zoneIds?.some((z) => zoneIds.includes(z)))
-      .map((u) => ({ ...u }));
+    return utilisateurs.filter((u) => u.role === 'DELEGUE' && u.managerId === managerId).map((u) => ({ ...u }));
   }
 
   async create(data: CreateUtilisateurDto): Promise<CreateUtilisateurResult> {
