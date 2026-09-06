@@ -42,6 +42,7 @@ import type { Centre, ProfessionnelSante, RendezVous, Utilisateur, Zone } from '
 import { ConversionsTab } from './ConversionsTab';
 import { FicheMensuelleTab } from './FicheMensuelleTab';
 import { ObjectifsRdvTab } from './ObjectifsRdvTab';
+import { PresentationsTab } from './PresentationsTab';
 import { SuiviProfessionnelsTab } from './SuiviProfessionnelsTab';
 
 const { Text } = Typography;
@@ -525,6 +526,7 @@ export function ReportingPage() {
           { key: 'fiche-mensuelle', label: 'Fiche mensuelle', children: <FicheMensuelleTab /> },
           { key: 'conversions', label: 'Objectifs de conversion', children: <ConversionsTab /> },
           { key: 'objectifs-rdv', label: 'Objectifs de RDV', children: <ObjectifsRdvTab /> },
+          { key: 'presentations', label: 'Présentations', children: <PresentationsTab /> },
         ]}
       />
     </PageContainer>

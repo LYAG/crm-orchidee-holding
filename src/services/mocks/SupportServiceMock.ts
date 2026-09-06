@@ -151,4 +151,111 @@ export class SupportServiceMock implements SupportService {
     await delay();
     return metriques.find((m) => m.rdvId === rdvId) ?? null;
   }
+
+  async listerMetriques(filtre?: MetriquesPresentationFiltre): Promise<MetriquePresentationLigne[]> {
+    await delay();
+    return metriques
+      .filter((m) => correspond(m, filtre))
+      .map(versLigne)
+      .sort((a, b) => b.datePresentation.localeCompare(a.datePresentation));
+  }
+
+  async getSyntheseParDelegue(
+    filtre?: Omit<MetriquesPresentationFiltre, 'delegueId'>,
+  ): Promise<SyntheseDeleguePresentation[]> {
+    await delay();
+    return utilisateurs
+      .filter((u) => u.role === 'DELEGUE')
+      .map((u) => {
+        const lignes = metriques.filter((m) => delegueIdDeMetrique(m) === u.id && correspond(m, filtre));
+        const nb = lignes.length;
+        const nbConformes = lignes.filter((m) => m.conforme).length;
+        const dureeTotale = lignes.reduce((s, m) => s + m.dureeTotal, 0);
+        return {
+          delegueId: u.id,
+          nomDelegue: `${u.prenom} ${u.nom}`,
+          nbPresentations: nb,
+          nbConformes,
+          nbNonConformes: nb - nbConformes,
+          tauxConformite: nb === 0 ? 0 : nbConformes / nb,
+          dureeMoyenneSecondes: nb === 0 ? 0 : dureeTotale / nb,
+          dureeTotaleSecondes: dureeTotale,
+        };
+      })
+      .sort((a, b) => a.nomDelegue.localeCompare(b.nomDelegue));
+  }
+
+  async getSyntheseParSupport(
+    filtre?: Omit<MetriquesPresentationFiltre, 'supportId'>,
+  ): Promise<SyntheseSupportPresentation[]> {
+    await delay();
+    const lignes = metriques.filter((m) => correspond(m, filtre));
+    const parSupport = new Map<string, MetriquePresentation[]>();
+    for (const m of lignes) {
+      const arr = parSupport.get(m.supportId) ?? [];
+      arr.push(m);
+      parSupport.set(m.supportId, arr);
+    }
+    return Array.from(parSupport.entries())
+      .map(([supportId, l]) => {
+        const nb = l.length;
+        const nbConformes = l.filter((m) => m.conforme).length;
+        const dureeTotale = l.reduce((s, m) => s + m.dureeTotal, 0);
+        return {
+          supportId,
+          titreSupport: supports.find((s) => s.id === supportId)?.titre ?? '—',
+          nbPresentations: nb,
+          tauxConformite: nb === 0 ? 0 : nbConformes / nb,
+          dureeMoyenneSecondes: nb === 0 ? 0 : dureeTotale / nb,
+        };
+      })
+      .sort((a, b) => a.tauxConformite - b.tauxConformite);
+  }
+
+  async getSlidesMoyens(supportId: string): Promise<SlideMoyenne[]> {
+    await delay();
+    const lignes = metriques.filter((m) => m.supportId === supportId);
+    const parSlide = new Map<number, { titre: string; temps: number[] }>();
+    for (const m of lignes) {
+      for (const s of m.slides) {
+        const entree = parSlide.get(s.slideIndex) ?? { titre: s.titreSlide, temps: [] };
+        entree.temps.push(s.tempsPasse);
+        parSlide.set(s.slideIndex, entree);
+      }
+    }
+    return Array.from(parSlide.entries())
+      .map(([slideIndex, { titre, temps }]) => ({
+        slideIndex,
+        titreSlide: titre,
+        dureeMoyenneSecondes: temps.reduce((a, b) => a + b, 0) / temps.length,
+        nbEchantillons: temps.length,
+      }))
+      .sort((a, b) => a.slideIndex - b.slideIndex);
+  }
+
+  async getTendanceConformite(delegueId?: string): Promise<TendanceConformitePresentation[]> {
+    await delay();
+    const lignes = metriques.filter((m) => !delegueId || delegueIdDeMetrique(m) === delegueId);
+    const semaines = 12;
+    const lundiCourant = lundiDeLaSemaine(new Date());
+    const resultat: TendanceConformitePresentation[] = [];
+    for (let i = semaines - 1; i >= 0; i--) {
+      const debut = new Date(lundiCourant);
+      debut.setDate(debut.getDate() - i * 7);
+      const fin = new Date(debut);
+      fin.setDate(fin.getDate() + 7);
+      const semaine = lignes.filter((m) => {
+        const d = new Date(m.datePresentation);
+        return d >= debut && d < fin;
+      });
+      const nb = semaine.length;
+      const nbConformes = semaine.filter((m) => m.conforme).length;
+      resultat.push({
+        semaine: `${debut.getFullYear()}-W${String(numeroSemaineIso(debut)).padStart(2, '0')}`,
+        nbPresentations: nb,
+        tauxConformite: nb === 0 ? 0 : nbConformes / nb,
+      });
+    }
+    return resultat;
+  }
 }
