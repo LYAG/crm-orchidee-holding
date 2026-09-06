@@ -1,4 +1,20 @@
-import type { MetriquePresentation, ParametresApp, SupportCommercial } from '@/types';
+import type {
+  MetriquePresentation,
+  MetriquePresentationLigne,
+  ParametresApp,
+  SlideMoyenne,
+  SupportCommercial,
+  SyntheseDeleguePresentation,
+  SyntheseSupportPresentation,
+  TendanceConformitePresentation,
+} from '@/types';
+
+export interface MetriquesPresentationFiltre {
+  delegueId?: string;
+  supportId?: string;
+  dateDebut?: string; // YYYY-MM-DD
+  dateFin?: string; // YYYY-MM-DD
+}
 
 export interface SupportService {
   getAll(): Promise<SupportCommercial[]>;
@@ -17,4 +33,19 @@ export interface SupportService {
 
   enregistrerMetrique(metrique: Omit<MetriquePresentation, 'id'>): Promise<MetriquePresentation>;
   getMetriqueByRdv(rdvId: string): Promise<MetriquePresentation | null>;
+
+  /** Journal détaillé des présentations, le plus récent en premier — scopé par rôle côté backend. */
+  listerMetriques(filtre?: MetriquesPresentationFiltre): Promise<MetriquePresentationLigne[]>;
+  /** Une ligne par délégué visible, y compris ceux sans aucune présentation sur la période. */
+  getSyntheseParDelegue(
+    filtre?: Omit<MetriquesPresentationFiltre, 'delegueId'>,
+  ): Promise<SyntheseDeleguePresentation[]>;
+  /** Une ligne par support présenté, triée par taux de conformité croissant (les plus fragiles d'abord). */
+  getSyntheseParSupport(
+    filtre?: Omit<MetriquesPresentationFiltre, 'supportId'>,
+  ): Promise<SyntheseSupportPresentation[]>;
+  /** Temps moyen passé sur chaque slide d'un support, toutes présentations visibles confondues. */
+  getSlidesMoyens(supportId: string): Promise<SlideMoyenne[]>;
+  /** Taux de conformité semaine par semaine sur les 12 dernières semaines. */
+  getTendanceConformite(delegueId?: string): Promise<TendanceConformitePresentation[]>;
 }

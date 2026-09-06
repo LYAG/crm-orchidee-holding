@@ -541,6 +541,63 @@ export const metriques: MetriquePresentation[] = [
       tempsPasse: 137,
     })),
   },
+  {
+    id: 'metrique-3',
+    supportId: 'support-3',
+    rdvId: 'rdv-3',
+    datePresentation: '2026-06-05T09:30:00',
+    dureeTotal: 640,
+    dureeMinimaleAttendue: 1200, // 10 slides × 120s
+    conforme: false,
+    // Dernières slides expédiées bien plus vite que les premières — cas type "slide zappée".
+    slides: Array.from({ length: 10 }, (_, i) => ({
+      slideIndex: i,
+      titreSlide: `Slide ${i + 1}`,
+      tempsPasse: i < 5 ? 100 : 28,
+    })),
+  },
+  {
+    id: 'metrique-4',
+    supportId: 'support-1',
+    rdvId: 'rdv-4',
+    datePresentation: '2026-06-08T11:00:00',
+    dureeTotal: 1500,
+    dureeMinimaleAttendue: 1440, // 12 slides × 120s
+    conforme: true,
+    slides: Array.from({ length: 12 }, (_, i) => ({
+      slideIndex: i,
+      titreSlide: `Slide ${i + 1}`,
+      tempsPasse: 125,
+    })),
+  },
+  {
+    id: 'metrique-5',
+    supportId: 'support-2',
+    rdvId: 'rdv-5',
+    datePresentation: '2026-06-15T16:00:00',
+    dureeTotal: 700,
+    dureeMinimaleAttendue: 960, // 8 slides × 120s
+    conforme: false,
+    slides: Array.from({ length: 8 }, (_, i) => ({
+      slideIndex: i,
+      titreSlide: `Slide ${i + 1}`,
+      tempsPasse: 87,
+    })),
+  },
+  {
+    id: 'metrique-6',
+    supportId: 'support-1',
+    rdvId: 'rdv-10',
+    datePresentation: '2026-06-20T11:00:00',
+    dureeTotal: 1620,
+    dureeMinimaleAttendue: 1440, // 12 slides × 120s
+    conforme: true,
+    slides: Array.from({ length: 12 }, (_, i) => ({
+      slideIndex: i,
+      titreSlide: `Slide ${i + 1}`,
+      tempsPasse: 135,
+    })),
+  },
 ];
 
 // ─── Opportunités ─────────────────────────────────────────────────────────────

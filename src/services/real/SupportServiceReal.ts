@@ -1,6 +1,15 @@
-import type { SupportService } from '@/services/api/SupportService';
-import type { MetriquePresentation, ParametresApp, SupportCommercial } from '@/types';
-import { ApiError, apiFetch, apiFetchBlob } from './httpClient';
+import type { MetriquesPresentationFiltre, SupportService } from '@/services/api/SupportService';
+import type {
+  MetriquePresentation,
+  MetriquePresentationLigne,
+  ParametresApp,
+  SlideMoyenne,
+  SupportCommercial,
+  SyntheseDeleguePresentation,
+  SyntheseSupportPresentation,
+  TendanceConformitePresentation,
+} from '@/types';
+import { ApiError, apiFetch, apiFetchBlob, qs } from './httpClient';
 
 export class SupportServiceReal implements SupportService {
   async getAll(): Promise<SupportCommercial[]> {
@@ -53,5 +62,37 @@ export class SupportServiceReal implements SupportService {
       if (err instanceof ApiError && err.status === 404) return null;
       throw err;
     }
+  }
+
+  async listerMetriques(filtre?: MetriquesPresentationFiltre): Promise<MetriquePresentationLigne[]> {
+    const query = qs({
+      delegueId: filtre?.delegueId,
+      supportId: filtre?.supportId,
+      dateDebut: filtre?.dateDebut,
+      dateFin: filtre?.dateFin,
+    });
+    return apiFetch<MetriquePresentationLigne[]>(`/metriques-presentation${query}`);
+  }
+
+  async getSyntheseParDelegue(
+    filtre?: Omit<MetriquesPresentationFiltre, 'delegueId'>,
+  ): Promise<SyntheseDeleguePresentation[]> {
+    const query = qs({ supportId: filtre?.supportId, dateDebut: filtre?.dateDebut, dateFin: filtre?.dateFin });
+    return apiFetch<SyntheseDeleguePresentation[]>(`/metriques-presentation/synthese-delegues${query}`);
+  }
+
+  async getSyntheseParSupport(
+    filtre?: Omit<MetriquesPresentationFiltre, 'supportId'>,
+  ): Promise<SyntheseSupportPresentation[]> {
+    const query = qs({ delegueId: filtre?.delegueId, dateDebut: filtre?.dateDebut, dateFin: filtre?.dateFin });
+    return apiFetch<SyntheseSupportPresentation[]>(`/metriques-presentation/synthese-supports${query}`);
+  }
+
+  async getSlidesMoyens(supportId: string): Promise<SlideMoyenne[]> {
+    return apiFetch<SlideMoyenne[]>(`/metriques-presentation/support/${supportId}/slides-moyens`);
+  }
+
+  async getTendanceConformite(delegueId?: string): Promise<TendanceConformitePresentation[]> {
+    return apiFetch<TendanceConformitePresentation[]>(`/metriques-presentation/tendance${qs({ delegueId })}`);
   }
 }

@@ -65,6 +65,59 @@ export interface MetriquePresentation {
   dureeMinimaleAttendue: number; // secondes
 }
 
+/** Une ligne du journal des présentations (voir SupportService.listerMetriques). */
+export interface MetriquePresentationLigne {
+  id: string;
+  rdvId: string;
+  delegueId: string;
+  nomDelegue: string;
+  supportId: string;
+  titreSupport: string;
+  professionnelId: string;
+  nomProfessionnel: string;
+  datePresentation: string;
+  dureeTotal: number; // secondes
+  dureeMinimaleAttendue: number; // secondes
+  conforme: boolean;
+  slides: SlideMetrique[];
+}
+
+/** Synthèse de conformité pour un délégué — inclut ceux sans aucune présentation sur la période (nbPresentations = 0). */
+export interface SyntheseDeleguePresentation {
+  delegueId: string;
+  nomDelegue: string;
+  nbPresentations: number;
+  nbConformes: number;
+  nbNonConformes: number;
+  tauxConformite: number; // 0..1
+  dureeMoyenneSecondes: number;
+  dureeTotaleSecondes: number;
+}
+
+/** Synthèse de conformité pour un support — trié côté service par taux croissant (les plus fragiles d'abord). */
+export interface SyntheseSupportPresentation {
+  supportId: string;
+  titreSupport: string;
+  nbPresentations: number;
+  tauxConformite: number; // 0..1
+  dureeMoyenneSecondes: number;
+}
+
+/** Temps moyen passé sur un slide donné d'un support, toutes présentations confondues. */
+export interface SlideMoyenne {
+  slideIndex: number;
+  titreSlide: string;
+  dureeMoyenneSecondes: number;
+  nbEchantillons: number;
+}
+
+/** Taux de conformité par semaine ISO (ex. "2026-W36"). */
+export interface TendanceConformitePresentation {
+  semaine: string;
+  nbPresentations: number;
+  tauxConformite: number; // 0..1
+}
+
 // ─── Paramètres globaux ───────────────────────────────────────────────────────
 
 export interface ParametresApp {
