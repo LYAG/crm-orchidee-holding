@@ -250,7 +250,7 @@ export function ImportGestesModal({ open, onClose, onImported }: Props) {
             columns={columns}
             dataSource={lignes}
             size="small"
-            pagination={{ pageSize: 8 }}
+            pagination={{ defaultPageSize: 8 }}
           />
           <Space>
             <Button onClick={reset}>Choisir un autre fichier</Button>

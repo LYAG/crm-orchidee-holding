@@ -150,7 +150,7 @@ export function FicheMensuelleTab() {
           loading={loading}
           dataSource={lignes}
           rowKey="key"
-          pagination={{ pageSize: 20 }}
+          pagination={{ defaultPageSize: 20 }}
           columns={[
             { title: 'Professionnel', dataIndex: 'professionnelNom' },
             { title: 'Centre', dataIndex: 'centreNom' },

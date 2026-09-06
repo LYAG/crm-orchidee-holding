@@ -543,7 +543,7 @@ export function ImportWizard() {
             columns={columns}
             dataSource={lignes}
             size="small"
-            pagination={{ pageSize: 10 }}
+            pagination={{ defaultPageSize: 10 }}
             scroll={{ x: true }}
           />
 

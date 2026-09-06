@@ -197,7 +197,7 @@ export function ValidationsPage() {
           return { data: resultat.contenu, success: true, total: resultat.total };
         }}
         search={{ labelWidth: 'auto' }}
-        pagination={{ pageSize: 10 }}
+        pagination={{ defaultPageSize: 10 }}
         toolBarRender={() => [
           <Space key="legend">
             <Tag>En attente uniquement</Tag>

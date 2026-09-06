@@ -496,7 +496,7 @@ export function ReportingPage() {
           columns={columns}
           rowKey={(r) => r.professionnel.id}
           loading={loading}
-          pagination={{ pageSize: 15, showSizeChanger: true }}
+          pagination={{ defaultPageSize: 15, showSizeChanger: true }}
           size="middle"
         />
       </ProCard>

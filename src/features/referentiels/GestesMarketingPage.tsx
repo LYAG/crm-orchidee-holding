@@ -183,7 +183,7 @@ export function GestesMarketingPage() {
           return { data, success: true, total: data.length };
         }}
         search={{ labelWidth: 'auto' }}
-        pagination={{ pageSize: 10 }}
+        pagination={{ defaultPageSize: 10 }}
         toolBarRender={() =>
           isAdmin
             ? [

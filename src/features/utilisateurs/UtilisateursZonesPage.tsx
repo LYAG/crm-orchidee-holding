@@ -1011,7 +1011,7 @@ export function UtilisateursZonesPage() {
               rowKey="id"
               search={false}
               size="middle"
-              pagination={{ pageSize: 10, showSizeChanger: true, showQuickJumper: true }}
+              pagination={{ defaultPageSize: 10, showSizeChanger: true, showQuickJumper: true }}
             />
           </ProCard>
         </div>

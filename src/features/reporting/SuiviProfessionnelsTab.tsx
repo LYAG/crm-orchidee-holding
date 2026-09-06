@@ -405,7 +405,7 @@ export function SuiviProfessionnelsTab() {
             <Table
               size="small"
               loading={loading}
-              pagination={{ pageSize: 8 }}
+              pagination={{ defaultPageSize: 8 }}
               dataSource={potentielParCentre}
               rowKey={(r) => r.centre.id}
               columns={[
@@ -452,7 +452,7 @@ export function SuiviProfessionnelsTab() {
             <Table
               size="small"
               loading={loading}
-              pagination={{ pageSize: 8 }}
+              pagination={{ defaultPageSize: 8 }}
               dataSource={ratioParProfessionnel}
               rowKey={(r) => r.professionnel.id}
               columns={[

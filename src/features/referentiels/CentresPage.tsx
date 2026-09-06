@@ -187,7 +187,7 @@ export function CentresPage() {
           return { data, success: true, total: data.length };
         }}
         search={{ labelWidth: 'auto' }}
-        pagination={{ pageSize: 10 }}
+        pagination={{ defaultPageSize: 10 }}
         expandable={{
           expandedRowRender: (centre) => {
             const rattaches = professionnels.filter((p) => p.centreId === centre.id);

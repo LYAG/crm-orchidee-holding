@@ -498,7 +498,7 @@ export function ProfessionnelsPage() {
           columns={columns}
           request={loadData}
           search={{ labelWidth: 'auto' }}
-          pagination={{ pageSize: 10, showSizeChanger: true, showQuickJumper: true }}
+          pagination={{ defaultPageSize: 10, showSizeChanger: true, showQuickJumper: true }}
         />
       ) : kanbanLoading && kanbanData.length === 0 ? (
         <div style={{ textAlign: 'center', padding: 40, color: '#8FB0A8' }}>Chargement…</div>

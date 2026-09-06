@@ -308,7 +308,7 @@ export function OpportunitesPage() {
           columns={columns}
           rowKey="id"
           search={false}
-          pagination={{ pageSize: 20, showSizeChanger: true, showQuickJumper: true }}
+          pagination={{ defaultPageSize: 20, showSizeChanger: true, showQuickJumper: true }}
         />
       )}
 
