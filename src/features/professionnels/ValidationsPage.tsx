@@ -36,9 +36,14 @@ export function ValidationsPage() {
       : Object.values(TypeDemandeValidation);
 
   // Chargée une fois indépendamment de la pagination — sert uniquement au libellé de la colonne Délégué.
+  // GET /api/utilisateurs (liste complète) est réservé à l'ADMIN côté backend : un MANAGER doit
+  // passer par /managers/{id}/delegues, sous peine d'un 403 silencieux (catch) qui laissait la
+  // colonne Délégué retomber sur l'UUID brut faute de correspondance trouvée.
   useEffect(() => {
-    utilisateurService.getAll().then(setDelegues).catch(() => {});
-  }, []);
+    if (!user || isDelegue) return;
+    const fn = isManager ? utilisateurService.getDeleguesByManager(user.id) : utilisateurService.getAll();
+    fn.then(setDelegues).catch(() => {});
+  }, [user, isManager, isDelegue]);
 
   async function traiter(demande: DemandeValidation, statut: StatutDemandeValidation) {
     await professionnelService.traiterDemandeValidation(demande.id, statut);
