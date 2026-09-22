@@ -45,7 +45,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ height: '100vh' }}>
       <ProLayout
-        title="Orchidée Holding"
+        title="Saphir OH"
         logo={
           <Image
             src="/images/logo-orchidee-holding.png"

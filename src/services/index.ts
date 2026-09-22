@@ -11,6 +11,7 @@ import type { AuthService } from './api/AuthService';
 import type { ObjectifConversionService } from './api/ObjectifConversionService';
 import type { ObjectifRdvService } from './api/ObjectifRdvService';
 import type { OpportuniteService } from './api/OpportuniteService';
+import type { OrdreMissionService } from './api/OrdreMissionService';
 import type { ProfessionnelService } from './api/ProfessionnelService';
 import type { PurgeService } from './api/PurgeService';
 import type { QualificationService } from './api/QualificationService';
@@ -20,6 +21,7 @@ import type { RoleService } from './api/RoleService';
 import type { SupportService } from './api/SupportService';
 import type { UtilisateurService } from './api/UtilisateurService';
 import type { ZoneService } from './api/ZoneService';
+import { OrdreMissionServiceReal } from './real/OrdreMissionServiceReal';
 
 const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS !== 'false';
 
@@ -106,3 +108,6 @@ export const zoneService = services.zoneService;
 export const purgeService = services.purgeService;
 export const objectifConversionService = services.objectifConversionService;
 export const objectifRdvService = services.objectifRdvService;
+
+// Module sans implémentation mockée : toujours branché sur le backend, quel que soit NEXT_PUBLIC_USE_MOCKS.
+export const ordreMissionService: OrdreMissionService = new OrdreMissionServiceReal();

@@ -4,6 +4,7 @@ export type { UserRole };
 
 export * from './professionnels';
 export * from './validations';
+export * from './missions';
 
 // ─── Zone ────────────────────────────────────────────────────────────────────
 

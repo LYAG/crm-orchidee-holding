@@ -127,9 +127,7 @@ function LoginForm() {
               lineHeight: 1.2,
             }}
           >
-            Orchidée
-            <br />
-            Holding
+            Saphir OH
           </Title>
           <Text
             style={{
@@ -139,7 +137,7 @@ function LoginForm() {
               marginTop: 8,
             }}
           >
-            CRM B2B — Espace collaborateurs
+            CRM B2B Orchidée Holding — Espace collaborateurs
           </Text>
         </div>
 

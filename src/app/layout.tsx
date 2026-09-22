@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'CRM Orchidée Holding',
-  description: 'CRM B2B — Orchidée Holding',
+  title: 'Saphir OH',
+  description: 'Saphir OH — CRM B2B Orchidée Holding',
 };
 
 export default function RootLayout({
