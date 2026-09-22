@@ -1,12 +1,26 @@
 'use client';
 
-import { DeleteOutlined, EditOutlined, PlusOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
-import { ModalForm, PageContainer, ProFormSwitch, ProFormText, ProTable } from '@ant-design/pro-components';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  SafetyCertificateOutlined,
+} from '@ant-design/icons';
+import {
+  ModalForm,
+  PageContainer,
+  ProFormSwitch,
+  ProFormText,
+  ProTable,
+} from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { App, Button, Tag, Tooltip } from 'antd';
 import { useRef, useState } from 'react';
 import { ordreMissionService } from '@/services';
-import type { CreateReferentielMissionDto, UpdateReferentielMissionDto } from '@/services/api/OrdreMissionService';
+import type {
+  CreateReferentielMissionDto,
+  UpdateReferentielMissionDto,
+} from '@/services/api/OrdreMissionService';
 import type { ReferentielMission } from '@/types';
 
 interface ReferentielApi {
@@ -195,20 +209,30 @@ export function ReferentielMissionPage({ referentiel }: Props) {
           if (!open) setEditing(null);
         }}
         initialValues={
-          editing ? { code: editing.code, libelle: editing.libelle, actif: editing.actif } : { actif: true }
+          editing
+            ? { code: editing.code, libelle: editing.libelle, actif: editing.actif }
+            : { actif: true }
         }
         onFinish={handleFinish}
         modalProps={{ destroyOnHidden: true }}
         submitter={{ searchConfig: { submitText: editing ? 'Enregistrer' : 'Créer' } }}
       >
-        <ProFormText name="code" label="Code" rules={[{ required: true, message: 'Obligatoire.' }]} />
+        <ProFormText
+          name="code"
+          label="Code"
+          rules={[{ required: true, message: 'Obligatoire.' }]}
+        />
         <ProFormText
           name="libelle"
           label="Libellé"
           placeholder={cfg.exemple}
           rules={[{ required: true, message: 'Obligatoire.' }]}
         />
-        <ProFormSwitch name="actif" label="Actif" tooltip="Un libellé inactif n'est plus proposé à la création côté mobile." />
+        <ProFormSwitch
+          name="actif"
+          label="Actif"
+          tooltip="Un libellé inactif n'est plus proposé à la création côté mobile."
+        />
       </ModalForm>
     </PageContainer>
   );

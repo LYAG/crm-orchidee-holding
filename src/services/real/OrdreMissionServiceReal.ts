@@ -80,7 +80,10 @@ export class OrdreMissionServiceReal implements OrdreMissionService {
   }
 
   async updateTypeMission(id: string, data: UpdateReferentielMissionDto): Promise<TypeMission> {
-    return apiFetch<TypeMission>(`/types-mission/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+    return apiFetch<TypeMission>(`/types-mission/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
   }
 
   async deleteTypeMission(id: string): Promise<void> {
@@ -92,10 +95,16 @@ export class OrdreMissionServiceReal implements OrdreMissionService {
   }
 
   async createMoyenTransport(data: CreateReferentielMissionDto): Promise<MoyenTransport> {
-    return apiFetch<MoyenTransport>('/moyens-transport', { method: 'POST', body: JSON.stringify(data) });
+    return apiFetch<MoyenTransport>('/moyens-transport', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 
-  async updateMoyenTransport(id: string, data: UpdateReferentielMissionDto): Promise<MoyenTransport> {
+  async updateMoyenTransport(
+    id: string,
+    data: UpdateReferentielMissionDto,
+  ): Promise<MoyenTransport> {
     return apiFetch<MoyenTransport>(`/moyens-transport/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),

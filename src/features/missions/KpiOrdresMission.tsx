@@ -41,7 +41,9 @@ function Indicateur({
         {icon}
       </div>
       <div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: '#123832', lineHeight: 1.1 }}>{valeur}</div>
+        <div style={{ fontSize: 22, fontWeight: 800, color: '#123832', lineHeight: 1.1 }}>
+          {valeur}
+        </div>
         <Text type="secondary" style={{ fontSize: 13 }}>
           {label}
         </Text>
@@ -98,7 +100,11 @@ export function KpiOrdresMission({ kpi, loading }: Props) {
         <Col span={24}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {STATUTS_MISSION_ORDONNES.map((s) => (
-              <Tag key={s} color={STATUT_MISSION_CONFIG[s].color} style={{ borderRadius: 6, padding: '2px 10px' }}>
+              <Tag
+                key={s}
+                color={STATUT_MISSION_CONFIG[s].color}
+                style={{ borderRadius: 6, padding: '2px 10px' }}
+              >
                 {STATUT_MISSION_CONFIG[s].label} : <strong>{kpi.parStatut[s] ?? 0}</strong>
               </Tag>
             ))}

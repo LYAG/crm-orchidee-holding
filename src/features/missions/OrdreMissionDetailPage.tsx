@@ -28,11 +28,17 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatFcfa } from '@/lib/format';
 import { ordreMissionService, professionnelService, zoneService } from '@/services';
 import { StatutOrdreMission } from '@/types';
-import type { Centre, HistoriqueOrdreMission as Entree, OrdreMission, PieceJointeMission, Zone } from '@/types';
+import type {
+  Centre,
+  HistoriqueOrdreMission as Entree,
+  OrdreMission,
+  PieceJointeMission,
+  Zone,
+} from '@/types';
 import { STATUT_MISSION_CONFIG } from './constants';
 import { HistoriqueOrdreMission } from './HistoriqueOrdreMission';
 
@@ -42,7 +48,14 @@ type Decision = 'valider' | 'rejeter' | 'modification';
 
 const DECISION_CONFIG: Record<
   Decision,
-  { titre: string; bouton: string; champ: string; obligatoire: boolean; placeholder: string; danger?: boolean }
+  {
+    titre: string;
+    bouton: string;
+    champ: string;
+    obligatoire: boolean;
+    placeholder: string;
+    danger?: boolean;
+  }
 > = {
   valider: {
     titre: 'Valider l’ordre de mission',
@@ -89,28 +102,44 @@ export function OrdreMissionDetailPage() {
   const [decision, setDecision] = useState<Decision | null>(null);
   const [envoi, setEnvoi] = useState(false);
 
-  const charger = useCallback(async () => {
-    setErreur(null);
-    try {
-      const [m, h] = await Promise.all([
-        ordreMissionService.getById(params.id),
-        ordreMissionService.getHistorique(params.id),
-      ]);
-      setMission(m);
-      setHistorique(h);
-    } catch (err) {
-      setErreur(err instanceof Error ? err.message : 'Ordre de mission introuvable.');
-    } finally {
-      setChargement(false);
-    }
-  }, [params.id]);
+  /** Incrémenté après chaque décision pour recharger la mission et son historique. */
+  const [version, setVersion] = useState(0);
 
   useEffect(() => {
-    charger();
+    let annule = false;
+    Promise.all([
+      ordreMissionService.getById(params.id),
+      ordreMissionService.getHistorique(params.id),
+    ])
+      .then(([m, h]) => {
+        if (annule) return;
+        setMission(m);
+        setHistorique(h);
+        setErreur(null);
+      })
+      .catch((err) => {
+        if (!annule)
+          setErreur(err instanceof Error ? err.message : 'Ordre de mission introuvable.');
+      })
+      .finally(() => {
+        if (!annule) setChargement(false);
+      });
+    return () => {
+      annule = true;
+    };
+  }, [params.id, version]);
+
+  useEffect(() => {
     // Libellés uniquement : en cas d'échec on retombe sur les identifiants bruts.
-    zoneService.getAll().then(setZones).catch(() => {});
-    professionnelService.getCentres().then(setCentres).catch(() => {});
-  }, [charger]);
+    zoneService
+      .getAll()
+      .then(setZones)
+      .catch(() => {});
+    professionnelService
+      .getCentres()
+      .then(setCentres)
+      .catch(() => {});
+  }, []);
 
   async function confirmerDecision() {
     if (!mission || !decision) return;
@@ -118,7 +147,8 @@ export function OrdreMissionDetailPage() {
     const valeur = texte?.trim();
     setEnvoi(true);
     try {
-      if (decision === 'valider') await ordreMissionService.valider(mission.id, valeur || undefined);
+      if (decision === 'valider')
+        await ordreMissionService.valider(mission.id, valeur || undefined);
       else if (decision === 'rejeter') await ordreMissionService.rejeter(mission.id, valeur!);
       else await ordreMissionService.demanderModification(mission.id, valeur!);
       message.success(
@@ -130,7 +160,7 @@ export function OrdreMissionDetailPage() {
       );
       setDecision(null);
       form.resetFields();
-      await charger();
+      setVersion((v) => v + 1);
     } catch (err) {
       message.error(err instanceof Error ? err.message : 'Erreur lors du traitement.');
     } finally {
@@ -200,13 +230,27 @@ export function OrdreMissionDetailPage() {
       extra={
         aTraiter
           ? [
-              <Button key="modif" icon={<EditOutlined />} onClick={() => setDecision('modification')}>
+              <Button
+                key="modif"
+                icon={<EditOutlined />}
+                onClick={() => setDecision('modification')}
+              >
                 Demander modification
               </Button>,
-              <Button key="rejet" danger icon={<CloseOutlined />} onClick={() => setDecision('rejeter')}>
+              <Button
+                key="rejet"
+                danger
+                icon={<CloseOutlined />}
+                onClick={() => setDecision('rejeter')}
+              >
                 Rejeter
               </Button>,
-              <Button key="valid" type="primary" icon={<CheckOutlined />} onClick={() => setDecision('valider')}>
+              <Button
+                key="valid"
+                type="primary"
+                icon={<CheckOutlined />}
+                onClick={() => setDecision('valider')}
+              >
                 Valider
               </Button>,
             ]
@@ -214,7 +258,13 @@ export function OrdreMissionDetailPage() {
       }
     >
       {mission.statut === StatutOrdreMission.REJETE && mission.motifRejet && (
-        <Alert type="error" showIcon title="Motif du rejet" description={mission.motifRejet} style={{ marginBottom: 16 }} />
+        <Alert
+          type="error"
+          showIcon
+          title="Motif du rejet"
+          description={mission.motifRejet}
+          style={{ marginBottom: 16 }}
+        />
       )}
       {mission.statut !== StatutOrdreMission.REJETE && mission.commentaireManager && (
         <Alert
@@ -232,14 +282,21 @@ export function OrdreMissionDetailPage() {
             <Descriptions column={{ xs: 1, md: 2 }} size="small">
               <Descriptions.Item label="Délégué">{mission.nomDelegue}</Descriptions.Item>
               <Descriptions.Item label="Manager">{mission.nomManager}</Descriptions.Item>
-              <Descriptions.Item label="Type de mission">{mission.typeMissionLibelle}</Descriptions.Item>
-              <Descriptions.Item label="Moyen de transport">{mission.moyenTransportLibelle}</Descriptions.Item>
+              <Descriptions.Item label="Type de mission">
+                {mission.typeMissionLibelle}
+              </Descriptions.Item>
+              <Descriptions.Item label="Moyen de transport">
+                {mission.moyenTransportLibelle}
+              </Descriptions.Item>
               <Descriptions.Item label="Période">
-                {dayjs(mission.dateDebut).format('DD/MM/YYYY')} → {dayjs(mission.dateFin).format('DD/MM/YYYY')} (
-                {nbJours} jour{nbJours > 1 ? 's' : ''})
+                {dayjs(mission.dateDebut).format('DD/MM/YYYY')} →{' '}
+                {dayjs(mission.dateFin).format('DD/MM/YYYY')} ({nbJours} jour
+                {nbJours > 1 ? 's' : ''})
               </Descriptions.Item>
               <Descriptions.Item label="Soumise le">
-                {mission.dateSoumission ? dayjs(mission.dateSoumission).format('DD/MM/YYYY à HH:mm') : '—'}
+                {mission.dateSoumission
+                  ? dayjs(mission.dateSoumission).format('DD/MM/YYYY à HH:mm')
+                  : '—'}
               </Descriptions.Item>
               <Descriptions.Item label="Zone(s)" span={2}>
                 {mission.zoneIds.length > 0
@@ -252,7 +309,9 @@ export function OrdreMissionDetailPage() {
                   : '—'}
               </Descriptions.Item>
               <Descriptions.Item label="Objet / motif" span={2}>
-                <Paragraph style={{ marginBottom: 0, whiteSpace: 'pre-wrap' }}>{mission.objet}</Paragraph>
+                <Paragraph style={{ marginBottom: 0, whiteSpace: 'pre-wrap' }}>
+                  {mission.objet}
+                </Paragraph>
               </Descriptions.Item>
             </Descriptions>
           </ProCard>

@@ -13,7 +13,13 @@ import { UserRole } from '@/lib/constants';
 import { formatFcfa } from '@/lib/format';
 import { ordreMissionService, utilisateurService, zoneService } from '@/services';
 import { StatutOrdreMission } from '@/types';
-import type { FiltresOrdreMission, KpiOrdresMission as Kpi, OrdreMission, Utilisateur, Zone } from '@/types';
+import type {
+  FiltresOrdreMission,
+  KpiOrdresMission as Kpi,
+  OrdreMission,
+  Utilisateur,
+  Zone,
+} from '@/types';
 import { STATUT_MISSION_CONFIG, STATUTS_MISSION_ORDONNES } from './constants';
 import { KpiOrdresMission } from './KpiOrdresMission';
 
@@ -44,7 +50,10 @@ export function OrdresMissionPage() {
       ? utilisateurService.getDeleguesByManager(user.id)
       : utilisateurService.getByRole(UserRole.DELEGUE);
     fn.then(setDelegues).catch(() => {});
-    zoneService.getAll().then(setZones).catch(() => {});
+    zoneService
+      .getAll()
+      .then(setZones)
+      .catch(() => {});
   }, [user, isManager]);
 
   const zoneMap = Object.fromEntries(zones.map((z) => [z.id, z]));
@@ -58,7 +67,11 @@ export function OrdresMissionPage() {
     ordreMissionService
       .getKpis(filtres)
       .then(setKpi)
-      .catch((err) => message.error(err instanceof Error ? err.message : 'Impossible de charger les indicateurs.'))
+      .catch((err) =>
+        message.error(
+          err instanceof Error ? err.message : 'Impossible de charger les indicateurs.',
+        ),
+      )
       .finally(() => setKpiLoading(false));
   }
 
@@ -164,7 +177,9 @@ export function OrdresMissionPage() {
     <PageContainer
       title="Ordres de mission"
       subTitle={
-        isManager ? 'Missions soumises par les délégués de votre équipe' : 'Toutes les missions des délégués'
+        isManager
+          ? 'Missions soumises par les délégués de votre équipe'
+          : 'Toutes les missions des délégués'
       }
     >
       <KpiOrdresMission kpi={kpi} loading={kpiLoading} />
@@ -184,18 +199,31 @@ export function OrdresMissionPage() {
             dateDebut: params.dateDebut as string | undefined,
             dateFin: params.dateFin as string | undefined,
           };
-          const { statut: _statut, ...filtresKpi } = filtres;
-          chargerKpis(filtresKpi);
+          chargerKpis({
+            delegueId: filtres.delegueId,
+            zoneId: filtres.zoneId,
+            dateDebut: filtres.dateDebut,
+            dateFin: filtres.dateFin,
+          });
           try {
             const page = (params.current ?? 1) - 1;
-            const resultat = await ordreMissionService.getPagine(filtres, page, params.pageSize ?? 10);
+            const resultat = await ordreMissionService.getPagine(
+              filtres,
+              page,
+              params.pageSize ?? 10,
+            );
             return { data: resultat.contenu, success: true, total: resultat.total };
           } catch (err) {
-            message.error(err instanceof Error ? err.message : 'Impossible de charger les ordres de mission.');
+            message.error(
+              err instanceof Error ? err.message : 'Impossible de charger les ordres de mission.',
+            );
             return { data: [], success: false, total: 0 };
           }
         }}
-        onRow={(m) => ({ onClick: () => router.push(`/ordres-mission/${m.id}`), style: { cursor: 'pointer' } })}
+        onRow={(m) => ({
+          onClick: () => router.push(`/ordres-mission/${m.id}`),
+          style: { cursor: 'pointer' },
+        })}
         search={{ labelWidth: 'auto' }}
         pagination={{ defaultPageSize: 10 }}
         toolBarRender={() => [

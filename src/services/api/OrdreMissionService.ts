@@ -17,7 +17,11 @@ export type UpdateReferentielMissionDto = Partial<Omit<ReferentielMission, 'id'>
  * token : les filtres ne font que restreindre ce périmètre, jamais l'élargir.
  */
 export interface OrdreMissionService {
-  getPagine(filtres: FiltresOrdreMission, page: number, pageSize: number): Promise<PageResponse<OrdreMission>>;
+  getPagine(
+    filtres: FiltresOrdreMission,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<OrdreMission>>;
   getById(id: string): Promise<OrdreMission>;
   getHistorique(id: string): Promise<HistoriqueOrdreMission[]>;
   getKpis(filtres: Omit<FiltresOrdreMission, 'statut'>): Promise<KpiOrdresMission>;

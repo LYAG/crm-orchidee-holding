@@ -41,7 +41,10 @@ export function HistoriqueOrdreMission({ entrees }: Props) {
               <Text strong>{ACTION_MISSION_LABELS[e.action]}</Text>
               {e.statutAvant && e.statutAvant !== e.statutApres && (
                 <>
-                  <Tag color={STATUT_MISSION_CONFIG[e.statutAvant].color} style={{ marginInlineEnd: 0 }}>
+                  <Tag
+                    color={STATUT_MISSION_CONFIG[e.statutAvant].color}
+                    style={{ marginInlineEnd: 0 }}
+                  >
                     {STATUT_MISSION_CONFIG[e.statutAvant].label}
                   </Tag>
                   <ArrowRightOutlined style={{ fontSize: 11, color: '#8FB0A8' }} />
@@ -53,7 +56,9 @@ export function HistoriqueOrdreMission({ entrees }: Props) {
             </div>
             <Text type="secondary" style={{ fontSize: 12 }}>
               {dayjs(e.date).format('DD/MM/YYYY à HH:mm')} — {e.auteurNom}
-              {e.auteurRole ? ` (${USER_ROLE_LABELS[e.auteurRole as UserRole] ?? e.auteurRole})` : ''}
+              {e.auteurRole
+                ? ` (${USER_ROLE_LABELS[e.auteurRole as UserRole] ?? e.auteurRole})`
+                : ''}
             </Text>
             {e.commentaire && (
               <div
