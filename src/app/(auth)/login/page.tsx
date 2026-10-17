@@ -41,148 +41,35 @@ function LoginForm() {
   }
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '420px 1fr',
-        minHeight: '100vh',
-      }}
-    >
-      {/* ── Left brand panel ────────────────────────────────────── */}
-      <div
-        style={{
-          background: 'linear-gradient(160deg, #0F2210 0%, #123832 40%, #1B4A40 75%, #2E6B5B 100%)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '48px 40px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Decorative blobs */}
-        <div
-          style={{
-            position: 'absolute',
-            top: -80,
-            right: -80,
-            width: 280,
-            height: 280,
-            borderRadius: '50%',
-            background: 'rgba(15,110,82,0.18)',
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: -60,
-            left: -60,
-            width: 220,
-            height: 220,
-            borderRadius: '50%',
-            background: 'rgba(15,110,82,0.12)',
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 160,
-            right: -20,
-            width: 120,
-            height: 120,
-            borderRadius: '50%',
-            background: 'rgba(255,255,255,0.04)',
-            pointerEvents: 'none',
-          }}
-        />
-
-        {/* Logo + brand */}
-        <div style={{ position: 'relative' }}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 14,
-              background: 'rgba(255,255,255,0.12)',
-              border: '1.5px solid rgba(255,255,255,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 24,
-              backdropFilter: 'blur(8px)',
-              overflow: 'hidden',
-            }}
-          >
-            <Image src="/images/logo-orchidee-holding.png" alt="Orchidée Holding" width={40} height={40} style={{ objectFit: 'contain' }} />
-          </div>
-          <Title
-            level={2}
-            style={{
-              color: '#ffffff',
-              margin: 0,
-              fontWeight: 700,
-              letterSpacing: '-0.5px',
-              lineHeight: 1.2,
-            }}
-          >
+    <div className="oh-login">
+      {/* ── Panneau de marque (masqué sur mobile) ───────────────────── */}
+      <aside className="oh-login__brand">
+        <div className="oh-login__logo">
+          <Image src="/images/logo-orchidee-holding.png" alt="Orchidée Holding" width={44} height={44} priority />
+        </div>
+        <div>
+          <Title level={2} className="oh-login__title">
             Saphir OH
           </Title>
-          <Text
-            style={{
-              color: 'rgba(255,255,255,0.6)',
-              fontSize: 15,
-              display: 'block',
-              marginTop: 8,
-            }}
-          >
-            CRM B2B Orchidée Holding — Espace collaborateurs
+          <Text className="oh-login__sub">CRM B2B Orchidée Holding — Espace collaborateurs</Text>
+          <Text className="oh-login__lead">
+            Gérez vos prospects, planifiez vos rendez-vous et suivez vos opportunités commerciales en temps réel.
           </Text>
         </div>
+        <Text className="oh-login__legal">© {new Date().getFullYear()} Orchidée Holding — Usage interne</Text>
+      </aside>
 
-        {/* Center quote */}
-        <div style={{ position: 'relative' }}>
-          <div
-            style={{
-              width: 40,
-              height: 2,
-              background: 'rgba(255,255,255,0.25)',
-              marginBottom: 16,
-            }}
-          />
-          <Text
-            style={{
-              color: 'rgba(255,255,255,0.55)',
-              fontSize: 13,
-              lineHeight: 1.6,
-              display: 'block',
-            }}
-          >
-            Gérez vos prospects, planifiez vos rendez-vous et suivez vos
-            opportunités commerciales en temps réel.
-          </Text>
-        </div>
-
-        <div />
-      </div>
-
-      {/* ── Right form panel ────────────────────────────────────── */}
-      <div
-        style={{
-          background: '#ffffff',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '48px 56px',
-        }}
-      >
-        <div style={{ width: '100%', maxWidth: 380 }}>
-          <Title level={3} style={{ margin: 0, marginBottom: 8, fontWeight: 700, color: '#123832' }}>
+      {/* ── Formulaire ───────────────────────────────────────────────── */}
+      <main className="oh-login__main">
+        <div className="oh-login__card">
+          <div className="oh-login__compact-brand">
+            <Image src="/images/logo-orchidee-holding.png" alt="" width={36} height={36} style={{ borderRadius: 8 }} />
+            <span>Saphir OH</span>
+          </div>
+          <Title level={3} style={{ margin: 0, marginBottom: 6, fontWeight: 650, letterSpacing: '-0.015em' }}>
             Connexion
           </Title>
-          <Text type="secondary" style={{ display: 'block', marginBottom: 32 }}>
+          <Text type="secondary" style={{ display: 'block', marginBottom: 28 }}>
             Entrez vos identifiants pour accéder à votre espace.
           </Text>
 
@@ -191,7 +78,7 @@ function LoginForm() {
               title="Votre session a expiré. Veuillez vous reconnecter."
               type="warning"
               showIcon
-              style={{ marginBottom: 20, borderRadius: 8 }}
+              style={{ marginBottom: 20 }}
             />
           )}
 
@@ -200,22 +87,21 @@ function LoginForm() {
               title={error}
               type="error"
               showIcon
-              style={{ marginBottom: 20, borderRadius: 8 }}
+              style={{ marginBottom: 20 }}
             />
           )}
 
           <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
             <Form.Item
               name="email"
-              label={<span style={{ fontWeight: 600, color: '#1F4E45' }}>Adresse e-mail</span>}
+              label={<span>Adresse e-mail</span>}
               rules={[{ required: true, message: 'Veuillez saisir votre e-mail.' }]}
             >
               <ProFormText
                 fieldProps={{
-                  prefix: <UserOutlined style={{ color: '#8FB0A8' }} />,
+                  prefix: <UserOutlined style={{ color: '#627A74' }} />,
                   autoComplete: 'email',
                   size: 'large',
-                  style: { borderRadius: 8 },
                   placeholder: 'nom@orchidee-holding.ci',
                 }}
                 noStyle
@@ -224,15 +110,14 @@ function LoginForm() {
 
             <Form.Item
               name="password"
-              label={<span style={{ fontWeight: 600, color: '#1F4E45' }}>Mot de passe</span>}
+              label={<span>Mot de passe</span>}
               rules={[{ required: true, message: 'Veuillez saisir votre mot de passe.' }]}
             >
               <ProFormText.Password
                 fieldProps={{
-                  prefix: <LockOutlined style={{ color: '#8FB0A8' }} />,
+                  prefix: <LockOutlined style={{ color: '#627A74' }} />,
                   autoComplete: 'current-password',
                   size: 'large',
-                  style: { borderRadius: 8 },
                   placeholder: '••••••••',
                 }}
                 noStyle
@@ -245,35 +130,16 @@ function LoginForm() {
               size="large"
               block
               loading={loading}
-              style={{
-                marginTop: 8,
-                borderRadius: 8,
-                height: 46,
-                fontWeight: 600,
-                fontSize: 15,
-                background: 'linear-gradient(135deg, #0F6E52 0%, #2E6B5B 100%)',
-                border: 'none',
-                boxShadow: '0 4px 12px rgba(15,110,82,0.35)',
-              }}
+              style={{ marginTop: 4, height: 44, fontWeight: 600 }}
             >
               Se connecter
             </Button>
           </Form>
-
-          <div
-            style={{
-              marginTop: 40,
-              paddingTop: 24,
-              borderTop: '1px solid #E7F3F0',
-              textAlign: 'center',
-            }}
-          >
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              © {new Date().getFullYear()} Orchidée Holding — Usage interne uniquement
-            </Text>
-          </div>
         </div>
-      </div>
+        <Text type="secondary" className="oh-login__legal-mobile">
+          © {new Date().getFullYear()} Orchidée Holding — Usage interne
+        </Text>
+      </main>
     </div>
   );
 }

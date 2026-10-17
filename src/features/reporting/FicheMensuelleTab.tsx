@@ -108,7 +108,7 @@ export function FicheMensuelleTab() {
     ]);
     const corps = `
       <h1 style="font-size:18px; margin:0;">Planning Mensuel — Fiche de Suivi</h1>
-      <p style="color:#6B8A82; font-size:13px; margin:4px 0 16px;">
+      <p style="color:#5A746D; font-size:13px; margin:4px 0 16px;">
         ${resumeFiltres} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
       </p>
       ${construireTableauHtml(entetes, corpsLignes)}

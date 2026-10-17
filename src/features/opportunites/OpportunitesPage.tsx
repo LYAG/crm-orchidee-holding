@@ -290,7 +290,7 @@ export function OpportunitesPage() {
 
       {viewMode === 'kanban' ? (
         loading && allOpps.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40, color: '#8FB0A8' }}>Chargement…</div>
+          <div style={{ textAlign: 'center', padding: 40, color: '#627A74' }}>Chargement…</div>
         ) : (
           <OpportuniteKanban
             opportunites={allOpps}

@@ -453,7 +453,7 @@ function PresentationSummary({ metrique, support, onReturn }: SummaryProps) {
             percent={pct}
             size="small"
             showInfo={false}
-            strokeColor={pct >= 100 ? '#0F6E52' : '#E65100'}
+            strokeColor={pct >= 100 ? '#0F6E52' : '#A84A00'}
           />
         );
       },

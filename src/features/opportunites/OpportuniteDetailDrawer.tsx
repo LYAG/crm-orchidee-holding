@@ -432,7 +432,7 @@ export function OpportuniteDetailDrawer({
               type="primary"
               icon={<TrophyOutlined />}
               onClick={handleMarquerGagnee}
-              style={{ background: '#2E7D32', borderColor: '#2E7D32', flex: 1 }}
+              style={{ background: '#1E7A4C', borderColor: '#1E7A4C', flex: 1 }}
               block
             >
               Marquer comme gagnée

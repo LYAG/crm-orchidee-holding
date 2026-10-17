@@ -252,14 +252,14 @@ export function HeaderNotifications({ user }: Props) {
   }
 
   const TYPE_STYLES: Record<AlertItem['type'], { bg: string; color: string; border: string }> = {
-    error:   { bg: '#FFF5F5', color: '#D32F2F', border: '#FFCDD2' },
-    warning: { bg: '#FFF8F0', color: '#E65100', border: '#FFE0B2' },
-    info:    { bg: '#F0F4FF', color: '#1565C0', border: '#BBDEFB' },
-    success: { bg: '#EDFAF5', color: '#2E7D32', border: '#C8E6C9' },
+    error:   { bg: '#FDF5F4', color: '#C2362F', border: '#F3CFCC' },
+    warning: { bg: '#FDF6EE', color: '#A84A00', border: '#F4D9B8' },
+    info:    { bg: '#F0F4FF', color: '#1F5FA8', border: '#BBDEFB' },
+    success: { bg: '#EDFAF5', color: '#1E7A4C', border: '#C9DFD5' },
   };
 
   const content = (
-    <div style={{ width: 320 }}>
+    <div style={{ width: 'min(340px, calc(100vw - 32px))' }}>
       {/* Header */}
       <div
         style={{
@@ -267,7 +267,7 @@ export function HeaderNotifications({ user }: Props) {
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '12px 16px 10px',
-          borderBottom: '1px solid #E7F3F0',
+          borderBottom: '1px solid #E3EAE7',
         }}
       >
         <Text strong style={{ fontSize: 14, color: '#123832' }}>
@@ -276,8 +276,8 @@ export function HeaderNotifications({ user }: Props) {
         {alertsAffiches.length > 0 && (
           <Tag
             style={{
-              background: '#FEE2E2',
-              color: '#D32F2F',
+              background: '#FBECEB',
+              color: '#C2362F',
               border: 'none',
               borderRadius: 10,
               fontWeight: 600,
@@ -300,7 +300,7 @@ export function HeaderNotifications({ user }: Props) {
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
-              <span style={{ color: '#8FB0A8', fontSize: 13 }}>
+              <span style={{ color: '#627A74', fontSize: 13 }}>
                 Aucune action en attente
               </span>
             }
@@ -374,12 +374,12 @@ export function HeaderNotifications({ user }: Props) {
         <div
           style={{
             padding: '8px 16px 12px',
-            borderTop: '1px solid #E7F3F0',
+            borderTop: '1px solid #E3EAE7',
             textAlign: 'center',
           }}
         >
           <CheckCircleOutlined style={{ color: '#0F6E52', marginRight: 6 }} />
-          <Text style={{ fontSize: 12, color: '#8FB0A8' }}>
+          <Text style={{ fontSize: 12, color: '#627A74' }}>
             Tout est à jour
           </Text>
         </div>
@@ -401,7 +401,7 @@ export function HeaderNotifications({ user }: Props) {
           borderRadius: 12,
           boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
           overflow: 'hidden',
-          border: '1px solid #E7F3F0',
+          border: '1px solid #E3EAE7',
         },
       }}
     >
@@ -412,9 +412,9 @@ export function HeaderNotifications({ user }: Props) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: 36,
-          height: 36,
-          color: alertsAffiches.length > 0 ? '#123832' : '#8FB0A8',
+          width: 40,
+          height: 40,
+          color: alertsAffiches.length > 0 ? '#123832' : '#627A74',
         }}
       >
         <Badge
@@ -423,7 +423,7 @@ export function HeaderNotifications({ user }: Props) {
           offset={[-2, 2]}
           styles={{
             indicator: {
-              background: '#D32F2F',
+              background: '#C2362F',
               boxShadow: 'none',
               minWidth: 16,
               height: 16,

@@ -33,8 +33,8 @@ export function ParametresPage() {
         <Tag
           icon={<SettingOutlined />}
           style={{
-            background: '#F3E5F5',
-            color: '#6A1B9A',
+            background: '#F1ECF8',
+            color: '#6B3FA0',
             border: 'none',
             fontWeight: 600,
             borderRadius: 6,
@@ -49,7 +49,7 @@ export function ParametresPage() {
           maxWidth: 560,
           background: '#fff',
           borderRadius: 12,
-          border: '1px solid #E7F3F0',
+          border: '1px solid #E3EAE7',
           boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
           overflow: 'hidden',
         }}
@@ -58,7 +58,7 @@ export function ParametresPage() {
         <div
           style={{
             padding: '18px 24px',
-            background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
+            background: '#123832',
             display: 'flex',
             alignItems: 'center',
             gap: 12,
@@ -95,8 +95,8 @@ export function ParametresPage() {
             style={{
               padding: '12px 14px',
               borderRadius: 8,
-              background: '#F3F9F7',
-              border: '1px solid #E7F3F0',
+              background: '#F3F6F5',
+              border: '1px solid #E3EAE7',
               marginBottom: 20,
             }}
           >

@@ -10,7 +10,7 @@ const ENTETE_HTML = `
     <img src="${LOGO_SRC}" alt="Orchidée Holding" style="width:56px; height:56px; border-radius:50%; object-fit:cover;"
       onerror="this.style.display='none'" />
     <div>
-      <div style="font-family:Georgia,'Times New Roman',serif; font-size:22px; font-weight:700; color:#2E7D32; line-height:1.1;">
+      <div style="font-family:Georgia,'Times New Roman',serif; font-size:22px; font-weight:700; color:#1E7A4C; line-height:1.1;">
         ORCHIDEE <span style="font-size:16px;">HOLDING</span>
       </div>
       <div style="font-size:11px; color:#4F6F63;">Unité de production et promotion de spécialités parapharmaceutiques</div>
@@ -19,7 +19,7 @@ const ENTETE_HTML = `
 `;
 
 const PIED_PAGE_HTML = `
-  <div style="margin-top:12px; padding-top:10px; border-top:1px solid #E0E0E0; font-size:10px; color:#555; text-align:center;">
+  <div style="margin-top:12px; padding-top:10px; border-top:1px solid #CDD4D1; font-size:10px; color:#555; text-align:center;">
     <div>
       SARL au capital de 1.000.000 F CFA / Siège social : <strong>RCI</strong> Abidjan, Cocody-2 plateaux /
       RC : N CI-ABJ-2019-B-18595 / NCC : 1949692G / Régime d'imposition : TEE/
@@ -47,11 +47,11 @@ export function construireLigneFiltres(filtres: { label: string; valeur: string 
 /** Tableau HTML générique (style commun) pour les rapports imprimés à partir de données déjà formatées en chaînes. */
 export function construireTableauHtml(entetes: string[], lignes: (string | number)[][]): string {
   if (lignes.length === 0) {
-    return '<p style="color:#8FB0A8; font-size:13px;">Aucune donnée pour ce filtre.</p>';
+    return '<p style="color:#627A74; font-size:13px;">Aucune donnée pour ce filtre.</p>';
   }
   return `<table style="width:100%; border-collapse:collapse; font-size:13px;">
     <thead><tr style="background:#F3F7F5;">
-      ${entetes.map((e) => `<th style="text-align:left; padding:6px 8px; border-bottom:1px solid #E7F3F0;">${escapeHtml(e)}</th>`).join('')}
+      ${entetes.map((e) => `<th style="text-align:left; padding:6px 8px; border-bottom:1px solid #E3EAE7;">${escapeHtml(e)}</th>`).join('')}
     </tr></thead>
     <tbody>
       ${lignes

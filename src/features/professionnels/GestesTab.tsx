@@ -43,9 +43,9 @@ export function GestesTab({ professionnelId }: Props) {
               children: (
                 <div key={g.id}>
                   <div style={{ fontWeight: 600, color: '#123832' }}>
-                    {libelle} {g.coutFcfa != null && <span style={{ color: '#8FB0A8', fontWeight: 400 }}>— {formatFcfa(g.coutFcfa)}</span>}
+                    {libelle} {g.coutFcfa != null && <span style={{ color: '#627A74', fontWeight: 400 }}>— {formatFcfa(g.coutFcfa)}</span>}
                   </div>
-                  <div style={{ fontSize: 12, color: '#8FB0A8' }}>{g.date}</div>
+                  <div style={{ fontSize: 12, color: '#627A74' }}>{g.date}</div>
                   {g.commentaire && <div style={{ fontSize: 13, marginTop: 4 }}>{g.commentaire}</div>}
                 </div>
               ),

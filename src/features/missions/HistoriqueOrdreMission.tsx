@@ -47,7 +47,7 @@ export function HistoriqueOrdreMission({ entrees }: Props) {
                   >
                     {STATUT_MISSION_CONFIG[e.statutAvant].label}
                   </Tag>
-                  <ArrowRightOutlined style={{ fontSize: 11, color: '#8FB0A8' }} />
+                  <ArrowRightOutlined style={{ fontSize: 11, color: '#627A74' }} />
                 </>
               )}
               <Tag color={STATUT_MISSION_CONFIG[e.statutApres].color}>
@@ -65,9 +65,9 @@ export function HistoriqueOrdreMission({ entrees }: Props) {
                 style={{
                   marginTop: 6,
                   padding: '6px 10px',
-                  background: '#F7FAF9',
+                  background: '#F6F8F7',
                   borderRadius: 6,
-                  borderLeft: '3px solid #DCE8E4',
+                  borderLeft: '3px solid #D6DFDB',
                   whiteSpace: 'pre-wrap',
                 }}
               >

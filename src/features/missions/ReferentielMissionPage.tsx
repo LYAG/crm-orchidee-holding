@@ -162,7 +162,7 @@ export function ReferentielMissionPage({ referentiel }: Props) {
       tags={
         <Tag
           icon={<SafetyCertificateOutlined />}
-          style={{ background: '#F3E5F5', color: '#6A1B9A', border: 'none', borderRadius: 6 }}
+          style={{ background: '#F1ECF8', color: '#6B3FA0', border: 'none', borderRadius: 6 }}
         >
           Administration
         </Tag>

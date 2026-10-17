@@ -135,7 +135,7 @@ function AccessCell({
   if (access === 'none') {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <CloseCircleFilled style={{ color: '#E0E0E0', fontSize: 14 }} />
+        <CloseCircleFilled style={{ color: '#CDD4D1', fontSize: 14 }} />
         <Text style={{ color: '#C8C8C8', fontSize: 12 }}>—</Text>
       </div>
     );
@@ -223,8 +223,8 @@ function RoleModal({
               width: 32,
               height: 32,
               borderRadius: 8,
-              background: '#F3E5F5',
-              color: '#6A1B9A',
+              background: '#F1ECF8',
+              color: '#6B3FA0',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -359,7 +359,7 @@ function PermissionModal({
               width: 32,
               height: 32,
               borderRadius: 8,
-              background: '#E7F3F0',
+              background: '#E3EAE7',
               color: '#0F6E52',
               display: 'flex',
               alignItems: 'center',
@@ -413,7 +413,7 @@ function PermissionModal({
           <Select options={ICON_OPTIONS} />
         </Form.Item>
 
-        <Text style={{ fontSize: 12, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase' }}>
+        <Text style={{ fontSize: 12, fontWeight: 700, color: '#627A74', textTransform: 'uppercase' }}>
           Accès par rôle
         </Text>
         {roles.map((role) => (
@@ -572,8 +572,8 @@ export function RolesPermissionsPage() {
         <Tag
           icon={<SafetyCertificateOutlined />}
           style={{
-            background: '#F3E5F5',
-            color: '#6A1B9A',
+            background: '#F1ECF8',
+            color: '#6B3FA0',
             border: 'none',
             fontWeight: 600,
             borderRadius: 6,
@@ -592,7 +592,7 @@ export function RolesPermissionsPage() {
         style={{
           background: '#fff',
           borderRadius: 12,
-          border: '1px solid #E7F3F0',
+          border: '1px solid #E3EAE7',
           boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
           overflow: 'hidden',
         }}
@@ -601,7 +601,7 @@ export function RolesPermissionsPage() {
         <div
           style={{
             padding: '18px 24px',
-            background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
+            background: '#123832',
             display: 'flex',
             alignItems: 'center',
             gap: 12,
@@ -651,10 +651,10 @@ export function RolesPermissionsPage() {
                         verticalAlign: 'bottom',
                         borderBottomWidth: 2,
                         borderBottomStyle: 'solid',
-                        borderBottomColor: '#E7F3F0',
+                        borderBottomColor: '#E3EAE7',
                       }}
                     >
-                      <Text style={{ fontSize: 12, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      <Text style={{ fontSize: 12, fontWeight: 700, color: '#627A74', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Module
                       </Text>
                     </th>
@@ -667,7 +667,7 @@ export function RolesPermissionsPage() {
                           verticalAlign: 'bottom',
                           borderBottomWidth: 2,
                           borderBottomStyle: 'solid',
-                          borderBottomColor: '#E7F3F0',
+                          borderBottomColor: '#E3EAE7',
                         }}
                       >
                         <RoleHeader role={role} onEdit={() => openEditRole(role)} />
@@ -680,7 +680,7 @@ export function RolesPermissionsPage() {
                         verticalAlign: 'bottom',
                         borderBottomWidth: 2,
                         borderBottomStyle: 'solid',
-                        borderBottomColor: '#E7F3F0',
+                        borderBottomColor: '#E3EAE7',
                       }}
                     />
                   </tr>
@@ -688,13 +688,13 @@ export function RolesPermissionsPage() {
 
                 <tbody>
                   {permissions.map((perm, i) => (
-                    <tr key={perm.id} style={{ background: i % 2 === 0 ? '#F7FAF9' : '#fff' }}>
+                    <tr key={perm.id} style={{ background: i % 2 === 0 ? '#F6F8F7' : '#fff' }}>
                       <td
                         style={{
                           padding: '14px 24px',
                           borderBottomWidth: 1,
                           borderBottomStyle: 'solid',
-                          borderBottomColor: '#EEF5F3',
+                          borderBottomColor: '#EEF3F1',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -703,7 +703,7 @@ export function RolesPermissionsPage() {
                               width: 28,
                               height: 28,
                               borderRadius: 6,
-                              background: '#E7F3F0',
+                              background: '#E3EAE7',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -727,7 +727,7 @@ export function RolesPermissionsPage() {
                             padding: '14px 16px',
                             borderBottomWidth: 1,
                             borderBottomStyle: 'solid',
-                            borderBottomColor: '#EEF5F3',
+                            borderBottomColor: '#EEF3F1',
                           }}
                         >
                           <AccessCell
@@ -743,7 +743,7 @@ export function RolesPermissionsPage() {
                           padding: '14px 16px',
                           borderBottomWidth: 1,
                           borderBottomStyle: 'solid',
-                          borderBottomColor: '#EEF5F3',
+                          borderBottomColor: '#EEF3F1',
                         }}
                       >
                         <Space size={4}>
@@ -779,28 +779,28 @@ export function RolesPermissionsPage() {
                 padding: '14px 24px',
                 borderTopWidth: 1,
                 borderTopStyle: 'solid',
-                borderTopColor: '#E7F3F0',
-                background: '#F7FAF9',
+                borderTopColor: '#E3EAE7',
+                background: '#F6F8F7',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 24,
                 flexWrap: 'wrap' as const,
               }}
             >
-              <Text style={{ fontSize: 11, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <Text style={{ fontSize: 11, fontWeight: 700, color: '#627A74', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Légende
               </Text>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <CheckCircleFilled style={{ color: '#2E6B5B', fontSize: 13 }} />
-                <Text style={{ fontSize: 12, color: '#4F7169' }}>Accès complet</Text>
+                <Text style={{ fontSize: 12, color: '#4A635D' }}>Accès complet</Text>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <CheckCircleFilled style={{ color: '#2E6B5B99', fontSize: 13 }} />
-                <Text style={{ fontSize: 12, color: '#4F7169' }}>Accès partiel</Text>
+                <Text style={{ fontSize: 12, color: '#4A635D' }}>Accès partiel</Text>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <CloseCircleFilled style={{ color: '#E0E0E0', fontSize: 13 }} />
-                <Text style={{ fontSize: 12, color: '#9E9E9E' }}>Aucun accès</Text>
+                <CloseCircleFilled style={{ color: '#CDD4D1', fontSize: 13 }} />
+                <Text style={{ fontSize: 12, color: '#6F7B78' }}>Aucun accès</Text>
               </div>
             </div>
           </>

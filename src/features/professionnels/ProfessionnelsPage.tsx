@@ -36,9 +36,9 @@ import { JOUR_LABELS, STATUT_CONFIG, formatJoursConsultation, formatPotentielCas
 type ViewMode = 'table' | 'kanban';
 
 const IMPORT_STATUT_STYLE: Record<string, { color: string; label: (curseur: number, total: number) => string }> = {
-  EN_COURS: { color: '#1565C0', label: (c, t) => `Import en cours — ${Math.round((c / t) * 100)} %` },
-  INTERROMPU: { color: '#E65100', label: () => 'Import interrompu — reprendre' },
-  ERREUR: { color: '#D32F2F', label: () => 'Import en erreur — reprendre' },
+  EN_COURS: { color: '#1F5FA8', label: (c, t) => `Import en cours — ${Math.round((c / t) * 100)} %` },
+  INTERROMPU: { color: '#A84A00', label: () => 'Import interrompu — reprendre' },
+  ERREUR: { color: '#C2362F', label: () => 'Import en erreur — reprendre' },
 };
 
 export function ProfessionnelsPage() {
@@ -182,7 +182,7 @@ export function ProfessionnelsPage() {
         const initiales = `${p.nom[0]}${p.prenom ? p.prenom[0] : ''}`.toUpperCase();
         return (
           <Space size={10} style={{ cursor: 'pointer' }} onClick={() => openDetail(p)}>
-            <Avatar size={34} style={{ background: '#E8F5E9', color: '#2E6B5B', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
+            <Avatar size={34} style={{ background: '#E8F2EE', color: '#2E6B5B', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
               {initiales}
             </Avatar>
             <Space orientation="vertical" size={0}>
@@ -190,7 +190,7 @@ export function ProfessionnelsPage() {
                 {p.titre ? `${p.titre} ` : ''}
                 {p.nom} {p.prenom ?? ''}
               </strong>
-              <span style={{ color: '#8FB0A8', fontSize: 12 }}>
+              <span style={{ color: '#627A74', fontSize: 12 }}>
                 {p.telephones[0] && (
                   <>
                     <PhoneOutlined style={{ marginRight: 4 }} />
@@ -226,7 +226,7 @@ export function ProfessionnelsPage() {
         return (
           <Space orientation="vertical" size={0}>
             <span>{centre?.nom ?? p.centreId}</span>
-            <span style={{ color: '#8FB0A8', fontSize: 11 }}>{zone?.nom}</span>
+            <span style={{ color: '#627A74', fontSize: 11 }}>{zone?.nom}</span>
           </Space>
         );
       },
@@ -263,7 +263,7 @@ export function ProfessionnelsPage() {
       search: false,
       render: (_, p) => {
         const g = dernierGesteMap[p.id];
-        return g ? <span style={{ fontSize: 12, color: '#123832' }}>{g.date}</span> : <span style={{ color: '#C7DAD5' }}>—</span>;
+        return g ? <span style={{ fontSize: 12, color: '#123832' }}>{g.date}</span> : <span style={{ color: '#627A74' }}>—</span>;
       },
     },
     {
@@ -435,7 +435,7 @@ export function ProfessionnelsPage() {
 
       const corps = `
         <h1 style="font-size:18px; margin:0;">Professionnels de santé</h1>
-        <p style="color:#6B8A82; font-size:13px; margin:4px 0 0;">
+        <p style="color:#5A746D; font-size:13px; margin:4px 0 0;">
           ${resumeFiltres} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
         </p>
         <p style="font-size:13px; margin:16px 0 8px;"><strong>${professionnels.length}</strong> professionnel(s)</p>
@@ -501,7 +501,7 @@ export function ProfessionnelsPage() {
           pagination={{ defaultPageSize: 10, showSizeChanger: true, showQuickJumper: true }}
         />
       ) : kanbanLoading && kanbanData.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 40, color: '#8FB0A8' }}>Chargement…</div>
+        <div style={{ textAlign: 'center', padding: 40, color: '#627A74' }}>Chargement…</div>
       ) : (
         <ClassificationKanban
           professionnels={kanbanData}

@@ -43,8 +43,8 @@ function tagConformite(conforme: boolean) {
 
 function couleurTaux(taux: number): string {
   if (taux >= 0.8) return '#0F6E52';
-  if (taux >= 0.5) return '#E65100';
-  return '#C62828';
+  if (taux >= 0.5) return '#A84A00';
+  return '#B42F29';
 }
 
 function slidesEnBarData(slides: MetriquePresentationLigne['slides']) {
@@ -168,7 +168,7 @@ export function PresentationsTab() {
     ]);
     const corps = `
       <h1 style="font-size:18px; margin:0;">Suivi des présentations</h1>
-      <p style="color:#6B8A82; font-size:13px; margin:4px 0 0;">
+      <p style="color:#5A746D; font-size:13px; margin:4px 0 0;">
         ${resumeFiltres} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
       </p>
       <p style="font-size:13px; margin:16px 0 8px;">
@@ -188,7 +188,7 @@ export function PresentationsTab() {
       key: 'conformite',
       render: (_: unknown, r: SyntheseDeleguePresentation) => (
         <Text>
-          <Text style={{ color: '#0F6E52', fontWeight: 700 }}>{r.nbConformes}</Text> / <Text style={{ color: '#C62828', fontWeight: 700 }}>{r.nbNonConformes}</Text>
+          <Text style={{ color: '#0F6E52', fontWeight: 700 }}>{r.nbConformes}</Text> / <Text style={{ color: '#B42F29', fontWeight: 700 }}>{r.nbNonConformes}</Text>
         </Text>
       ),
     },
@@ -290,17 +290,17 @@ export function PresentationsTab() {
 
       <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
         <Col xs={24} sm={12} md={6}>
-          <MiniKpi loading={loading} icon={<ClockCircleOutlined />} label="Présentations" value={kpis.nb} accent="#1565C0" bg="#E3F2FD" />
+          <MiniKpi loading={loading} icon={<ClockCircleOutlined />} label="Présentations" value={kpis.nb} accent="#1F5FA8" bg="#EAF1FA" />
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <MiniKpi loading={loading} icon={<CheckCircleOutlined />} label="Taux de conformité" value={Math.round(kpis.taux * 100)} suffix="%" accent={couleurTaux(kpis.taux)} bg="#E8F5E9" />
+          <MiniKpi loading={loading} icon={<CheckCircleOutlined />} label="Taux de conformité" value={Math.round(kpis.taux * 100)} suffix="%" accent={couleurTaux(kpis.taux)} bg="#E8F2EE" />
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <MiniKpi loading={loading} icon={<ClockCircleOutlined />} label="Durée moyenne" value={formatDuree(kpis.dureeMoyenne)} accent="#6A1B9A" bg="#F3E5F5" />
+          <MiniKpi loading={loading} icon={<ClockCircleOutlined />} label="Durée moyenne" value={formatDuree(kpis.dureeMoyenne)} accent="#6B3FA0" bg="#F1ECF8" />
         </Col>
         {!isDelegue && (
           <Col xs={24} sm={12} md={6}>
-            <MiniKpi loading={loading} icon={<WarningOutlined />} label="Délégués sans présentation" value={kpis.deleguesInactifs} accent="#E65100" bg="#FFF3E0" />
+            <MiniKpi loading={loading} icon={<WarningOutlined />} label="Délégués sans présentation" value={kpis.deleguesInactifs} accent="#A84A00" bg="#FCF1E3" />
           </Col>
         )}
       </Row>
@@ -399,7 +399,7 @@ function PrinterButton({ onClick, disabled }: { onClick: () => void; disabled: b
         border: '1px solid #d9d9d9',
         borderRadius: 6,
         padding: '4px 15px',
-        background: disabled ? '#f5f5f5' : '#fff',
+        background: disabled ? '#F1F3F2' : '#fff',
         color: disabled ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.88)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontSize: 14,
@@ -432,7 +432,7 @@ function MiniKpi({
       style={{
         background: '#fff',
         borderRadius: 10,
-        border: '1px solid #E7F3F0',
+        border: '1px solid #E3EAE7',
         padding: '16px 20px',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
       }}
@@ -458,10 +458,10 @@ function MiniKpi({
             {icon}
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#123832', lineHeight: 1 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#123832', lineHeight: 1 }}>
               {value}
               {suffix && (
-                <span style={{ fontSize: 14, fontWeight: 500, color: '#5C8079', marginLeft: 3 }}>{suffix}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#4E6A63', marginLeft: 3 }}>{suffix}</span>
               )}
             </div>
             <Text type="secondary" style={{ fontSize: 12, marginTop: 2, display: 'block' }}>

@@ -21,7 +21,7 @@ const { Text } = Typography;
 
 /* ── Couleurs par délégué (identification visuelle en vue équipe) ──────────── */
 
-const DELEGUE_COLORS = ['#1565C0', '#6A1B9A', '#E65100', '#2E7D32', '#C62828', '#00838F', '#4E342E', '#AD1457'];
+const DELEGUE_COLORS = ['#1F5FA8', '#6B3FA0', '#A84A00', '#1E7A4C', '#B42F29', '#00838F', '#4E342E', '#AD1457'];
 
 function nomCourtDelegue(d: Utilisateur): string {
   return `${d.prenom} ${d.nom[0]}.`;
@@ -49,10 +49,10 @@ const VIEW_LABELS: Record<ViewMode, string> = {
 };
 
 const LEGEND = [
-  { color: '#1565C0', label: 'À venir' },
-  { color: '#E65100', label: 'À qualifier' },
-  { color: '#2E7D32', label: 'Qualifié' },
-  { color: '#9E9E9E', label: 'Annulé' },
+  { color: '#1F5FA8', label: 'À venir' },
+  { color: '#A84A00', label: 'À qualifier' },
+  { color: '#1E7A4C', label: 'Qualifié' },
+  { color: '#6F7B78', label: 'Annulé' },
 ];
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
@@ -67,13 +67,13 @@ interface RdvConfig { bg: string; color: string; label: string; icon: React.Reac
 
 function getRdvConfig(rdv: RendezVous): RdvConfig {
   if (rdv.statut === RdvStatut.ANNULE)
-    return { bg: '#F5F5F5', color: '#9E9E9E', label: 'Annulé', icon: <CloseCircleFilled /> };
+    return { bg: '#F1F3F2', color: '#6F7B78', label: 'Annulé', icon: <CloseCircleFilled /> };
   const isPasse = new Date(rdv.dateHeure) < new Date();
   if (!isPasse)
-    return { bg: '#EBF3FF', color: '#1565C0', label: 'À venir', icon: <ClockCircleOutlined /> };
+    return { bg: '#EBF3FF', color: '#1F5FA8', label: 'À venir', icon: <ClockCircleOutlined /> };
   if (rdv.qualifie)
-    return { bg: '#E8F5E9', color: '#2E7D32', label: 'Qualifié', icon: <CheckCircleFilled /> };
-  return { bg: '#FFF3E0', color: '#E65100', label: 'À qualifier', icon: <ExclamationCircleFilled /> };
+    return { bg: '#E8F2EE', color: '#1E7A4C', label: 'Qualifié', icon: <CheckCircleFilled /> };
+  return { bg: '#FCF1E3', color: '#A84A00', label: 'À qualifier', icon: <ExclamationCircleFilled /> };
 }
 
 function hhmm(dateStr: string) {
@@ -230,11 +230,11 @@ function RdvCard({ rdv, onClick, delegue }: { rdv: RendezVous; onClick: () => vo
       style={{
         display: 'flex', alignItems: 'center', gap: 10,
         paddingTop: 10, paddingBottom: 10, paddingLeft: 0, paddingRight: 12,
-        borderRadius: 8, background: '#F7FAF9', cursor: 'pointer',
+        borderRadius: 8, background: '#F6F8F7', cursor: 'pointer',
         transition: 'all 0.15s', marginBottom: 6, overflow: 'hidden',
       }}
       onMouseEnter={(e) => { e.currentTarget.style.background = cfg.bg; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = '#F7FAF9'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = '#F6F8F7'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div style={{ width: 4, alignSelf: 'stretch', background: cfg.color, borderRadius: '0 2px 2px 0', flexShrink: 0 }} />
       <div style={{ width: 32, height: 32, borderRadius: 8, background: `${cfg.color}16`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: cfg.color, fontSize: 14, flexShrink: 0 }}>
@@ -243,7 +243,7 @@ function RdvCard({ rdv, onClick, delegue }: { rdv: RendezVous; onClick: () => vo
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontWeight: 700, color: '#123832', fontSize: 13, lineHeight: 1.25 }}>
           {hhmm(rdv.dateHeure)}
-          <span style={{ fontWeight: 400, color: '#8FB0A8', fontSize: 11, marginLeft: 5 }}>· {rdv.dureeMinutes} min</span>
+          <span style={{ fontWeight: 400, color: '#627A74', fontSize: 11, marginLeft: 5 }}>· {rdv.dureeMinutes} min</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' as const }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', background: `${cfg.color}16`, color: cfg.color, borderRadius: 4, paddingTop: 1, paddingBottom: 1, paddingLeft: 6, paddingRight: 6, fontSize: 10, fontWeight: 700 }}>
@@ -256,7 +256,7 @@ function RdvCard({ rdv, onClick, delegue }: { rdv: RendezVous; onClick: () => vo
           )}
         </div>
       </div>
-      <RightOutlined style={{ color: '#C7DAD5', fontSize: 10, flexShrink: 0 }} />
+      <RightOutlined style={{ color: '#627A74', fontSize: 10, flexShrink: 0 }} />
     </div>
   );
 }
@@ -296,7 +296,7 @@ function CalendarTopBar({
       style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         paddingTop: 12, paddingBottom: 12, paddingLeft: 20, paddingRight: 20,
-        borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E7F3F0',
+        borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E3EAE7',
         flexWrap: 'wrap' as const, gap: 10, background: '#fff',
       }}
     >
@@ -313,21 +313,21 @@ function CalendarTopBar({
       </div>
 
       {/* Droite : vue + légende */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' as const }}>
         {/* Légende (semaine/jour uniquement) */}
         {viewMode !== 'mois' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' as const }}>
             {LEGEND.map((l) => (
               <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <div style={{ width: 9, height: 9, borderRadius: 2, background: l.color }} />
-                <span style={{ fontSize: 10, fontWeight: 600, color: '#4F7169' }}>{l.label}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#4A635D', whiteSpace: 'nowrap' as const }}>{l.label}</span>
               </div>
             ))}
           </div>
         )}
 
         {/* Vue switcher */}
-        <div style={{ display: 'flex', background: '#E7F3F0', borderRadius: 8, padding: 3, gap: 2 }}>
+        <div style={{ display: 'flex', background: '#E3EAE7', borderRadius: 8, padding: 3, gap: 2 }}>
           {(['semaine', 'mois', 'jour'] as ViewMode[]).map((v) => (
             <button
               key={v}
@@ -340,7 +340,7 @@ function CalendarTopBar({
                 padding: '4px 11px',
                 fontSize: 12,
                 fontWeight: viewMode === v ? 700 : 500,
-                color: viewMode === v ? '#123832' : '#4F7169',
+                color: viewMode === v ? '#123832' : '#4A635D',
                 cursor: 'pointer',
                 boxShadow: viewMode === v ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                 transition: 'all 0.12s',
@@ -396,7 +396,7 @@ function DayColumn({
         background: isToday ? 'rgba(15,110,82,0.025)' : '#fff',
         borderLeftWidth: 1,
         borderLeftStyle: 'solid' as const,
-        borderLeftColor: '#E7F3F0',
+        borderLeftColor: '#E3EAE7',
       }}
       onDragOver={(e) => { e.preventDefault(); setDragSlot(slotFromY(e.clientY)); }}
       onDragLeave={(e) => {
@@ -420,7 +420,7 @@ function DayColumn({
             left: 0,
             right: 0,
             height: 1,
-            background: i % 2 === 0 ? '#DCE8E4' : '#EFF6F4',
+            background: i % 2 === 0 ? '#D6DFDB' : '#EEF3F1',
           }}
         />
       ))}
@@ -487,7 +487,7 @@ function WeekView({
   return (
     <div style={{ display: 'flex', flexDirection: 'column' as const, height: '100%' }}>
       {/* En-têtes des jours */}
-      <div style={{ display: 'flex', borderBottomWidth: 2, borderBottomStyle: 'solid' as const, borderBottomColor: '#E7F3F0', background: '#F7FAF9' }}>
+      <div style={{ display: 'flex', borderBottomWidth: 2, borderBottomStyle: 'solid' as const, borderBottomColor: '#E3EAE7', background: '#F6F8F7' }}>
         {/* Coin heure */}
         <div style={{ width: TIME_COL_W, flexShrink: 0 }} />
 
@@ -504,11 +504,11 @@ function WeekView({
                 paddingLeft: 14,
                 borderLeftWidth: 1,
                 borderLeftStyle: 'solid' as const,
-                borderLeftColor: '#E7F3F0',
+                borderLeftColor: '#E3EAE7',
                 background: isToday ? 'rgba(15,110,82,0.05)' : undefined,
               }}
             >
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase' as const, letterSpacing: '0.6px', lineHeight: 1 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#627A74', textTransform: 'uppercase' as const, letterSpacing: '0.6px', lineHeight: 1 }}>
                 {day.format('ddd')}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
@@ -522,7 +522,7 @@ function WeekView({
                   {day.date()}
                 </div>
                 {cnt > 0 && (
-                  <span style={{ fontSize: 10, color: '#8FB0A8', fontWeight: 600 }}>
+                  <span style={{ fontSize: 10, color: '#627A74', fontWeight: 600 }}>
                     {cnt} RDV
                   </span>
                 )}
@@ -590,8 +590,8 @@ function WeekView({
                   alignItems: 'center',
                 }}
               >
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#E53935', flexShrink: 0, marginLeft: -5 }} />
-                <div style={{ flex: 1, height: 2, background: '#E53935' }} />
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#C2362F', flexShrink: 0, marginLeft: -5 }} />
+                <div style={{ flex: 1, height: 2, background: '#C2362F' }} />
               </div>
             )}
           </div>
@@ -630,9 +630,9 @@ function MonthGrid({
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: '#F7FAF9', borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E7F3F0' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: '#F6F8F7', borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E3EAE7' }}>
         {JOURS.map((j) => (
-          <div key={j} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: '#8FB0A8', padding: '7px 4px', textTransform: 'uppercase' as const, letterSpacing: '0.6px' }}>
+          <div key={j} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: '#627A74', padding: '7px 4px', textTransform: 'uppercase' as const, letterSpacing: '0.6px' }}>
             {j}
           </div>
         ))}
@@ -663,11 +663,11 @@ function MonthGrid({
               }}
               style={{
                 minHeight: 90,
-                borderRightWidth: 1, borderRightStyle: 'solid' as const, borderRightColor: '#E7F3F0',
-                borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E7F3F0',
+                borderRightWidth: 1, borderRightStyle: 'solid' as const, borderRightColor: '#E3EAE7',
+                borderBottomWidth: 1, borderBottomStyle: 'solid' as const, borderBottomColor: '#E3EAE7',
                 padding: '4px 3px',
                 cursor: 'pointer',
-                background: isDO ? '#E6F2EE' : isSel ? '#E7F3F0' : '#fff',
+                background: isDO ? '#E6F2EE' : isSel ? '#E3EAE7' : '#fff',
                 transition: 'background 0.1s',
                 position: 'relative' as const,
               }}
@@ -676,7 +676,7 @@ function MonthGrid({
                 <div style={{
                   width: 22, height: 22, borderRadius: '50%',
                   background: isToday ? '#0F6E52' : 'transparent',
-                  color: isToday ? '#fff' : isCurMonth ? '#123832' : '#C7DAD5',
+                  color: isToday ? '#fff' : isCurMonth ? '#123832' : '#C5D1CD',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 12, fontWeight: isToday ? 700 : isCurMonth ? 500 : 400,
                 }}>
@@ -687,7 +687,7 @@ function MonthGrid({
                 <EventPill key={rdv.id} rdv={rdv} onClick={() => onSelectRdv(rdv)} delegue={deleguesParId?.[rdv.delegueId]} />
               ))}
               {rdvs.length > 2 && (
-                <div style={{ fontSize: 10, color: '#8FB0A8', fontWeight: 600, paddingLeft: 4 }}>+{rdvs.length - 2}</div>
+                <div style={{ fontSize: 10, color: '#627A74', fontWeight: 600, paddingLeft: 4 }}>+{rdvs.length - 2}</div>
               )}
               {isDO && <div style={{ position: 'absolute', inset: 0, borderWidth: 2, borderStyle: 'dashed', borderColor: '#0F6E52', pointerEvents: 'none' }} />}
             </div>
@@ -709,9 +709,9 @@ function AgendaPanel({
   deleguesParId?: Record<string, Utilisateur>;
 }) {
   return (
-    <div style={{ width: 270, flexShrink: 0 }}>
+    <div className="oh-cal-month__agenda">
       <ProCard bordered style={{ borderRadius: 12, overflow: 'hidden', position: 'sticky', top: 72 }} bodyStyle={{ padding: 0 }}>
-        <div style={{ padding: '16px 18px', background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)' }}>
+        <div style={{ padding: '16px 18px', background: '#123832' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               {selectedDate ? (
@@ -719,7 +719,7 @@ function AgendaPanel({
                   <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 8, fontWeight: 700, lineHeight: 1, textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>
                     {selectedDate.format('MMM')}
                   </span>
-                  <span style={{ color: '#fff', fontSize: 17, fontWeight: 800, lineHeight: 1 }}>{selectedDate.format('DD')}</span>
+                  <span style={{ color: '#fff', fontSize: 17, fontWeight: 700, lineHeight: 1 }}>{selectedDate.format('DD')}</span>
                 </>
               ) : (
                 <CalendarOutlined style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }} />
@@ -737,7 +737,7 @@ function AgendaPanel({
         </div>
         <div style={{ padding: '10px 10px 12px' }}>
           {!selectedDate || rdvDuJour.length === 0 ? (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<Text style={{ fontSize: 12, color: '#C7DAD5' }}>{selectedDate ? 'Aucun rendez-vous' : 'Cliquez sur une date'}</Text>} style={{ margin: '16px 0' }} />
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<Text style={{ fontSize: 12, color: '#627A74' }}>{selectedDate ? 'Aucun rendez-vous' : 'Cliquez sur une date'}</Text>} style={{ margin: '16px 0' }} />
           ) : (
             rdvDuJour.map((rdv) => <RdvCard key={rdv.id} rdv={rdv} onClick={() => onSelectRdv(rdv)} delegue={deleguesParId?.[rdv.delegueId]} />)
           )}
@@ -794,8 +794,8 @@ export function RdvCalendar({
 
   if (viewMode === 'mois') {
     return (
-      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="oh-cal-month">
+        <div className="oh-cal-month__main">
           <ProCard bordered bodyStyle={{ padding: 0 }} style={{ borderRadius: 12, overflow: 'hidden' }}>
             <CalendarTopBar viewMode={viewMode} currentDate={currentDate} onViewChange={onViewModeChange} onNavigate={onCurrentDateChange} />
             <MonthGrid
@@ -824,7 +824,7 @@ export function RdvCalendar({
       style={{ borderRadius: 12, overflow: 'hidden' }}
     >
       <CalendarTopBar viewMode={viewMode} currentDate={currentDate} onViewChange={onViewModeChange} onNavigate={onCurrentDateChange} />
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div className="oh-cal-week" data-days={numDays}>
         <WeekView
           weekStart={ws}
           numDays={numDays}

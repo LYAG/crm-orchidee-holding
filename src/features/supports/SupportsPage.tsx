@@ -22,15 +22,15 @@ const { Text } = Typography;
 
 const TYPE_CONFIG: Record<SupportType, { color: string; bg: string; border: string; icon: React.ReactNode }> = {
   [SupportType.PPT]: {
-    color: '#E65100',
-    bg: '#FFF3E0',
-    border: '#FFE0B2',
+    color: '#A84A00',
+    bg: '#FCF1E3',
+    border: '#F4D9B8',
     icon: <SlidersOutlined />,
   },
   [SupportType.PDF]: {
-    color: '#C62828',
-    bg: '#FFEBEE',
-    border: '#FFCDD2',
+    color: '#B42F29',
+    bg: '#FBECEB',
+    border: '#F3CFCC',
     icon: <FilePdfOutlined />,
   },
 };
@@ -62,7 +62,7 @@ function SupportCard({
       style={{
         background: '#fff',
         borderRadius: 12,
-        border: '1px solid #E7F3F0',
+        border: '1px solid #E3EAE7',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
         overflow: 'hidden',
         display: 'flex',
@@ -78,7 +78,7 @@ function SupportCard({
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)';
         e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.borderColor = '#E7F3F0';
+        e.currentTarget.style.borderColor = '#E3EAE7';
       }}
     >
       {/* Accent bar */}
@@ -144,7 +144,7 @@ function SupportCard({
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              background: '#EFF6F4',
+              background: '#EEF3F1',
               color: '#0F6E52',
               borderRadius: 5,
               padding: '4px 10px',
@@ -160,8 +160,8 @@ function SupportCard({
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              background: '#E3F2FD',
-              color: '#1565C0',
+              background: '#EAF1FA',
+              color: '#1F5FA8',
               borderRadius: 5,
               padding: '4px 10px',
               fontSize: 12,
@@ -183,8 +183,8 @@ function SupportCard({
       <div
         style={{
           padding: '12px 18px',
-          borderTop: '1px solid #E7F3F0',
-          background: '#F7FAF9',
+          borderTop: '1px solid #E3EAE7',
+          background: '#F6F8F7',
         }}
       >
         <Row gutter={8} style={{ alignItems: 'center' }}>
@@ -263,8 +263,8 @@ export function SupportsPage() {
       tags={
         <Tag
           style={{
-            background: '#FFF3E0',
-            color: '#E65100',
+            background: '#FCF1E3',
+            color: '#A84A00',
             border: 'none',
             fontWeight: 600,
             borderRadius: 6,
@@ -291,7 +291,7 @@ export function SupportsPage() {
                 style={{
                   background: '#fff',
                   borderRadius: 12,
-                  border: '1px solid #E7F3F0',
+                  border: '1px solid #E3EAE7',
                   padding: 20,
                 }}
               >
@@ -305,7 +305,7 @@ export function SupportsPage() {
           style={{
             background: '#fff',
             borderRadius: 12,
-            border: '1px solid #E7F3F0',
+            border: '1px solid #E3EAE7',
             padding: '60px 24px',
             textAlign: 'center',
           }}

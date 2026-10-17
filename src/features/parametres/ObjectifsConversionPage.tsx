@@ -150,7 +150,7 @@ export function ObjectifsConversionPage() {
       tags={
         <Tag
           icon={<SettingOutlined />}
-          style={{ background: '#F3E5F5', color: '#6A1B9A', border: 'none', fontWeight: 600, borderRadius: 6 }}
+          style={{ background: '#F1ECF8', color: '#6B3FA0', border: 'none', fontWeight: 600, borderRadius: 6 }}
         >
           Administration
         </Tag>
@@ -161,7 +161,7 @@ export function ObjectifsConversionPage() {
           style={{
             background: '#fff',
             borderRadius: 12,
-            border: '1px solid #E7F3F0',
+            border: '1px solid #E3EAE7',
             boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
             overflow: 'hidden',
             marginBottom: 20,
@@ -170,7 +170,7 @@ export function ObjectifsConversionPage() {
           <div
             style={{
               padding: '18px 24px',
-              background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
+              background: '#123832',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -223,7 +223,7 @@ export function ObjectifsConversionPage() {
                 </>
               ) : (
                 <>
-                  <Text style={{ fontSize: 24, fontWeight: 800, color: '#0F6E52' }}>
+                  <Text style={{ fontSize: 24, fontWeight: 700, color: '#0F6E52' }}>
                     {donnees?.valeurParDefaut ?? '—'}
                   </Text>
                   <Button
