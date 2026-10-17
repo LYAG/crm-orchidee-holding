@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { getMenuRoutes } from '@/config/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { usePermissionModules } from '@/hooks/usePermission';
 import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { zoneService } from '@/services';
 import type { Zone } from '@/types';
@@ -26,6 +27,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const screens = Grid.useBreakpoint();
+  const permissionModules = usePermissionModules();
   // Rendu uniquement côté client (null tant que l'utilisateur n'est pas chargé) : matchMedia est sûr ici.
   const [collapsed, setCollapsed] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
@@ -40,11 +42,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  // Sous 768 px le menu est un tiroir : fermé par défaut et refermé à chaque navigation.
+  // Sous 768 px le menu est un tiroir : fermé par défaut (état initial) et refermé à chaque clic de navigation.
   const estMobile = screens.md === false;
-  useEffect(() => {
+  const fermerSiMobile = () => {
     if (estMobile) setCollapsed(true);
-  }, [estMobile, pathname]);
+  };
 
   if (!user) return null;
 
@@ -149,12 +151,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         siderWidth={248}
         collapsed={collapsed}
         onCollapse={setCollapsed}
-        route={getMenuRoutes(role)}
+        route={getMenuRoutes(role, permissionModules ?? [])}
         location={{ pathname }}
         splitMenus={false}
         menu={{ autoClose: false }}
-        menuItemRender={(item, dom) => <Link href={item.path ?? '/'}>{dom}</Link>}
-        subMenuItemRender={(item, dom) => <Link href={item.path ?? '/'}>{dom}</Link>}
+        menuItemRender={(item, dom) => (
+          <Link href={item.path ?? '/'} onClick={fermerSiMobile}>
+            {dom}
+          </Link>
+        )}
+        subMenuItemRender={(item, dom) => (
+          <Link href={item.path ?? '/'} onClick={fermerSiMobile}>
+            {dom}
+          </Link>
+        )}
         actionsRender={() => [
           zoneControl,
           <HeaderNotifications key="notifs" user={user} />,

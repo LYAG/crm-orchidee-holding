@@ -1,11 +1,11 @@
-import { RoleGuard } from '@/features/auth/RoleGuard';
+import { PermissionGuard } from '@/features/auth/PermissionGuard';
 import { ObjectifsRdvPage } from '@/features/parametres/ObjectifsRdvPage';
-import { UserRole } from '@/lib/constants';
 
+/** Accès piloté par la matrice Rôles & permissions (module OBJECTIFS_RDV), comme côté backend. */
 export default function Page() {
   return (
-    <RoleGuard roles={[UserRole.MANAGER]}>
+    <PermissionGuard code="OBJECTIFS_RDV">
       <ObjectifsRdvPage />
-    </RoleGuard>
+    </PermissionGuard>
   );
 }

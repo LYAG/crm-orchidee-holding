@@ -6,6 +6,7 @@ import { App, Button, InputNumber, Select, Space, Table, Tag, Typography } from 
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { UserRole } from '@/lib/constants';
 import { objectifRdvService, utilisateurService } from '@/services';
 import type { ObjectifMois, ObjectifRdvAnnee, Utilisateur } from '@/types';
 
@@ -39,13 +40,20 @@ export function ObjectifsRdvPage() {
 
   useEffect(() => {
     if (!user) return;
-    utilisateurService
-      .getDeleguesByManager(user.id)
+    // Le périmètre suit la matrice (OBJECTIFS_RDV) et le contrôle backend (scopeService) :
+    // équipe pour un manager, tous les délégués pour un admin, soi-même pour un délégué.
+    const chargement =
+      user.role === UserRole.ADMIN
+        ? utilisateurService.getByRole(UserRole.DELEGUE)
+        : user.role === UserRole.MANAGER
+          ? utilisateurService.getDeleguesByManager(user.id)
+          : Promise.resolve([user as Utilisateur]);
+    chargement
       .then((liste) => {
         setDelegues(liste);
         setDelegueId((prev) => prev ?? liste[0]?.id);
       })
-      .catch(() => message.error('Erreur lors du chargement de votre équipe.'));
+      .catch(() => message.error('Erreur lors du chargement des délégués.'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

@@ -1,11 +1,11 @@
-import { RoleGuard } from '@/features/auth/RoleGuard';
+import { PermissionGuard } from '@/features/auth/PermissionGuard';
 import { ObjectifsConversionPage } from '@/features/parametres/ObjectifsConversionPage';
-import { UserRole } from '@/lib/constants';
 
+/** Accès piloté par la matrice Rôles & permissions (module OBJECTIFS_CONVERSION), comme côté backend. */
 export default function Page() {
   return (
-    <RoleGuard roles={[UserRole.ADMIN]}>
+    <PermissionGuard code="OBJECTIFS_CONVERSION">
       <ObjectifsConversionPage />
-    </RoleGuard>
+    </PermissionGuard>
   );
 }
