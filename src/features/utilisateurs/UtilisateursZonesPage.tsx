@@ -37,15 +37,15 @@ import type { Utilisateur, Zone } from '@/types';
 const { Text, Title } = Typography;
 
 const ROLE_COLOR: Record<UserRole, string> = {
-  ADMIN: '#6A1B9A',
-  MANAGER: '#1565C0',
+  ADMIN: '#6B3FA0',
+  MANAGER: '#1F5FA8',
   DELEGUE: '#2E6B5B',
 };
 
 const ROLE_BG: Record<UserRole, string> = {
-  ADMIN: '#F3E5F5',
-  MANAGER: '#E3F2FD',
-  DELEGUE: '#E8F5E9',
+  ADMIN: '#F1ECF8',
+  MANAGER: '#EAF1FA',
+  DELEGUE: '#E8F2EE',
 };
 
 function initials(u: Utilisateur) {
@@ -149,7 +149,7 @@ function UtilisateurModal({
               width: 32,
               height: 32,
               borderRadius: 8,
-              background: '#E8F5E9',
+              background: '#E8F2EE',
               color: '#0F6E52',
               display: 'flex',
               alignItems: 'center',
@@ -173,12 +173,12 @@ function UtilisateurModal({
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
         <Row gutter={12}>
-          <Col span={12}>
+          <Col xs={24} sm={12}>
             <Form.Item name="prenom" label="Prénom" rules={[{ required: true, message: 'Obligatoire.' }]}>
               <Input placeholder="Marie" />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col xs={24} sm={12}>
             <Form.Item name="nom" label="Nom" rules={[{ required: true, message: 'Obligatoire.' }]}>
               <Input placeholder="Dupont" />
             </Form.Item>
@@ -266,7 +266,7 @@ function CredentialsModal({
               width: 32,
               height: 32,
               borderRadius: 8,
-              background: '#E8F5E9',
+              background: '#E8F2EE',
               color: '#0F6E52',
               display: 'flex',
               alignItems: 'center',
@@ -372,7 +372,7 @@ function ZoneModal({
               width: 32,
               height: 32,
               borderRadius: 8,
-              background: '#E8F5E9',
+              background: '#E8F2EE',
               color: '#0F6E52',
               display: 'flex',
               alignItems: 'center',
@@ -433,7 +433,7 @@ function ZoneCard({
       {/* Header coloré */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
+          background: '#123832',
           padding: '20px 20px 16px',
         }}
       >
@@ -517,7 +517,7 @@ function ZoneCard({
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: '#8FB0A8',
+                color: '#627A74',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
                 display: 'block',
@@ -556,7 +556,7 @@ function ZoneCard({
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: '#8FB0A8',
+              color: '#627A74',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               display: 'block',
@@ -582,8 +582,8 @@ function ZoneCard({
                       gap: 10,
                       padding: '8px 10px',
                       borderRadius: 8,
-                      background: '#F3F9F7',
-                      border: '1px solid #E7F3F0',
+                      background: '#F3F6F5',
+                      border: '1px solid #E3EAE7',
                     }}
                   >
                     <Avatar
@@ -904,7 +904,7 @@ export function UtilisateursZonesPage() {
               type="text"
               size="small"
               icon={<KeyOutlined />}
-              style={{ color: '#1565C0' }}
+              style={{ color: '#1F5FA8' }}
               onClick={() => confirmResetPassword(u)}
             />
           </Tooltip>

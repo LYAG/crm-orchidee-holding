@@ -44,20 +44,20 @@ const { Text } = Typography;
 const CAT_CONFIG: Record<CategorieEtablissement, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
   [CategorieEtablissement.MEDECIN]: {
     label: 'Médecins',
-    color: '#1565C0',
-    bg: '#E3F2FD',
+    color: '#1F5FA8',
+    bg: '#EAF1FA',
     icon: <MedicineBoxOutlined />,
   },
   [CategorieEtablissement.INFIRMIER]: {
     label: 'Infirmiers',
-    color: '#6A1B9A',
-    bg: '#F3E5F5',
+    color: '#6B3FA0',
+    bg: '#F1ECF8',
     icon: <MedicineBoxOutlined />,
   },
   [CategorieEtablissement.PHARMACIE]: {
     label: 'Pharmacies',
-    color: '#2E7D32',
-    bg: '#E8F5E9',
+    color: '#1E7A4C',
+    bg: '#E8F2EE',
     icon: <MedicineBoxOutlined />,
   },
 };
@@ -81,23 +81,19 @@ function DeleguePanel({
 }) {
   return (
     <div
+      className="oh-rdv-side"
       style={{
-        width: 190,
-        flexShrink: 0,
+        ['--oh-side-w' as string]: '190px',
         borderRadius: 12,
         overflow: 'hidden',
         borderWidth: 1,
         borderStyle: 'solid',
-        borderColor: '#E7F3F0',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+        borderColor: '#E3EAE7',
         background: '#fff',
-        alignSelf: 'flex-start',
-        position: 'sticky',
-        top: 72,
       }}
     >
       {/* Header */}
-      <div style={{ padding: '12px 14px', background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)' }}>
+      <div style={{ padding: '12px 14px', background: '#123832' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <TeamOutlined style={{ color: '#fff', fontSize: 13 }} />
@@ -109,7 +105,7 @@ function DeleguePanel({
       {/* Liste */}
       <div style={{ padding: '6px 6px 8px' }}>
         {delegues.length === 0 ? (
-          <Text style={{ fontSize: 11, color: '#C7DAD5', display: 'block', textAlign: 'center', padding: '12px 0' }}>
+          <Text style={{ fontSize: 11, color: '#627A74', display: 'block', textAlign: 'center', padding: '12px 0' }}>
             Aucun délégué
           </Text>
         ) : (
@@ -125,7 +121,7 @@ function DeleguePanel({
                   flexDirection: 'column',
                   alignItems: 'flex-start',
                   width: '100%',
-                  background: isSelected ? '#E7F3F0' : 'transparent',
+                  background: isSelected ? '#E3EAE7' : 'transparent',
                   border: 'none',
                   borderRadius: 8,
                   padding: '8px 10px',
@@ -178,23 +174,19 @@ function ContactsPanel({
 
   return (
     <div
+      className="oh-rdv-side"
       style={{
-        width: 210,
-        flexShrink: 0,
+        ['--oh-side-w' as string]: '210px',
         borderRadius: 12,
         overflow: 'hidden',
         borderWidth: 1,
         borderStyle: 'solid',
-        borderColor: '#E7F3F0',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+        borderColor: '#E3EAE7',
         background: '#fff',
-        alignSelf: 'flex-start',
-        position: 'sticky',
-        top: 72,
       }}
     >
       {/* Header */}
-      <div style={{ padding: '12px 14px', background: 'linear-gradient(135deg, #1565C0 0%, #1976D2 100%)' }}>
+      <div style={{ padding: '12px 14px', background: '#1F5FA8' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <MedicineBoxOutlined style={{ color: '#fff', fontSize: 13 }} />
@@ -213,17 +205,17 @@ function ContactsPanel({
       {/* Contenu */}
       <div style={{ padding: '6px 6px 8px', maxHeight: 'calc(100vh - 220px)', overflowY: 'auto' }}>
         {loading ? (
-          <Text style={{ fontSize: 11, color: '#C7DAD5', display: 'block', textAlign: 'center', padding: '16px 0' }}>
+          <Text style={{ fontSize: 11, color: '#627A74', display: 'block', textAlign: 'center', padding: '16px 0' }}>
             Chargement…
           </Text>
         ) : !selectedDelegue && professionnels.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={<Text style={{ fontSize: 11, color: '#C7DAD5' }}>Sélectionnez un délégué</Text>}
+            description={<Text style={{ fontSize: 11, color: '#627A74' }}>Sélectionnez un délégué</Text>}
             style={{ margin: '14px 0' }}
           />
         ) : !hasAny ? (
-          <Text style={{ fontSize: 11, color: '#C7DAD5', display: 'block', textAlign: 'center', padding: '12px 0' }}>
+          <Text style={{ fontSize: 11, color: '#627A74', display: 'block', textAlign: 'center', padding: '12px 0' }}>
             Aucun contact affecté
           </Text>
         ) : (
@@ -258,7 +250,7 @@ function ContactsPanel({
                       padding: '7px 10px',
                       borderRadius: 7,
                       cursor: 'grab',
-                      background: '#F7FAF9',
+                      background: '#F6F8F7',
                       marginBottom: 3,
                       borderLeftWidth: 3,
                       borderLeftStyle: 'solid',
@@ -271,7 +263,7 @@ function ContactsPanel({
                     <Text style={{ fontWeight: 600, fontSize: 11, color: '#123832', lineHeight: 1.3 }}>
                       {p.titre ? `${p.titre} ` : ''}{p.nom} {p.prenom ?? ''}
                     </Text>
-                    <Text style={{ fontSize: 10, color: '#8FB0A8', lineHeight: 1.3, marginTop: 1 }}>
+                    <Text style={{ fontSize: 10, color: '#627A74', lineHeight: 1.3, marginTop: 1 }}>
                       {p.telephones[0] ?? ''}
                     </Text>
                   </div>
@@ -284,7 +276,7 @@ function ContactsPanel({
 
       {/* Footer hint */}
       {hasAny && (
-        <div style={{ padding: '8px 12px', borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: '#E7F3F0', background: '#F7FAF9' }}>
+        <div style={{ padding: '8px 12px', borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: '#E3EAE7', background: '#F6F8F7' }}>
           <Text style={{ fontSize: 10, color: '#B0C8B0' }}>
             ↕ Glissez un contact sur une date
           </Text>
@@ -403,7 +395,7 @@ export function RdvPage() {
       tags={
         <Tag
           style={{
-            background: '#E7F3F0',
+            background: '#E3EAE7',
             color: '#0F6E52',
             border: 'none',
             fontWeight: 600,
@@ -426,7 +418,7 @@ export function RdvPage() {
         </Tooltip>,
       ]}
     >
-      <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+      <div className="oh-rdv-layout">
 
         {/* ── Panel 1 : liste des délégués (Admin / Manager uniquement) ── */}
         {!isDelegue && delegues.length > 0 && (
@@ -445,7 +437,7 @@ export function RdvPage() {
         />
 
         {/* ── Calendrier + panneau agenda ── */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="oh-rdv-layout__main">
           <RdvCalendar
             rdvList={rdvList}
             selectedDate={selectedDate}

@@ -41,7 +41,7 @@ function Indicateur({
         {icon}
       </div>
       <div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: '#123832', lineHeight: 1.1 }}>
+        <div style={{ fontSize: 22, fontWeight: 700, color: '#123832', lineHeight: 1.1 }}>
           {valeur}
         </div>
         <Text type="secondary" style={{ fontSize: 13 }}>
@@ -76,7 +76,7 @@ export function KpiOrdresMission({ kpi, loading }: Props) {
             label="Missions sur la période"
             valeur={String(kpi.total)}
             accent="#0F6E52"
-            bg="#E7F3F0"
+            bg="#E3EAE7"
           />
         </Col>
         <Col xs={24} md={8}>
@@ -84,8 +84,8 @@ export function KpiOrdresMission({ kpi, loading }: Props) {
             icon={<WalletOutlined />}
             label="Budget prévisionnel cumulé (missions validées)"
             valeur={formatFcfa(kpi.budgetPrevisionnelCumule)}
-            accent="#E65100"
-            bg="#FFF3E0"
+            accent="#A84A00"
+            bg="#FCF1E3"
           />
         </Col>
         <Col xs={24} md={8}>
@@ -93,8 +93,8 @@ export function KpiOrdresMission({ kpi, loading }: Props) {
             icon={<ClockCircleOutlined />}
             label="Délai moyen de validation"
             valeur={formatDelai(kpi.delaiMoyenValidationHeures)}
-            accent="#1565C0"
-            bg="#E3F2FD"
+            accent="#1F5FA8"
+            bg="#EAF1FA"
           />
         </Col>
         <Col span={24}>

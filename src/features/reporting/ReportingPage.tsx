@@ -56,12 +56,12 @@ interface ProfessionnelRow {
 }
 
 const STATUT_CONFIG: Record<StatutProfessionnel, { color: string; bg: string; label: string }> = {
-  [StatutProfessionnel.PNA]: { color: '#E65100', bg: '#FFF3E0', label: 'Non affecté' },
-  [StatutProfessionnel.ST]: { color: '#2E7D32', bg: '#E8F5E9', label: 'ST' },
-  [StatutProfessionnel.T1]: { color: '#1565C0', bg: '#E3F2FD', label: 'T1' },
-  [StatutProfessionnel.T2]: { color: '#6A1B9A', bg: '#F3E5F5', label: 'T2' },
-  [StatutProfessionnel.T3]: { color: '#9E9E9E', bg: '#F5F5F5', label: 'T3' },
-  [StatutProfessionnel.PERDU]: { color: '#C62828', bg: '#FFEBEE', label: 'Perdu' },
+  [StatutProfessionnel.PNA]: { color: '#A84A00', bg: '#FCF1E3', label: 'Non affecté' },
+  [StatutProfessionnel.ST]: { color: '#1E7A4C', bg: '#E8F2EE', label: 'ST' },
+  [StatutProfessionnel.T1]: { color: '#1F5FA8', bg: '#EAF1FA', label: 'T1' },
+  [StatutProfessionnel.T2]: { color: '#6B3FA0', bg: '#F1ECF8', label: 'T2' },
+  [StatutProfessionnel.T3]: { color: '#6F7B78', bg: '#F1F3F2', label: 'T3' },
+  [StatutProfessionnel.PERDU]: { color: '#B42F29', bg: '#FBECEB', label: 'Perdu' },
 };
 
 /* ── Mini KPI ────────────────────────────────────────────────────────────── */
@@ -88,7 +88,7 @@ function MiniKpi({
       style={{
         background: '#fff',
         borderRadius: 10,
-        border: '1px solid #E7F3F0',
+        border: '1px solid #E3EAE7',
         padding: '16px 20px',
         boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
       }}
@@ -114,10 +114,10 @@ function MiniKpi({
             {icon}
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#123832', lineHeight: 1 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#123832', lineHeight: 1 }}>
               {value}
               {suffix && (
-                <span style={{ fontSize: 14, fontWeight: 500, color: '#5C8079', marginLeft: 3 }}>
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#4E6A63', marginLeft: 3 }}>
                   {suffix}
                 </span>
               )}
@@ -277,7 +277,7 @@ export function ReportingPage() {
     });
     const corps = `
       <h1 style="font-size:18px; margin:0;">Reporting équipe — Professionnels</h1>
-      <p style="color:#6B8A82; font-size:13px; margin:4px 0 0;">
+      <p style="color:#5A746D; font-size:13px; margin:4px 0 0;">
         ${resumeFiltres} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
       </p>
       <p style="font-size:13px; margin:16px 0 8px;">
@@ -365,8 +365,8 @@ export function ReportingPage() {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            background: v > 0 ? '#E8F5E9' : '#F5F5F5',
-            color: v > 0 ? '#2E7D32' : '#9E9E9E',
+            background: v > 0 ? '#E8F2EE' : '#F1F3F2',
+            color: v > 0 ? '#1E7A4C' : '#6F7B78',
             borderRadius: 5,
             padding: '2px 8px',
             fontSize: 11,
@@ -394,7 +394,7 @@ export function ReportingPage() {
               width: 32,
               height: 32,
               borderRadius: 8,
-              background: '#E8F5E9',
+              background: '#E8F2EE',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -444,7 +444,7 @@ export function ReportingPage() {
             label="Professionnels filtrés"
             value={summaryStats.totalProfessionnels}
             accent="#0F6E52"
-            bg="#E8F5E9"
+            bg="#E8F2EE"
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
@@ -453,8 +453,8 @@ export function ReportingPage() {
             icon={<CalendarOutlined />}
             label="Total RDV"
             value={summaryStats.totalRdv}
-            accent="#1565C0"
-            bg="#E3F2FD"
+            accent="#1F5FA8"
+            bg="#EAF1FA"
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
@@ -463,8 +463,8 @@ export function ReportingPage() {
             icon={<TeamOutlined />}
             label="RDV réalisés"
             value={summaryStats.rdvRealises}
-            accent="#E65100"
-            bg="#FFF3E0"
+            accent="#A84A00"
+            bg="#FCF1E3"
           />
         </Col>
         <Col xs={24} sm={12} md={6}>
@@ -474,8 +474,8 @@ export function ReportingPage() {
             label="Taux qualification"
             value={tauxQual}
             suffix="%"
-            accent="#6A1B9A"
-            bg="#F3E5F5"
+            accent="#6B3FA0"
+            bg="#F1ECF8"
           />
         </Col>
       </Row>

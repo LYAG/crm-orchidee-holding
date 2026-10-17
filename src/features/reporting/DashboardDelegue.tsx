@@ -16,90 +16,13 @@ import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { qualificationService, rdvService, reportingService } from '@/services';
 import { QualificationTransformation } from '@/types';
 import type { KpiDelegue, ProgressionConversion, QualificationRDV, RendezVous, Utilisateur } from '@/types';
+import { StatCard as KpiCard } from '@/components/ui/StatCard';
 import { SimpleBarChart } from './SimpleBarChart';
 
 const { Text } = Typography;
 
 interface Props {
   user: Utilisateur;
-}
-
-/* ── Carte KPI ───────────────────────────────────────────────────────────── */
-
-function KpiCard({
-  loading,
-  icon,
-  label,
-  value,
-  suffix,
-  formatter,
-  accent,
-  bg,
-}: {
-  loading: boolean;
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  suffix?: string;
-  formatter?: (v: number) => string;
-  accent: string;
-  bg: string;
-}) {
-  const displayed = formatter ? formatter(value) : String(value);
-  return (
-    <div
-      style={{
-        background: '#fff',
-        borderRadius: 12,
-        border: '1px solid #E7F3F0',
-        padding: '20px 24px',
-        height: '100%',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-      }}
-    >
-      {loading ? (
-        <Skeleton active paragraph={{ rows: 2 }} />
-      ) : (
-        <>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 10,
-              background: bg,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 20,
-              color: accent,
-              marginBottom: 16,
-            }}
-          >
-            {icon}
-          </div>
-          <div
-            style={{
-              fontSize: 30,
-              fontWeight: 800,
-              color: '#123832',
-              lineHeight: 1,
-              letterSpacing: '-1px',
-            }}
-          >
-            {displayed}
-            {suffix && (
-              <span style={{ fontSize: 16, fontWeight: 500, color: '#5C8079', marginLeft: 4 }}>
-                {suffix}
-              </span>
-            )}
-          </div>
-          <Text type="secondary" style={{ fontSize: 13, marginTop: 6, display: 'block' }}>
-            {label}
-          </Text>
-        </>
-      )}
-    </div>
-  );
 }
 
 /* ── Dashboard Délégué ───────────────────────────────────────────────────── */
@@ -166,7 +89,7 @@ export function DashboardDelegue({ user }: Props) {
       tags={
         <Tag
           style={{
-            background: '#E8F5E9',
+            background: '#E8F2EE',
             color: '#2E6B5B',
             border: 'none',
             fontWeight: 600,
@@ -186,7 +109,7 @@ export function DashboardDelegue({ user }: Props) {
             label="RDV cette semaine"
             value={kpi?.rdvSemaine ?? 0}
             accent="#0F6E52"
-            bg="#E8F5E9"
+            bg="#E8F2EE"
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -196,8 +119,8 @@ export function DashboardDelegue({ user }: Props) {
             label="Taux de transformation"
             value={kpi ? Math.round(kpi.tauxTransformation * 100) : 0}
             suffix="%"
-            accent="#1565C0"
-            bg="#E3F2FD"
+            accent="#1F5FA8"
+            bg="#EAF1FA"
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -208,8 +131,8 @@ export function DashboardDelegue({ user }: Props) {
             value={kpi?.montantPipelineEnCours ?? 0}
             suffix="€"
             formatter={(v) => v.toLocaleString('fr-FR')}
-            accent="#E65100"
-            bg="#FFF3E0"
+            accent="#A84A00"
+            bg="#FCF1E3"
           />
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -218,8 +141,8 @@ export function DashboardDelegue({ user }: Props) {
             icon={<PhoneOutlined />}
             label="Relances à venir"
             value={kpi?.relancesAVenir ?? 0}
-            accent="#6A1B9A"
-            bg="#F3E5F5"
+            accent="#6B3FA0"
+            bg="#F1ECF8"
           />
         </Col>
       </Row>
@@ -231,9 +154,9 @@ export function DashboardDelegue({ user }: Props) {
               type="circle"
               size={64}
               percent={Math.min(100, Math.round((conversion.nbConversions / conversion.objectif) * 100))}
-              strokeColor={conversion.nbConversions >= conversion.objectif ? '#0F6E52' : '#1565C0'}
+              strokeColor={conversion.nbConversions >= conversion.objectif ? '#0F6E52' : '#1F5FA8'}
               format={() => (
-                <span style={{ fontSize: 15, fontWeight: 800, color: '#123832' }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#123832' }}>
                   {conversion.nbConversions}/{conversion.objectif}
                 </span>
               )}
@@ -284,7 +207,7 @@ export function DashboardDelegue({ user }: Props) {
             <div
               style={{
                 padding: '14px 16px',
-                background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
+                background: '#123832',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -313,7 +236,7 @@ export function DashboardDelegue({ user }: Props) {
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                   description={
-                    <Text style={{ fontSize: 12, color: '#8FB0A8' }}>
+                    <Text style={{ fontSize: 12, color: '#627A74' }}>
                       Aucune relance planifiée
                     </Text>
                   }
@@ -332,8 +255,8 @@ export function DashboardDelegue({ user }: Props) {
                         style={{
                           padding: '10px 12px',
                           borderRadius: 8,
-                          border: '1px solid #E7F3F0',
-                          background: '#F7FAF9',
+                          border: '1px solid #E3EAE7',
+                          background: '#F6F8F7',
                           display: 'flex',
                           alignItems: 'flex-start',
                           gap: 10,
@@ -344,8 +267,8 @@ export function DashboardDelegue({ user }: Props) {
                             width: 32,
                             height: 32,
                             borderRadius: 8,
-                            background: '#F3E5F5',
-                            color: '#6A1B9A',
+                            background: '#F1ECF8',
+                            color: '#6B3FA0',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -372,7 +295,7 @@ export function DashboardDelegue({ user }: Props) {
                           </Text>
                         </div>
                         <Link href={`/qualification/${rdv.id}`}>
-                          <ArrowRightOutlined style={{ color: '#C7DAD5', fontSize: 11 }} />
+                          <ArrowRightOutlined style={{ color: '#627A74', fontSize: 11 }} />
                         </Link>
                       </div>
                     );

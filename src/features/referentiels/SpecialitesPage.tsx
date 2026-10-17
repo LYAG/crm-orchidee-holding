@@ -128,7 +128,7 @@ export function SpecialitesPage() {
       title="Spécialités"
       subTitle="Référentiel dynamique"
       tags={
-        <Tag icon={<SafetyCertificateOutlined />} style={{ background: '#F3E5F5', color: '#6A1B9A', border: 'none', borderRadius: 6 }}>
+        <Tag icon={<SafetyCertificateOutlined />} style={{ background: '#F1ECF8', color: '#6B3FA0', border: 'none', borderRadius: 6 }}>
           Administration
         </Tag>
       }

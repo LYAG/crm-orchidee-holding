@@ -229,8 +229,8 @@ export function QualificationPage() {
           <Tag
             icon={<CheckOutlined />}
             style={{
-              background: '#E8F5E9',
-              color: '#2E7D32',
+              background: '#E8F2EE',
+              color: '#1E7A4C',
               border: 'none',
               fontWeight: 600,
               borderRadius: 6,
@@ -242,8 +242,8 @@ export function QualificationPage() {
           <Tag
             icon={<WarningOutlined />}
             style={{
-              background: '#FFF3E0',
-              color: '#E65100',
+              background: '#FCF1E3',
+              color: '#A84A00',
               border: 'none',
               fontWeight: 600,
               borderRadius: 6,
@@ -264,7 +264,7 @@ export function QualificationPage() {
         <div
           style={{
             padding: '14px 20px',
-            background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
+            background: '#123832',
             display: 'flex',
             alignItems: 'center',
             gap: 10,
@@ -282,17 +282,17 @@ export function QualificationPage() {
             <div
               style={{
                 padding: '16px 20px',
-                borderRight: '1px solid #E7F3F0',
-                borderBottom: '1px solid #E7F3F0',
+                borderRight: '1px solid #E3EAE7',
+                borderBottom: '1px solid #E3EAE7',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <CalendarOutlined style={{ color: '#8FB0A8', fontSize: 12 }} />
+                <CalendarOutlined style={{ color: '#627A74', fontSize: 12 }} />
                 <Text
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: '#8FB0A8',
+                    color: '#627A74',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                   }}
@@ -309,17 +309,17 @@ export function QualificationPage() {
             <div
               style={{
                 padding: '16px 20px',
-                borderRight: '1px solid #E7F3F0',
-                borderBottom: '1px solid #E7F3F0',
+                borderRight: '1px solid #E3EAE7',
+                borderBottom: '1px solid #E3EAE7',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <BuildOutlined style={{ color: '#8FB0A8', fontSize: 12 }} />
+                <BuildOutlined style={{ color: '#627A74', fontSize: 12 }} />
                 <Text
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: '#8FB0A8',
+                    color: '#627A74',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                   }}
@@ -335,14 +335,14 @@ export function QualificationPage() {
             </div>
           </Col>
           <Col xs={24} sm={8}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #E7F3F0' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #E3EAE7' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <ClockCircleOutlined style={{ color: '#8FB0A8', fontSize: 12 }} />
+                <ClockCircleOutlined style={{ color: '#627A74', fontSize: 12 }} />
                 <Text
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: '#8FB0A8',
+                    color: '#627A74',
                     textTransform: 'uppercase',
                     letterSpacing: '0.06em',
                   }}

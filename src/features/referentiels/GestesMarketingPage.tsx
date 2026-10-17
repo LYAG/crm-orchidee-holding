@@ -143,18 +143,18 @@ export function GestesMarketingPage() {
     <PageContainer title="Gestes marketing" subTitle="Référentiel dynamique">
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
         <Col xs={24} sm={8}>
-          <div style={{ padding: '16px 20px', borderRadius: 10, background: '#F7FAF9', border: '1px solid #E7F3F0' }}>
+          <div style={{ padding: '16px 20px', borderRadius: 10, background: '#F6F8F7', border: '1px solid #E3EAE7' }}>
             <Statistic title="Gestes réalisés ce mois" value={stats?.nbGestesCeMois ?? 0} />
           </div>
         </Col>
         <Col xs={24} sm={8}>
-          <div style={{ padding: '16px 20px', borderRadius: 10, background: '#F7FAF9', border: '1px solid #E7F3F0' }}>
+          <div style={{ padding: '16px 20px', borderRadius: 10, background: '#F6F8F7', border: '1px solid #E3EAE7' }}>
             <Statistic title="Coût total ce mois" value={formatFcfa(stats?.coutTotalFcfaCeMois ?? 0)} />
           </div>
         </Col>
         <Col xs={24} sm={8}>
-          <div style={{ padding: '16px 20px', borderRadius: 10, background: '#F7FAF9', border: '1px solid #E7F3F0' }}>
-            <div style={{ fontSize: 13, color: '#8FB0A8', marginBottom: 8 }}>Top 5 gestes utilisés</div>
+          <div style={{ padding: '16px 20px', borderRadius: 10, background: '#F6F8F7', border: '1px solid #E3EAE7' }}>
+            <div style={{ fontSize: 13, color: '#627A74', marginBottom: 8 }}>Top 5 gestes utilisés</div>
             {stats && stats.topGestes.length > 0 ? (
               stats.topGestes.map((g) => (
                 <div key={g.gesteMarketingId} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '2px 0' }}>
@@ -163,7 +163,7 @@ export function GestesMarketingPage() {
                 </div>
               ))
             ) : (
-              <span style={{ color: '#C7DAD5', fontSize: 13 }}>Aucune donnée</span>
+              <span style={{ color: '#627A74', fontSize: 13 }}>Aucune donnée</span>
             )}
           </div>
         </Col>

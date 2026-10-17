@@ -54,9 +54,9 @@ function OppCard({
       style={{
         background: '#fff',
         borderRadius: 10,
-        borderTop: `1px solid ${hovered ? color + '60' : '#E7F3F0'}`,
-        borderRight: `1px solid ${hovered ? color + '60' : '#E7F3F0'}`,
-        borderBottom: `1px solid ${hovered ? color + '60' : '#E7F3F0'}`,
+        borderTop: `1px solid ${hovered ? color + '60' : '#E3EAE7'}`,
+        borderRight: `1px solid ${hovered ? color + '60' : '#E3EAE7'}`,
+        borderBottom: `1px solid ${hovered ? color + '60' : '#E3EAE7'}`,
         borderLeft: `3px solid ${color}`,
         padding: '12px 12px 10px',
         cursor: isDragging ? 'grabbing' : 'grab',
@@ -77,7 +77,7 @@ function OppCard({
             position: 'absolute',
             top: 8,
             right: 8,
-            color: '#C7DAD5',
+            color: '#627A74',
             fontSize: 12,
           }}
         >
@@ -152,8 +152,8 @@ function OppCard({
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            background: '#E8F5E9',
-            color: '#2E7D32',
+            background: '#E8F2EE',
+            color: '#1E7A4C',
             borderRadius: 5,
             padding: '2px 8px',
             fontSize: 10,
@@ -267,7 +267,7 @@ export function OpportuniteKanban({
               flex: '0 0 230px',
               borderRadius: 12,
               border: isOver ? `2px dashed ${color}` : '2px solid transparent',
-              background: isOver ? bgColor : '#EFF6F4',
+              background: isOver ? bgColor : '#EEF3F1',
               transition: 'all 0.15s ease',
               minHeight: 240,
               display: 'flex',
@@ -279,7 +279,7 @@ export function OpportuniteKanban({
             <div
               style={{
                 padding: '12px 14px 10px',
-                background: isOver ? bgColor : '#E7EDEA',
+                background: isOver ? bgColor : '#E3EAE7',
                 borderBottom: `2px solid ${isOver ? color + '40' : 'transparent'}`,
                 transition: 'all 0.15s',
               }}
@@ -294,7 +294,7 @@ export function OpportuniteKanban({
                     background: color,
                     color: '#fff',
                     fontSize: 12,
-                    fontWeight: 800,
+                    fontWeight: 700,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

@@ -44,7 +44,7 @@ interface MiniKpiProps {
 
 function MiniKpi({ loading, icon, label, value, suffix, accent, bg }: MiniKpiProps) {
   return (
-    <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #E7F3F0', padding: '16px 20px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+    <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #E3EAE7', padding: '16px 20px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
       {loading ? (
         <Skeleton active paragraph={{ rows: 1 }} title={false} />
       ) : (
@@ -53,9 +53,9 @@ function MiniKpi({ loading, icon, label, value, suffix, accent, bg }: MiniKpiPro
             {icon}
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#123832', lineHeight: 1 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#123832', lineHeight: 1 }}>
               {value}
-              {suffix && <span style={{ fontSize: 14, fontWeight: 500, color: '#5C8079', marginLeft: 3 }}>{suffix}</span>}
+              {suffix && <span style={{ fontSize: 14, fontWeight: 500, color: '#4E6A63', marginLeft: 3 }}>{suffix}</span>}
             </div>
             <Text type="secondary" style={{ fontSize: 12, marginTop: 2, display: 'block' }}>{label}</Text>
           </div>
@@ -248,7 +248,7 @@ export function SuiviProfessionnelsTab() {
   function imprimerTableauSuivi(titre: string, entetes: string[], lignes: (string | number)[][]) {
     const corps = `
       <h1 style="font-size:18px; margin:0;">${titre}</h1>
-      <p style="color:#6B8A82; font-size:13px; margin:4px 0 16px;">
+      <p style="color:#5A746D; font-size:13px; margin:4px 0 16px;">
         ${resumeFiltres} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
       </p>
       ${construireTableauHtml(entetes, lignes)}
@@ -321,16 +321,16 @@ export function SuiviProfessionnelsTab() {
       {/* KPI globaux */}
       <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
         <Col xs={24} sm={12} md={6}>
-          <MiniKpi loading={loading} icon={<HeartOutlined />} label="Couverture (30 derniers jours)" value={tauxCouverture} suffix="%" accent="#0F6E52" bg="#E8F5E9" />
+          <MiniKpi loading={loading} icon={<HeartOutlined />} label="Couverture (30 derniers jours)" value={tauxCouverture} suffix="%" accent="#0F6E52" bg="#E8F2EE" />
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <MiniKpi loading={loading} icon={<TeamOutlined />} label="Professionnels suivis" value={professionnelsScope.length} accent="#1565C0" bg="#E3F2FD" />
+          <MiniKpi loading={loading} icon={<TeamOutlined />} label="Professionnels suivis" value={professionnelsScope.length} accent="#1F5FA8" bg="#EAF1FA" />
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <MiniKpi loading={loading} icon={<DollarOutlined />} label="Investissement gestes" value={formatFcfa(coutTotalFcfa)} accent="#E65100" bg="#FFF3E0" />
+          <MiniKpi loading={loading} icon={<DollarOutlined />} label="Investissement gestes" value={formatFcfa(coutTotalFcfa)} accent="#A84A00" bg="#FCF1E3" />
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <MiniKpi loading={loading} icon={<RiseOutlined />} label="Coût moyen / professionnel" value={formatFcfa(coutMoyenParProfessionnel)} accent="#6A1B9A" bg="#F3E5F5" />
+          <MiniKpi loading={loading} icon={<RiseOutlined />} label="Coût moyen / professionnel" value={formatFcfa(coutMoyenParProfessionnel)} accent="#6B3FA0" bg="#F1ECF8" />
         </Col>
       </Row>
 
@@ -415,7 +415,7 @@ export function SuiviProfessionnelsTab() {
                   title: 'Potentiel (cas/semaine)',
                   render: (_, r) => (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ width: 100, height: 8, borderRadius: 4, background: '#EEF5F3', overflow: 'hidden' }}>
+                      <div style={{ width: 100, height: 8, borderRadius: 4, background: '#EEF3F1', overflow: 'hidden' }}>
                         <div style={{ width: `${Math.min(100, (r.potentiel / maxPotentiel) * 100)}%`, height: '100%', background: '#0F6E52' }} />
                       </div>
                       <Text>{Math.round(r.potentiel)}</Text>

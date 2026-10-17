@@ -169,7 +169,7 @@ export function ObjectifsRdvPage() {
       tags={
         <Tag
           icon={<SettingOutlined />}
-          style={{ background: '#E3F2FD', color: '#1565C0', border: 'none', fontWeight: 600, borderRadius: 6 }}
+          style={{ background: '#EAF1FA', color: '#1F5FA8', border: 'none', fontWeight: 600, borderRadius: 6 }}
         >
           Manager
         </Tag>
@@ -180,7 +180,7 @@ export function ObjectifsRdvPage() {
           style={{
             background: '#fff',
             borderRadius: 12,
-            border: '1px solid #E7F3F0',
+            border: '1px solid #E3EAE7',
             boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
             overflow: 'hidden',
             marginBottom: 20,
@@ -189,7 +189,7 @@ export function ObjectifsRdvPage() {
           <div
             style={{
               padding: '18px 24px',
-              background: 'linear-gradient(135deg, #123832 0%, #1B4A40 100%)',
+              background: '#123832',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -252,7 +252,7 @@ export function ObjectifsRdvPage() {
                 </>
               ) : (
                 <>
-                  <Text style={{ fontSize: 24, fontWeight: 800, color: '#0F6E52' }}>
+                  <Text style={{ fontSize: 24, fontWeight: 700, color: '#0F6E52' }}>
                     {donnees?.valeurParDefaut ?? '—'}
                   </Text>
                   <Button

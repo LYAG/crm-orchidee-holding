@@ -15,8 +15,8 @@ const { Text } = Typography;
 
 function couleurJauge(pourcent: number): string {
   if (pourcent >= 100) return '#0F6E52';
-  if (pourcent >= 50) return '#1565C0';
-  return '#E65100';
+  if (pourcent >= 50) return '#1F5FA8';
+  return '#A84A00';
 }
 
 // Voir ConversionsTab pour le détail du choix d'impression (onglet à part, en-tête/pied de page
@@ -39,11 +39,11 @@ function construireCorpsImpression(periode: Dayjs, progression: ProgressionRdv[]
 
   return `
     <h1 style="font-size:18px; margin:0;">Objectifs de RDV</h1>
-    <p style="color:#6B8A82; font-size:13px; margin:4px 0 0;">
+    <p style="color:#5A746D; font-size:13px; margin:4px 0 0;">
       Période : ${periode.format('MMMM YYYY')} · Généré le ${dayjs().format('DD/MM/YYYY à HH:mm')}
     </p>
     ${tableau('Objectif atteint', '#0F6E52', atteints)}
-    ${tableau('Objectif non atteint', '#E65100', nonAtteints)}
+    ${tableau('Objectif non atteint', '#A84A00', nonAtteints)}
   `;
 }
 
@@ -111,7 +111,7 @@ export function ObjectifsRdvTab() {
                   style={{
                     background: '#fff',
                     borderRadius: 12,
-                    border: '1px solid #E7F3F0',
+                    border: '1px solid #E3EAE7',
                     padding: '20px 16px',
                     textAlign: 'center',
                     boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
@@ -122,14 +122,14 @@ export function ObjectifsRdvTab() {
                     percent={Math.min(100, pourcent)}
                     strokeColor={couleurJauge(pourcent)}
                     format={() => (
-                      <span style={{ fontSize: 20, fontWeight: 800, color: '#123832' }}>
+                      <span style={{ fontSize: 20, fontWeight: 700, color: '#123832' }}>
                         {p.nbRdvRealises}
-                        <span style={{ fontSize: 12, fontWeight: 500, color: '#8FB0A8' }}>/{p.objectif || '—'}</span>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: '#627A74' }}>/{p.objectif || '—'}</span>
                       </span>
                     )}
                   />
                   <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                    <CalendarOutlined style={{ color: '#8FB0A8', fontSize: 12 }} />
+                    <CalendarOutlined style={{ color: '#627A74', fontSize: 12 }} />
                     <Text strong style={{ fontSize: 13, color: '#123832' }}>
                       {p.nomDelegue}
                     </Text>

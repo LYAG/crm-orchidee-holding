@@ -19,101 +19,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { reportingService } from '@/services';
+import { StatCard as KpiCard } from '@/components/ui/StatCard';
 import type { KpiAdmin, Utilisateur } from '@/types';
 
 const { Text, Title } = Typography;
 
 interface Props {
   user: Utilisateur;
-}
-
-/* ── Carte KPI ────────────────────────────────────────────────────────────── */
-
-function KpiCard({
-  loading,
-  icon,
-  label,
-  value,
-  suffix,
-  formatter,
-  accent,
-  bg,
-  alert,
-}: {
-  loading: boolean;
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  suffix?: string;
-  formatter?: (v: number) => string;
-  accent: string;
-  bg: string;
-  alert?: boolean;
-}) {
-  const displayed = formatter ? formatter(value) : String(value);
-
-  return (
-    <div
-      style={{
-        background: '#fff',
-        borderRadius: 12,
-        border: `1px solid ${alert && value > 0 ? accent + '40' : '#E7F3F0'}`,
-        padding: '20px 24px',
-        height: '100%',
-        boxShadow: alert && value > 0
-          ? `0 0 0 3px ${accent}14, 0 2px 8px rgba(0,0,0,0.06)`
-          : '0 1px 4px rgba(0,0,0,0.05)',
-        transition: 'box-shadow 0.2s',
-      }}
-    >
-      {loading ? (
-        <Skeleton active paragraph={{ rows: 2 }} />
-      ) : (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 10,
-                background: bg,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 20,
-                color: accent,
-              }}
-            >
-              {icon}
-            </div>
-            {alert && value > 0 && (
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  background: accent,
-                  marginTop: 4,
-                  boxShadow: `0 0 0 3px ${accent}30`,
-                }}
-              />
-            )}
-          </div>
-          <div style={{ fontSize: 30, fontWeight: 800, color: '#123832', lineHeight: 1, letterSpacing: '-1px' }}>
-            {displayed}
-            {suffix && (
-              <span style={{ fontSize: 16, fontWeight: 500, color: '#5C8079', marginLeft: 4 }}>
-                {suffix}
-              </span>
-            )}
-          </div>
-          <Text type="secondary" style={{ fontSize: 13, marginTop: 6, display: 'block' }}>
-            {label}
-          </Text>
-        </>
-      )}
-    </div>
-  );
 }
 
 /* ── Carte Raccourci ──────────────────────────────────────────────────────── */
@@ -141,7 +53,7 @@ function QuickLinkCard({
         style={{
           background: '#fff',
           borderRadius: 12,
-          border: '1px solid #E7F3F0',
+          border: '1px solid #E3EAE7',
           padding: '20px 22px',
           height: '100%',
           cursor: 'pointer',
@@ -162,22 +74,10 @@ function QuickLinkCard({
         onMouseLeave={(e) => {
           const el = e.currentTarget;
           el.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)';
-          el.style.borderColor = '#E7F3F0';
+          el.style.borderColor = '#E3EAE7';
           el.style.transform = 'translateY(0)';
         }}
       >
-        {/* Accent bar */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 3,
-            background: `linear-gradient(90deg, ${accent} 0%, ${accent}80 100%)`,
-            borderRadius: '12px 12px 0 0',
-          }}
-        />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div
@@ -255,8 +155,8 @@ export function DashboardAdmin({ user }: Props) {
       tags={
         <Tag
           style={{
-            background: '#F3E5F5',
-            color: '#6A1B9A',
+            background: '#F1ECF8',
+            color: '#6B3FA0',
             border: 'none',
             fontWeight: 600,
             borderRadius: 6,
@@ -319,8 +219,8 @@ export function DashboardAdmin({ user }: Props) {
             icon={<UserOutlined />}
             label="Professionnels PNA > 30 jours"
             value={kpi?.professionnelsNonAttribuesSup30j ?? 0}
-            accent="#6A1B9A"
-            bg="#F3E5F5"
+            accent="#6B3FA0"
+            bg="#F1ECF8"
             alert
           />
         </Col>
@@ -332,7 +232,7 @@ export function DashboardAdmin({ user }: Props) {
             value={kpi && kpi.rdvTotal > 0 ? Math.round((kpi.rdvRealises / kpi.rdvTotal) * 100) : 0}
             suffix="%"
             accent="#0F6E52"
-            bg="#E8F5E9"
+            bg="#E8F2EE"
           />
         </Col>
         <Col xs={24} sm={12} lg={8}>
@@ -342,8 +242,8 @@ export function DashboardAdmin({ user }: Props) {
             label="Taux de transformation global"
             value={kpi ? Math.round(kpi.tauxTransformationGlobal * 100) : 0}
             suffix="%"
-            accent="#1565C0"
-            bg="#E3F2FD"
+            accent="#1F5FA8"
+            bg="#EAF1FA"
           />
         </Col>
       </Row>
@@ -363,16 +263,16 @@ export function DashboardAdmin({ user }: Props) {
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', gap: 12 }}>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 30, fontWeight: 800, color: '#1565C0', lineHeight: 1 }}>
+                  <div style={{ fontSize: 30, fontWeight: 700, color: '#1F5FA8', lineHeight: 1 }}>
                     {kpi?.conversionsT3VersT2 ?? 0}
                   </div>
                   <Text type="secondary" style={{ fontSize: 12, marginTop: 6, display: 'block' }}>
                     T3 → T2
                   </Text>
                 </div>
-                <SwapOutlined style={{ fontSize: 18, color: '#8FB0A8' }} />
+                <SwapOutlined style={{ fontSize: 18, color: '#627A74' }} />
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 30, fontWeight: 800, color: '#E65100', lineHeight: 1 }}>
+                  <div style={{ fontSize: 30, fontWeight: 700, color: '#A84A00', lineHeight: 1 }}>
                     {kpi?.conversionsT2VersT3 ?? 0}
                   </div>
                   <Text type="secondary" style={{ fontSize: 12, marginTop: 6, display: 'block' }}>
@@ -387,7 +287,7 @@ export function DashboardAdmin({ user }: Props) {
           <ProCard
             title={
               <Space size={6}>
-                <TrophyOutlined style={{ color: '#E65100' }} />
+                <TrophyOutlined style={{ color: '#A84A00' }} />
                 <span>Top 5 délégués</span>
               </Space>
             }
@@ -408,7 +308,7 @@ export function DashboardAdmin({ user }: Props) {
                         height: 24,
                         borderRadius: '50%',
                         background: i === 0 ? '#FEF3C7' : '#F0F4F2',
-                        color: i === 0 ? '#B45309' : '#5C8079',
+                        color: i === 0 ? '#B45309' : '#4E6A63',
                         fontSize: 12,
                         fontWeight: 700,
                         display: 'flex',
@@ -427,7 +327,7 @@ export function DashboardAdmin({ user }: Props) {
                     </Text>
                     <Tag
                       style={{
-                        background: '#E8F5E9',
+                        background: '#E8F2EE',
                         color: '#0F6E52',
                         border: 'none',
                         fontWeight: 600,
@@ -463,8 +363,8 @@ export function DashboardAdmin({ user }: Props) {
             icon={<TeamOutlined />}
             title="Utilisateurs & Zones"
             description="Gérer les comptes collaborateurs et la couverture géographique."
-            accent="#1565C0"
-            bg="#E3F2FD"
+            accent="#1F5FA8"
+            bg="#EAF1FA"
           />
         </Col>
         <Col xs={24} sm={12} lg={8}>
@@ -474,7 +374,7 @@ export function DashboardAdmin({ user }: Props) {
             title="Reporting détaillé"
             description="Analyser les performances par zone, délégué et période."
             accent="#0F6E52"
-            bg="#E8F5E9"
+            bg="#E8F2EE"
           />
         </Col>
         <Col xs={24} sm={12} lg={8}>
@@ -483,8 +383,8 @@ export function DashboardAdmin({ user }: Props) {
             icon={<SettingOutlined />}
             title="Paramètres"
             description="Configurer les seuils de conformité des présentations commerciales."
-            accent="#6A1B9A"
-            bg="#F3E5F5"
+            accent="#6B3FA0"
+            bg="#F1ECF8"
           />
         </Col>
       </Row>

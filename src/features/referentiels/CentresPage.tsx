@@ -137,7 +137,7 @@ export function CentresPage() {
       title: 'Adresse',
       dataIndex: 'adresse',
       search: false,
-      render: (_, c) => c.adresse ?? <span style={{ color: '#C7DAD5' }}>—</span>,
+      render: (_, c) => c.adresse ?? <span style={{ color: '#627A74' }}>—</span>,
     },
     {
       title: 'Actif',

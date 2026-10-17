@@ -56,7 +56,7 @@ export function ProfessionnelDrawer({ open, professionnel, onClose, onChanged }:
       width={520}
       title={
         <Space size={12}>
-          <Avatar size={40} style={{ background: '#E8F5E9', color: '#2E6B5B', fontWeight: 700 }} icon={<UserOutlined />} />
+          <Avatar size={40} style={{ background: '#E8F2EE', color: '#2E6B5B', fontWeight: 700 }} icon={<UserOutlined />} />
           <div>
             <Text strong style={{ display: 'block', fontSize: 15 }}>
               {pro.titre ? `${pro.titre} ` : ''}

@@ -48,7 +48,7 @@ export function HistoriqueRdvTab({ professionnel, onProfessionnelChanged }: Prop
         <>
           {aVenir.length > 0 && (
             <>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#627A74', textTransform: 'uppercase', marginBottom: 8 }}>
                 À venir
               </div>
               <List
@@ -68,7 +68,7 @@ export function HistoriqueRdvTab({ professionnel, onProfessionnelChanged }: Prop
           )}
           {passes.length > 0 && (
             <>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#8FB0A8', textTransform: 'uppercase', marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#627A74', textTransform: 'uppercase', marginBottom: 8 }}>
                 Historique
               </div>
               <List
@@ -76,7 +76,7 @@ export function HistoriqueRdvTab({ professionnel, onProfessionnelChanged }: Prop
                 renderItem={(r) => (
                   <List.Item>
                     <List.Item.Meta
-                      avatar={<CalendarOutlined style={{ color: '#8FB0A8', fontSize: 18 }} />}
+                      avatar={<CalendarOutlined style={{ color: '#627A74', fontSize: 18 }} />}
                       title={new Date(r.dateHeure).toLocaleString('fr-FR')}
                       description={<Tag color={STATUT_LABELS[r.statut].color}>{STATUT_LABELS[r.statut].label}</Tag>}
                     />
