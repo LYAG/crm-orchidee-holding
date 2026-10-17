@@ -18,6 +18,8 @@ import {
   UsergroupAddOutlined,
 } from '@ant-design/icons';
 import type { UserRole } from '@/lib/constants';
+import { aLaPermission } from '@/hooks/usePermission';
+import type { PermissionModule } from '@/types';
 
 export interface MenuRoute {
   path: string;
@@ -26,6 +28,8 @@ export interface MenuRoute {
   routes?: MenuRoute[];
   /** Rôles autorisés. Absent = tous les rôles authentifiés. */
   roles?: UserRole[];
+  /** Code de la matrice Rôles & permissions : s'il est présent, il remplace `roles` (accès configurable). */
+  permission?: string;
   hideInMenu?: boolean;
 }
 
@@ -121,7 +125,7 @@ const allRoutes: MenuRoute[] = [
     path: '/parametres',
     name: 'Paramètres',
     icon: <SettingOutlined />,
-    roles: ['ADMIN', 'MANAGER'],
+    // Pas de restriction propre : visible dès qu'au moins une sous-page l'est (voir filtrerParRole).
     routes: [
       {
         path: '/parametres/presentation',
@@ -133,13 +137,13 @@ const allRoutes: MenuRoute[] = [
         path: '/parametres/objectifs',
         name: 'Objectifs de conversion',
         icon: <AimOutlined />,
-        roles: ['ADMIN'],
+        permission: 'OBJECTIFS_CONVERSION',
       },
       {
         path: '/parametres/objectifs-rdv',
         name: 'Objectifs de RDV',
         icon: <CalendarOutlined />,
-        roles: ['MANAGER'],
+        permission: 'OBJECTIFS_RDV',
       },
       {
         path: '/parametres/roles',
@@ -157,19 +161,23 @@ const allRoutes: MenuRoute[] = [
   },
 ];
 
-/** Filtre récursif : un item sans `roles` est visible par tous, un sous-item hérite de sa propre
- * restriction indépendamment de son parent (ex. un manager voit "Paramètres" mais seulement
- * "Objectifs de RDV" à l'intérieur, pas les pages réservées à l'admin). */
-function filtrerParRole(routes: MenuRoute[], role: UserRole): MenuRoute[] {
+/** Filtre récursif : un item sans `roles` ni `permission` est visible par tous, un sous-item hérite
+ * de sa propre restriction indépendamment de son parent (ex. un manager voit "Paramètres" mais
+ * seulement "Objectifs de RDV" à l'intérieur, pas les pages réservées à l'admin). Un item à
+ * `permission` suit la matrice configurable ; un parent n'est affiché que s'il lui reste un enfant. */
+function filtrerParRole(routes: MenuRoute[], role: UserRole, modules: PermissionModule[]): MenuRoute[] {
   return routes
-    .filter((r) => !r.roles || r.roles.includes(role))
-    .map((r) => (r.routes ? { ...r, routes: filtrerParRole(r.routes, role) } : r));
+    .filter((r) => (r.permission ? aLaPermission(modules, r.permission, role) : !r.roles || r.roles.includes(role)))
+    .map((r) => (r.routes ? { ...r, routes: filtrerParRole(r.routes, role, modules) } : r))
+    .filter((r) => !r.routes || r.routes.length > 0);
 }
 
-export function getMenuRoutes(role: UserRole) {
+
+/** `modules` : matrice Rôles & permissions (vide tant qu'elle n'est pas chargée → fail-closed). */
+export function getMenuRoutes(role: UserRole, modules: PermissionModule[] = []) {
   return {
     path: '/',
-    routes: filtrerParRole(allRoutes, role),
+    routes: filtrerParRole(allRoutes, role, modules),
   };
 }
 
