@@ -6,6 +6,7 @@ import {
   CalendarOutlined,
   CheckCircleOutlined,
   CloudUploadOutlined,
+  ReadOutlined,
   SafetyCertificateOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
@@ -14,7 +15,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { UserRole } from '@/lib/constants';
 import { useImportJob } from '@/features/professionnels/import/importJobStore';
-import { professionnelService, rdvService, reportingService } from '@/services';
+import { formationService, professionnelService, rdvService, reportingService } from '@/services';
 import { QualificationTransformation, RdvStatut, StatutDemandeValidation, TypeDemandeValidation } from '@/types';
 import type { Utilisateur } from '@/types';
 
@@ -241,6 +242,23 @@ export function HeaderNotifications({ user }: Props) {
             link: '/validations',
           });
         }
+      }
+
+      // Notifications du module Formation (tous rôles), isolées pour ne pas bloquer les autres alertes.
+      try {
+        const nonLues = (await formationService.getNotifications()).filter((n) => !n.lue);
+        if (nonLues.length > 0) {
+          items.push({
+            key: 'formation',
+            icon: <ReadOutlined />,
+            type: 'info',
+            title: `${nonLues.length} notification${nonLues.length > 1 ? 's' : ''} Formation`,
+            description: nonLues[0].titre,
+            link: '/formation/notifications',
+          });
+        }
+      } catch {
+        // Module Formation indisponible : on ignore.
       }
 
       setAlerts(items);

@@ -9,6 +9,7 @@
  */
 
 import type { AuthService } from './api/AuthService';
+import type { FormationService } from './api/FormationService';
 import type { ObjectifConversionService } from './api/ObjectifConversionService';
 import type { NotationService } from './api/NotationService';
 import type { ObjectifRdvService } from './api/ObjectifRdvService';
@@ -46,6 +47,7 @@ function loadMocks() {
   const { UtilisateurServiceMock } = require('./mocks/UtilisateurServiceMock');
   const { ZoneServiceMock } = require('./mocks/ZoneServiceMock');
   const { PurgeServiceMock } = require('./mocks/PurgeServiceMock');
+  const { FormationServiceMock } = require('./mocks/FormationServiceMock');
 
   return {
     authService: new AuthServiceMock() as AuthService,
@@ -62,6 +64,7 @@ function loadMocks() {
     objectifConversionService: new ObjectifConversionServiceMock() as ObjectifConversionService,
     objectifRdvService: new ObjectifRdvServiceMock() as ObjectifRdvService,
     notationService: new NotationServiceMock() as NotationService,
+    formationService: new FormationServiceMock() as FormationService,
   };
 }
 
@@ -80,6 +83,7 @@ function loadReal() {
   const { UtilisateurServiceReal } = require('./real/UtilisateurServiceReal');
   const { ZoneServiceReal } = require('./real/ZoneServiceReal');
   const { PurgeServiceReal } = require('./real/PurgeServiceReal');
+  const { FormationServiceReal } = require('./real/FormationServiceReal');
 
   return {
     authService: new AuthServiceReal() as AuthService,
@@ -96,6 +100,7 @@ function loadReal() {
     objectifConversionService: new ObjectifConversionServiceReal() as ObjectifConversionService,
     objectifRdvService: new ObjectifRdvServiceReal() as ObjectifRdvService,
     notationService: new NotationServiceReal() as NotationService,
+    formationService: new FormationServiceReal() as FormationService,
   };
 }
 
@@ -115,6 +120,7 @@ export const purgeService = services.purgeService;
 export const objectifConversionService = services.objectifConversionService;
 export const objectifRdvService = services.objectifRdvService;
 export const notationService = services.notationService;
+export const formationService = services.formationService;
 
 // Module sans implémentation mockée : toujours branché sur le backend, quel que soit NEXT_PUBLIC_USE_MOCKS.
 export const ordreMissionService: OrdreMissionService = new OrdreMissionServiceReal();

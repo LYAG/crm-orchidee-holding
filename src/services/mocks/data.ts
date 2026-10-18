@@ -322,6 +322,53 @@ export const permissionModules: PermissionModule[] = [
       ADMIN: 'Modifie directement',
     },
   },
+  // Module Formation (voir V19__formation_permissions.sql côté backend).
+  {
+    id: 'perm-formation-conception',
+    module: 'Formation — conception (formations, modules, quiz)',
+    icon: 'ReadOutlined',
+    code: 'FORMATION_CONCEPTION',
+    access: { DELEGUE: 'none', MANAGER: 'partial', ADMIN: 'full' },
+    labels: {
+      MANAGER: 'Crée et gère ses formations et exercices, complète les brouillons',
+      ADMIN: 'Gère toutes les formations, publication et archivage',
+    },
+  },
+  {
+    id: 'perm-formation-affectation',
+    module: 'Formation — affectations',
+    icon: 'UsergroupAddOutlined',
+    code: 'FORMATION_AFFECTATION',
+    access: { DELEGUE: 'none', MANAGER: 'partial', ADMIN: 'full' },
+    labels: {
+      MANAGER: 'Affecte aux délégués de son équipe, autorise de nouvelles tentatives',
+      ADMIN: 'Affectation globale',
+    },
+  },
+  {
+    id: 'perm-formation-suivi',
+    module: 'Formation — suivi, corrections et statistiques',
+    icon: 'LineChartOutlined',
+    code: 'FORMATION_SUIVI',
+    access: { DELEGUE: 'none', MANAGER: 'partial', ADMIN: 'full' },
+    labels: { MANAGER: 'Suivi et corrections de son équipe', ADMIN: 'Statistiques globales' },
+  },
+  {
+    id: 'perm-formation-export',
+    module: 'Formation — export des résultats',
+    icon: 'DownloadOutlined',
+    code: 'FORMATION_EXPORT',
+    access: { DELEGUE: 'none', MANAGER: 'full', ADMIN: 'full' },
+    labels: {},
+  },
+  {
+    id: 'perm-formation-espace',
+    module: 'Formation — espace apprenant',
+    icon: 'BookOutlined',
+    code: 'FORMATION_ESPACE',
+    access: { DELEGUE: 'full', MANAGER: 'none', ADMIN: 'none' },
+    labels: { DELEGUE: 'Suit ses formations, passe les évaluations, consulte ses résultats publiés' },
+  },
 ];
 
 // ─── Rendez-vous ─────────────────────────────────────────────────────────────
