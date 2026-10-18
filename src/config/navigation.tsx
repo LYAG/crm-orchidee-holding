@@ -14,6 +14,7 @@ import {
   PlayCircleOutlined,
   SafetyCertificateOutlined,
   SettingOutlined,
+  StarOutlined,
   TrophyOutlined,
   UsergroupAddOutlined,
 } from '@ant-design/icons';
@@ -146,6 +147,12 @@ const allRoutes: MenuRoute[] = [
         permission: 'OBJECTIFS_RDV',
       },
       {
+        path: '/parametres/criteres-notation',
+        name: 'Critères de notation',
+        icon: <StarOutlined />,
+        roles: ['ADMIN'],
+      },
+      {
         path: '/parametres/roles',
         name: 'Rôles & permissions',
         icon: <SafetyCertificateOutlined />,
@@ -202,6 +209,7 @@ export const PAGE_TITLES: Record<string, string> = {
   '/parametres/presentation': 'Présentation commerciale',
   '/parametres/objectifs': 'Objectifs de conversion',
   '/parametres/objectifs-rdv': 'Objectifs de RDV',
+  '/parametres/criteres-notation': 'Critères de notation',
   '/parametres/roles': 'Rôles & permissions',
   '/parametres/purge': 'Purge base de données',
 };
