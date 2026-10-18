@@ -1,61 +1,15 @@
 'use client';
 
-import { ArrowLeftOutlined, CheckOutlined, DownloadOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Alert, App, Button, Drawer, Result, Space, Spin, Typography } from 'antd';
+import { App, Button, Drawer, Result, Spin } from 'antd';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { formationService } from '@/services';
 import type { EvaluationParcours, LeconParcours, Parcours } from '@/types/formation';
-import { TYPES_LECON, messageErreur, telecharger } from './constants';
+import { messageErreur } from './constants';
+import { LecteurLecon } from './LecteurLecon';
 import { ParcoursView } from './ParcoursView';
-
-const { Paragraph, Text } = Typography;
-
-/** Lecteur de leçon : texte, lien, ou support téléversé (PDF / image / vidéo affichés en ligne). */
-function LeconViewer({ affectationId, lecon }: { affectationId: string; lecon: LeconParcours }) {
-  const [url, setUrl] = useState<string | null>(null);
-  const [erreur, setErreur] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!lecon.aFichier) return;
-    let objet: string | null = null;
-    formationService
-      .getFichierLeconApprenant(affectationId, lecon.id)
-      .then((b) => {
-        objet = URL.createObjectURL(b);
-        setUrl(objet);
-      })
-      .catch((err) => setErreur(messageErreur(err, 'Support indisponible.')));
-    return () => {
-      if (objet) URL.revokeObjectURL(objet);
-    };
-  }, [affectationId, lecon]);
-
-  const type = lecon.fichierType ?? '';
-  return (
-    <Space orientation="vertical" size={16} style={{ width: '100%' }}>
-      <Text type="secondary">{TYPES_LECON[lecon.type]}</Text>
-      {lecon.contenu && <Paragraph style={{ whiteSpace: 'pre-wrap', fontSize: 15, lineHeight: 1.7 }}>{lecon.contenu}</Paragraph>}
-      {lecon.url && (
-        <a href={lecon.url} target="_blank" rel="noreferrer">
-          Ouvrir le lien : {lecon.url}
-        </a>
-      )}
-      {erreur && <Alert type="error" message={erreur} />}
-      {/* Aperçu d’'un Blob local : next/image ne s’'applique pas aux URL blob:. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {url && type.startsWith('image/') && <img src={url} alt={lecon.titre} style={{ maxWidth: '100%', borderRadius: 8 }} />}
-      {url && type.startsWith('video/') && <video src={url} controls style={{ width: '100%', borderRadius: 8 }} />}
-      {url && type === 'application/pdf' && <iframe src={url} title={lecon.titre} style={{ width: '100%', height: '70vh', border: '1px solid var(--oh-line)', borderRadius: 8 }} />}
-      {url && !type.startsWith('image/') && !type.startsWith('video/') && type !== 'application/pdf' && (
-        <Button icon={<DownloadOutlined />} onClick={() => fetch(url).then((r) => r.blob()).then((b) => telecharger(b, lecon.fichierNom ?? 'support'))}>
-          Télécharger {lecon.fichierNom}
-        </Button>
-      )}
-    </Space>
-  );
-}
 
 export function ParcoursApprenantPage() {
   const { affectationId } = useParams<{ affectationId: string }>();
@@ -77,16 +31,27 @@ export function ParcoursApprenantPage() {
   }, [affectationId]);
   useEffect(charger, [charger]);
 
+  /** Ouvre la leçon : le serveur démarre le temps minimal de consultation. */
   async function ouvrirLecon(l: LeconParcours) {
-    setLecon(l);
-    if (!l.consultee) {
-      try {
-        setParcours(await formationService.consulterLecon(affectationId, l.id));
-      } catch (err) {
-        message.error(messageErreur(err, 'Leçon indisponible.'));
-        setLecon(null);
-      }
+    if (l.consultee) {
+      setLecon(l);
+      return;
     }
+    try {
+      const p = await formationService.ouvrirLecon(affectationId, l.id);
+      setParcours(p);
+      setLecon(p.modules.flatMap((m) => m.lecons).find((x) => x.id === l.id) ?? l);
+    } catch (err) {
+      message.error(messageErreur(err, 'Leçon indisponible.'));
+    }
+  }
+
+  async function validerLecon() {
+    if (!lecon) return;
+    const p = await formationService.consulterLecon(affectationId, lecon.id);
+    setParcours(p);
+    setLecon(null);
+    message.success('Leçon consultée.');
   }
 
   async function demarrer(e: EvaluationParcours) {
@@ -115,15 +80,8 @@ export function ParcoursApprenantPage() {
       subTitle={parcours.progressionSequentielle ? 'Les modules se débloquent dans l’ordre' : undefined}
     >
       <ParcoursView parcours={parcours} onOuvrirLecon={ouvrirLecon} onDemarrer={demarrer} chargementEvaluation={demarrage} />
-      <Drawer
-        open={lecon !== null}
-        onClose={() => setLecon(null)}
-        size={760}
-        title={lecon?.titre}
-        destroyOnHidden
-        extra={<Button icon={<CheckOutlined />} type="primary" onClick={() => setLecon(null)}>J’ai terminé la lecture</Button>}
-      >
-        {lecon && <LeconViewer affectationId={affectationId} lecon={lecon} />}
+      <Drawer open={lecon !== null} onClose={() => setLecon(null)} size={860} title={lecon?.titre} destroyOnHidden>
+        {lecon && <LecteurLecon key={lecon.id} affectationId={affectationId} lecon={lecon} onValider={validerLecon} onFermer={() => setLecon(null)} />}
       </Drawer>
     </PageContainer>
   );

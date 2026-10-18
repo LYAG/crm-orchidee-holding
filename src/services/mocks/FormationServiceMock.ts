@@ -195,7 +195,10 @@ interface TentativeS {
 interface ProgressionS {
   affectationId: string;
   leconId: string;
-  date: string;
+  /** Validation de la consultation (null tant que le temps minimal n'est pas écoulé). */
+  date: string | null;
+  ouverture: string | null;
+  terminee: boolean;
 }
 
 const db = {
@@ -709,7 +712,7 @@ function etat(a: AffectationS, vueApprenant: boolean): EtatParcours {
     };
   }
   const f = formation(a.formationId);
-  const consultees = new Set(db.progressions.filter((p) => p.affectationId === a.id).map((p) => p.leconId));
+  const consultees = new Set(db.progressions.filter((p) => p.affectationId === a.id && p.terminee).map((p) => p.leconId));
   const evals = evaluationsDe(f.id);
   let precedentsValides = true;
   let total = 0;
@@ -888,7 +891,7 @@ function parcours(a: AffectationS, vueApprenant: boolean): Parcours {
   }
   const f = formation(a.formationId);
   const evals = evaluationsDe(f.id);
-  const vues = new Map(db.progressions.filter((p) => p.affectationId === a.id).map((p) => [p.leconId, p.date]));
+  const vues = new Map(db.progressions.filter((p) => p.affectationId === a.id).map((p) => [p.leconId, p]));
   const modules: ModuleParcours[] = modulesDe(f.id).map((m, i) => {
     const me = et.modules[i];
     const blocage = me.accessible ? null : "Validez d'abord les modules obligatoires précédents.";
@@ -913,10 +916,12 @@ function parcours(a: AffectationS, vueApprenant: boolean): Parcours {
         fichierNom: l.fichierNom,
         fichierType: l.fichierType,
         dureeMinutes: l.dureeMinutes,
+        tempsMinimalSecondes: tempsMinimal(l),
         ordre: l.ordre,
         obligatoire: l.obligatoire,
-        consultee: vues.has(l.id),
-        dateConsultation: vues.get(l.id) ?? null,
+        consultee: !!vues.get(l.id)?.terminee,
+        dateOuverture: vues.get(l.id)?.ouverture ?? null,
+        dateConsultation: vues.get(l.id)?.date ?? null,
       })),
       evaluations: evals.filter((e) => e.moduleId === m.id).map((e) => evaluationParcours(a, e, f, me.evals.find((x) => x.id === e.id)!, me.accessible, blocage)),
     };
@@ -1203,7 +1208,7 @@ const ops = {
     const f = formation(m.formationId);
     verifierContenuModifiableF(u, f);
     verifierLecon(d);
-    const l: LeconS = { id: generateId('lec'), moduleId, titre: d.titre.trim(), type: d.type, contenu: texte(d.contenu), url: texte(d.url), fichier: null, fichierNom: null, fichierType: null, fichierTaille: null, dureeMinutes: d.dureeMinutes ?? null, ordre: leconsDe(moduleId).length + 1, obligatoire: d.obligatoire ?? true };
+    const l: LeconS = { id: generateId('lec'), moduleId, titre: d.titre.trim(), type: d.type, contenu: texte(d.contenu), url: texte(d.url), fichier: null, fichierNom: null, fichierType: null, fichierTaille: null, dureeMinutes: d.dureeMinutes ?? null, tempsMinimalSecondes: d.tempsMinimalSecondes ?? null, ordre: leconsDe(moduleId).length + 1, obligatoire: d.obligatoire ?? true };
     db.lecons.push(l);
     ops.contenuModifie(u, f, `Leçon « ${l.titre} » ajoutée au module « ${m.titre} »`);
     return l;
@@ -1399,17 +1404,36 @@ const ops = {
     if (creees.length) journal('AFFECTATION', u.id, `${creees.length} affectation(s) — ${r.libelle}`, { formationId: r.f?.id, evaluationId: r.e?.id });
     return creees;
   },
-  consulter(u: Utilisateur, affectationId: string, leconId: string) {
-    const a = affectationDuDelegue(u, affectationId);
-    if (!a.formationId) throw new ErreurMetier(`Leçon introuvable : ${leconId}`);
-    const l = lecon(leconId);
-    const p = parcours(a, true);
-    const m = p.modules.find((x) => x.id === l.moduleId);
-    if (!m) throw new ErreurMetier(`Leçon introuvable : ${leconId}`);
-    if (a.dateDebut > aujourdhui()) throw new ErreurMetier(`Cette formation est disponible à partir du ${a.dateDebut}.`);
-    if (!m.accessible) throw new ErreurMetier("Validez d'abord les modules obligatoires précédents.");
-    if (!db.progressions.some((x) => x.affectationId === a.id && x.leconId === leconId)) {
-      db.progressions.push({ affectationId: a.id, leconId, date: maintenant() });
+  /** Ouverture : démarre le temps minimal (une leçon terminée garde son statut). */
+  ouvrir(u: Utilisateur, affectationId: string, leconId: string) {
+    const a = verifierAccesLecon(u, affectationId, leconId);
+    let p = db.progressions.find((x) => x.affectationId === a.id && x.leconId === leconId);
+    if (!p) {
+      p = { affectationId: a.id, leconId, date: null, ouverture: null, terminee: false };
+      db.progressions.push(p);
+    }
+    if (!p.terminee) p.ouverture = maintenant();
+    a.datePremiereActivite ??= maintenant();
+    a.dateDerniereActivite = maintenant();
+    return a;
+  },
+  /** Validation, refusée avant la fin du temps minimal (forcer : jeu de données initial). */
+  consulter(u: Utilisateur, affectationId: string, leconId: string, forcer = false) {
+    const a = verifierAccesLecon(u, affectationId, leconId);
+    let p = db.progressions.find((x) => x.affectationId === a.id && x.leconId === leconId);
+    if (!p) {
+      p = { affectationId: a.id, leconId, date: null, ouverture: null, terminee: false };
+      db.progressions.push(p);
+    }
+    const minimum = tempsMinimal(lecon(leconId));
+    if (!p.terminee && minimum > 0 && !forcer) {
+      if (!p.ouverture) throw new ErreurMetier("Ouvrez d'abord la leçon pour la consulter.");
+      const ecoule = Math.floor((Date.now() - new Date(p.ouverture).getTime()) / 1000);
+      if (ecoule + 2 < minimum) throw new ErreurMetier(`Consultez encore la leçon -e s avant de la valider.`);
+    }
+    if (!p.terminee) {
+      p.terminee = true;
+      p.date = maintenant();
     }
     a.datePremiereActivite ??= maintenant();
     a.dateDerniereActivite = maintenant();
@@ -1496,6 +1520,22 @@ const ops = {
     return t;
   },
 };
+
+/** Temps minimal effectif : explicite, sinon durée estimée, sinon aucun. */
+function tempsMinimal(l: LeconS): number {
+  return l.tempsMinimalSecondes ?? (l.dureeMinutes ? l.dureeMinutes * 60 : 0);
+}
+
+function verifierAccesLecon(u: Utilisateur, affectationId: string, leconId: string): AffectationS {
+  const a = affectationDuDelegue(u, affectationId);
+  if (!a.formationId) throw new ErreurMetier(`Leçon introuvable : ${leconId}`);
+  const l = lecon(leconId);
+  const m = parcours(a, true).modules.find((x) => x.id === l.moduleId);
+  if (!m) throw new ErreurMetier(`Leçon introuvable : ${leconId}`);
+  if (a.dateDebut > aujourdhui()) throw new ErreurMetier(`Cette formation est disponible à partir du ${a.dateDebut}.`);
+  if (!m.accessible) throw new ErreurMetier("Validez d'abord les modules obligatoires précédents.");
+  return a;
+}
 
 function verifierLecon(d: LeconFormDto) {
   if (d.type === 'TEXTE' && !texte(d.contenu)) throw new ErreurMetier('Une leçon texte doit avoir un contenu.');
@@ -1716,7 +1756,7 @@ function initialiser() {
   ops.ajouterQuestion(admin, q1.id, { type: 'VRAI_FAUX', enonce: 'Un objectif de visite doit être mesurable.', points: 10, propositions: [{ libelle: 'Vrai', correcte: true }, { libelle: 'Faux', correcte: false }] });
   const m2 = ops.ajouterModule(admin, vente.id, { titre: 'Argumenter et conclure', obligatoire: true });
   ops.ajouterLecon(admin, m2.id, { titre: 'La méthode CAP', type: 'TEXTE', contenu: 'Caractéristique, Avantage, Preuve : chaque argument part du besoin exprimé.', dureeMinutes: 15 });
-  ops.ajouterLecon(admin, m2.id, { titre: 'Vidéo : traiter une objection', type: 'LIEN', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', dureeMinutes: 8, obligatoire: false });
+  ops.ajouterLecon(admin, m2.id, { titre: 'Vidéo : traiter une objection', type: 'VIDEO', url: 'https://www.youtube.com/watch?v=aXWwVG94WIQ', dureeMinutes: 8, tempsMinimalSecondes: 60, obligatoire: false });
   const q2 = ops.creerEvaluation(admin, { moduleId: m2.id, type: 'QUIZ_ENTRAINEMENT', titre: 'Quiz — argumenter', obligatoire: true });
   ops.ajouterQuestion(admin, q2.id, qcm('Que signifie le « P » de CAP ?', 'Preuve', ['Prix', 'Produit']));
   const fin = ops.creerEvaluation(admin, { formationId: vente.id, type: 'EVALUATION_FINALE', titre: 'Évaluation finale — techniques de vente', consignes: 'Répondez à toutes les questions. Seuil de réussite : 70/100.' });
@@ -1728,13 +1768,13 @@ function initialiser() {
 
   // Progression de Kouassi N'Guessan : module 1 validé, finale à corriger plus tard.
   const affD1 = db.affectations.find((a) => a.delegueId === d1.id && a.formationId === vente.id)!;
-  ops.consulter(d1, affD1.id, l1.id);
-  ops.consulter(d1, affD1.id, l2.id);
+  ops.consulter(d1, affD1.id, l1.id, true);
+  ops.consulter(d1, affD1.id, l2.id, true);
   const t1 = ops.demarrer(d1, affD1.id, q1.id);
   ops.enregistrer(t1, t1.snapshot.questions.map((q) => ({ questionId: q.id, propositionIds: [q.propositions.find((p) => p.correcte)!.id], texte: null })));
   soumettreInterne(t1, false);
   const affD2 = db.affectations.find((a) => a.delegueId === d2.id && a.formationId === vente.id)!;
-  ops.consulter(d2, affD2.id, l1.id);
+  ops.consulter(d2, affD2.id, l1.id, true);
 
   // Brouillon de l'admin.
   const reglementation = ops.creerFormation(admin, {
@@ -1971,7 +2011,7 @@ export class FormationServiceMock implements FormationService {
       const f = formation(module_(l.moduleId).formationId);
       verifierContenuModifiableF(u, f);
       verifierLecon(d);
-      Object.assign(l, { titre: d.titre.trim(), type: d.type, contenu: texte(d.contenu), url: texte(d.url), dureeMinutes: d.dureeMinutes ?? null, obligatoire: d.obligatoire ?? true });
+      Object.assign(l, { titre: d.titre.trim(), type: d.type, contenu: texte(d.contenu), url: texte(d.url), dureeMinutes: d.dureeMinutes ?? null, tempsMinimalSecondes: d.tempsMinimalSecondes ?? null, obligatoire: d.obligatoire ?? true });
       ops.contenuModifie(u, f, `Leçon « ${l.titre} » modifiée`);
       return leconDto(l);
     });
@@ -2431,14 +2471,21 @@ export class FormationServiceMock implements FormationService {
   getParcours(affectationId: string) {
     return avecDonnees((u) => parcours(affectationDuDelegue(u, affectationId), true));
   }
+  ouvrirLecon(affectationId: string, leconId: string) {
+    return avecDonnees((u) => parcours(ops.ouvrir(u, affectationId, leconId), true));
+  }
   consulterLecon(affectationId: string, leconId: string) {
     return avecDonnees((u) => parcours(ops.consulter(u, affectationId, leconId), true));
   }
-  async getFichierLeconApprenant(affectationId: string, leconId: string): Promise<Blob> {
-    await delay(50);
+  async getFichierLeconApprenant(affectationId: string, leconId: string, onProgress?: (charge: number, total: number | null) => void): Promise<Blob> {
     affectationDuDelegue(utilisateurCourant(), affectationId);
     const f = lecon(leconId).fichier;
     if (!f) throw new ErreurMetier('Fichier introuvable');
+    // Simule un téléchargement progressif pour la jauge de chargement.
+    for (let i = 1; i <= 10; i++) {
+      await delay(120);
+      onProgress?.(Math.round((f.size * i) / 10), f.size);
+    }
     return f;
   }
   demarrerTentative(affectationId: string, evaluationId: string) {

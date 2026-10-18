@@ -141,7 +141,7 @@ function ModuleModal({ open, module, onClose, onSave }: { open: boolean; module:
 }
 
 function LeconModal({ open, lecon, onClose, onSave }: { open: boolean; lecon: Lecon | null; onClose: () => void; onSave: (d: LeconFormDto, fichier: File | null) => Promise<void> }) {
-  const [form] = Form.useForm<LeconFormDto>();
+  const [form] = Form.useForm<LeconFormDto & { tempsMinimalMinutes?: number | null }>();
   const [envoi, setEnvoi] = useState(false);
   const [fichier, setFichier] = useState<File | null>(null);
   const type = Form.useWatch('type', form) as TypeLecon | undefined;
@@ -151,8 +151,8 @@ function LeconModal({ open, lecon, onClose, onSave }: { open: boolean; lecon: Le
     if (!open) return;
     form.setFieldsValue(
       lecon
-        ? { titre: lecon.titre, type: lecon.type, contenu: lecon.contenu, url: lecon.url, dureeMinutes: lecon.dureeMinutes, obligatoire: lecon.obligatoire }
-        : { titre: '', type: 'TEXTE', contenu: '', url: '', dureeMinutes: null, obligatoire: true },
+        ? { titre: lecon.titre, type: lecon.type, contenu: lecon.contenu, url: lecon.url, dureeMinutes: lecon.dureeMinutes, tempsMinimalMinutes: lecon.tempsMinimalSecondes == null ? null : lecon.tempsMinimalSecondes / 60, obligatoire: lecon.obligatoire }
+        : { titre: '', type: 'TEXTE', contenu: '', url: '', dureeMinutes: null, tempsMinimalMinutes: null, obligatoire: true },
     );
   }, [open, lecon, form]);
 
@@ -167,14 +167,17 @@ function LeconModal({ open, lecon, onClose, onSave }: { open: boolean; lecon: Le
       onCancel={() => { setFichier(null); onClose(); }}
       destroyOnHidden
       onOk={async () => {
-        const v = await form.validateFields();
+        const { tempsMinimalMinutes, ...v } = await form.validateFields();
         if (avecFichier && !fichier && !v.url && !lecon?.aFichier) {
           form.setFields([{ name: 'url', errors: ['Ajoutez un fichier ou indiquez un lien.'] }]);
           return;
         }
         setEnvoi(true);
         try {
-          await onSave(v, avecFichier ? fichier : null);
+          await onSave(
+            { ...v, tempsMinimalSecondes: tempsMinimalMinutes == null ? null : Math.round(tempsMinimalMinutes * 60) },
+            avecFichier ? fichier : null,
+          );
           setFichier(null);
         } finally {
           setEnvoi(false);
@@ -235,12 +238,21 @@ function LeconModal({ open, lecon, onClose, onSave }: { open: boolean; lecon: Le
           </Form.Item>
         )}
         <Row gutter={16}>
-          <Col xs={12}>
-            <Form.Item name="dureeMinutes" label="Durée (min)">
+          <Col xs={12} md={8}>
+            <Form.Item name="dureeMinutes" label="Durée estimée (min)">
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
-          <Col xs={12}>
+          <Col xs={12} md={8}>
+            <Form.Item
+              name="tempsMinimalMinutes"
+              label="Temps minimal de consultation (min)"
+              extra="Avant de pouvoir valider la leçon. Vide = durée estimée ; 0 = aucun."
+            >
+              <InputNumber min={0} step={0.5} style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={8}>
             <Form.Item name="obligatoire" label="Consultation obligatoire" valuePropName="checked">
               <Switch checkedChildren="Obligatoire" unCheckedChildren="Facultative" />
             </Form.Item>

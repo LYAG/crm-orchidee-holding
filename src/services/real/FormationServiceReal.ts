@@ -39,7 +39,7 @@ import type {
   TentativePassage,
   TentativeResume,
 } from '@/types/formation';
-import { apiFetch, apiFetchBlob, qs } from './httpClient';
+import { apiFetch, apiFetchBlob, apiFetchBlobProgress, qs } from './httpClient';
 
 const json = (method: string, body?: unknown): RequestInit => ({
   method,
@@ -245,13 +245,22 @@ export class FormationServiceReal implements FormationService {
   getParcours(affectationId: string): Promise<Parcours> {
     return apiFetch(`/formation/mon-espace/affectations/${affectationId}`);
   }
+  ouvrirLecon(affectationId: string, leconId: string): Promise<Parcours> {
+    return apiFetch(`/formation/mon-espace/affectations/${affectationId}/lecons/${leconId}/ouvrir`, {
+      method: 'POST',
+    });
+  }
   consulterLecon(affectationId: string, leconId: string): Promise<Parcours> {
     return apiFetch(`/formation/mon-espace/affectations/${affectationId}/lecons/${leconId}/consulter`, {
       method: 'POST',
     });
   }
-  getFichierLeconApprenant(affectationId: string, leconId: string): Promise<Blob> {
-    return apiFetchBlob(`/formation/mon-espace/affectations/${affectationId}/lecons/${leconId}/fichier`);
+  getFichierLeconApprenant(
+    affectationId: string,
+    leconId: string,
+    onProgress?: (charge: number, total: number | null) => void,
+  ): Promise<Blob> {
+    return apiFetchBlobProgress(`/formation/mon-espace/affectations/${affectationId}/lecons/${leconId}/fichier`, onProgress);
   }
   demarrerTentative(affectationId: string, evaluationId: string): Promise<TentativePassage> {
     return apiFetch(`/formation/mon-espace/affectations/${affectationId}/evaluations/${evaluationId}/tentatives`, {

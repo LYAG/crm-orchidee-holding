@@ -67,6 +67,7 @@ export interface LeconFormDto {
   contenu?: string | null;
   url?: string | null;
   dureeMinutes?: number | null;
+  tempsMinimalSecondes?: number | null;
   obligatoire?: boolean;
 }
 
@@ -195,8 +196,15 @@ export interface FormationService {
   getMonEspace(): Promise<EspaceApprenant>;
   getMesAffectations(filtres?: FiltresMesAffectations): Promise<Affectation[]>;
   getParcours(affectationId: string): Promise<Parcours>;
+  /** Ouvre la leçon : démarre le temps minimal de consultation côté serveur. */
+  ouvrirLecon(affectationId: string, leconId: string): Promise<Parcours>;
+  /** Valide la consultation (refusée tant que le temps minimal n’est pas écoulé). */
   consulterLecon(affectationId: string, leconId: string): Promise<Parcours>;
-  getFichierLeconApprenant(affectationId: string, leconId: string): Promise<Blob>;
+  getFichierLeconApprenant(
+    affectationId: string,
+    leconId: string,
+    onProgress?: (charge: number, total: number | null) => void,
+  ): Promise<Blob>;
   demarrerTentative(affectationId: string, evaluationId: string): Promise<TentativePassage>;
   getPassage(tentativeId: string): Promise<TentativePassage>;
   enregistrerReponses(tentativeId: string, reponses: ReponseQuestion[]): Promise<TentativePassage>;
