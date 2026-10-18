@@ -9,6 +9,7 @@
 
 import type { AuthService } from './api/AuthService';
 import type { ObjectifConversionService } from './api/ObjectifConversionService';
+import type { NotationService } from './api/NotationService';
 import type { ObjectifRdvService } from './api/ObjectifRdvService';
 import type { OpportuniteService } from './api/OpportuniteService';
 import type { OrdreMissionService } from './api/OrdreMissionService';
@@ -32,6 +33,7 @@ const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS !== 'false';
 function loadMocks() {
   const { AuthServiceMock } = require('./mocks/AuthServiceMock');
   const { ObjectifConversionServiceMock } = require('./mocks/ObjectifConversionServiceMock');
+  const { NotationServiceMock } = require('./mocks/NotationServiceMock');
   const { ObjectifRdvServiceMock } = require('./mocks/ObjectifRdvServiceMock');
   const { OpportuniteServiceMock } = require('./mocks/OpportuniteServiceMock');
   const { ProfessionnelServiceMock } = require('./mocks/ProfessionnelServiceMock');
@@ -58,12 +60,14 @@ function loadMocks() {
     purgeService: new PurgeServiceMock() as PurgeService,
     objectifConversionService: new ObjectifConversionServiceMock() as ObjectifConversionService,
     objectifRdvService: new ObjectifRdvServiceMock() as ObjectifRdvService,
+    notationService: new NotationServiceMock() as NotationService,
   };
 }
 
 function loadReal() {
   const { AuthServiceReal } = require('./real/AuthServiceReal');
   const { ObjectifConversionServiceReal } = require('./real/ObjectifConversionServiceReal');
+  const { NotationServiceReal } = require('./real/NotationServiceReal');
   const { ObjectifRdvServiceReal } = require('./real/ObjectifRdvServiceReal');
   const { OpportuniteServiceReal } = require('./real/OpportuniteServiceReal');
   const { ProfessionnelServiceReal } = require('./real/ProfessionnelServiceReal');
@@ -90,6 +94,7 @@ function loadReal() {
     purgeService: new PurgeServiceReal() as PurgeService,
     objectifConversionService: new ObjectifConversionServiceReal() as ObjectifConversionService,
     objectifRdvService: new ObjectifRdvServiceReal() as ObjectifRdvService,
+    notationService: new NotationServiceReal() as NotationService,
   };
 }
 
@@ -108,6 +113,7 @@ export const zoneService = services.zoneService;
 export const purgeService = services.purgeService;
 export const objectifConversionService = services.objectifConversionService;
 export const objectifRdvService = services.objectifRdvService;
+export const notationService = services.notationService;
 
 // Module sans implémentation mockée : toujours branché sur le backend, quel que soit NEXT_PUBLIC_USE_MOCKS.
 export const ordreMissionService: OrdreMissionService = new OrdreMissionServiceReal();

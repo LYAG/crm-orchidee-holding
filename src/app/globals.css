@@ -728,3 +728,104 @@ button {
     min-width: 720px;
   }
 }
+
+/* ── Notes mensuelles des délégués ───────────────────────────────────────── */
+
+.oh-note-cell {
+  min-width: 52px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.oh-note-cell:hover {
+  border-color: currentColor;
+}
+
+.oh-note-cell[data-pending] {
+  border-style: dashed;
+  border-color: currentColor;
+}
+
+.oh-note-pill {
+  display: inline-block;
+  min-width: 52px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.oh-note-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.oh-note-swatch[data-pending] {
+  background: transparent;
+  border: 1px dashed var(--oh-ink-3);
+}
+
+.oh-note-total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 20px;
+  border-radius: var(--oh-radius);
+}
+
+.oh-note-total__value {
+  font-size: 32px;
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.oh-note-total__max {
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.oh-note-total__label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.oh-note-criteres {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--oh-line);
+  border-radius: var(--oh-radius);
+}
+
+.oh-note-critere {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+}
+
+.oh-note-critere + .oh-note-critere {
+  border-top: 1px solid var(--oh-line);
+}
+
+.oh-note-critere__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.oh-note-critere__libelle {
+  font-weight: 600;
+  color: var(--oh-ink);
+}

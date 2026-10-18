@@ -17,6 +17,7 @@ import { qualificationService, rdvService, reportingService } from '@/services';
 import { QualificationTransformation } from '@/types';
 import type { KpiDelegue, ProgressionConversion, QualificationRDV, RendezVous, Utilisateur } from '@/types';
 import { StatCard as KpiCard } from '@/components/ui/StatCard';
+import { NotesMensuellesTab } from '@/features/notation/NotesMensuellesTab';
 import { SimpleBarChart } from './SimpleBarChart';
 
 const { Text } = Typography;
@@ -306,6 +307,15 @@ export function DashboardDelegue({ user }: Props) {
           </ProCard>
         </Col>
       </Row>
+
+      {/* ── Notes mensuelles attribuées par le manager (lecture seule) ── */}
+      <ProCard
+        bordered
+        title={<Text strong style={{ color: '#123832' }}>Mes notes mensuelles</Text>}
+        style={{ borderRadius: 12, marginTop: 16 }}
+      >
+        <NotesMensuellesTab delegueId={user.id} />
+      </ProCard>
     </PageContainer>
   );
 }

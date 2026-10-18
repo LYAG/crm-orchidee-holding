@@ -388,6 +388,50 @@ export interface ProgressionRdv {
   objectif: number;
 }
 
+// ─── Notation mensuelle des délégués ──────────────────────────────────────────
+
+/** MANUEL : note /20 saisie par le manager. OBJECTIF_* : taux d'atteinte de l'objectif du mois × 20 (calculé). */
+export type TypeCritereNotation = 'MANUEL' | 'OBJECTIF_RDV' | 'OBJECTIF_CONVERSION';
+
+export interface CritereNotation {
+  id: string;
+  libelle: string;
+  description: string | null;
+  type: TypeCritereNotation;
+  /** Pondération dans la moyenne du mois (1 à 10). */
+  poids: number;
+  actif: boolean;
+  ordre: number;
+}
+
+export interface NoteCritere {
+  critereId: string;
+  libelle: string;
+  type: TypeCritereNotation;
+  poids: number;
+  /** null : critère manuel pas encore noté, ou critère automatique sans objectif (ignoré). */
+  note: number | null;
+  /** Explication du calcul pour les critères automatiques (ex. « 8 / 10 RDV réalisés »). */
+  detail: string | null;
+}
+
+export interface NotationMois {
+  delegueId: string;
+  nomDelegue: string;
+  annee: number;
+  mois: number;
+  /** Moyenne pondérée /20 des critères notés (null si aucun). */
+  noteFinale: number | null;
+  /** Une évaluation a été enregistrée par le manager. */
+  saisie: boolean;
+  /** Tous les critères manuels actifs sont notés. */
+  complete: boolean;
+  criteres: NoteCritere[];
+  commentaire: string | null;
+  auteurNom: string | null;
+  dateModification: string | null;
+}
+
 // ─── Filtres génériques ───────────────────────────────────────────────────────
 
 export interface FiltresRdv {
