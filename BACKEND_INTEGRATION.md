@@ -19,7 +19,8 @@ un agent IA pour implémenter chaque module dans l'ordre.
 Point d'entrée unique : [`src/services/index.ts`](src/services/index.ts).
 
 ```ts
-const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS !== 'false';
+// Backend réel par défaut ; mocks uniquement si NEXT_PUBLIC_USE_MOCKS=true est explicitement défini.
+const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
 function loadReal(): ReturnType<typeof loadMocks> {
   // À implémenter dans src/services/real/ quand le backend sera prêt

@@ -1,10 +1,11 @@
 /**
  * Point d'entrée unique pour tous les services.
- * NEXT_PUBLIC_USE_MOCKS=true  → implémentations mockées (défaut dev)
- * NEXT_PUBLIC_USE_MOCKS=false → implémentations réelles (backend Spring Boot)
+ * Par défaut              → implémentations réelles (backend Spring Boot).
+ * NEXT_PUBLIC_USE_MOCKS=true → implémentations mockées (développement local uniquement).
  *
- * Pour brancher le vrai backend, créer src/services/real/ avec les mêmes interfaces
- * et basculer NEXT_PUBLIC_USE_MOCKS à false sans toucher aux composants.
+ * Les mocks ne sont jamais activés implicitement : une variable absente, vide ou à toute autre
+ * valeur que « true » branche le vrai backend, pour qu'un build mal configuré ne livre pas une
+ * application factice (connexion et données simulées).
  */
 
 import type { AuthService } from './api/AuthService';
@@ -24,7 +25,7 @@ import type { UtilisateurService } from './api/UtilisateurService';
 import type { ZoneService } from './api/ZoneService';
 import { OrdreMissionServiceReal } from './real/OrdreMissionServiceReal';
 
-const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS !== 'false';
+const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
 
 /* eslint-disable @typescript-eslint/no-require-imports --
    Chargement conditionnel volontaire : un `import` statique chargerait (et empaqueterait)
