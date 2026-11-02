@@ -14,6 +14,7 @@ import {
   FileTextOutlined,
   GiftOutlined,
   LineChartOutlined,
+  MailOutlined,
   MedicineBoxOutlined,
   PlayCircleOutlined,
   ReadOutlined,
@@ -220,6 +221,12 @@ const allRoutes: MenuRoute[] = [
         roles: ['ADMIN'],
       },
       {
+        path: '/parametres/messagerie',
+        name: 'Messagerie',
+        icon: <MailOutlined />,
+        roles: ['ADMIN'],
+      },
+      {
         path: '/parametres/roles',
         name: 'Rôles & permissions',
         icon: <SafetyCertificateOutlined />,
@@ -277,6 +284,7 @@ export const PAGE_TITLES: Record<string, string> = {
   '/parametres/objectifs': 'Objectifs de conversion',
   '/parametres/objectifs-rdv': 'Objectifs de RDV',
   '/parametres/criteres-notation': 'Critères de notation',
+  '/parametres/messagerie': 'Messagerie',
   '/parametres/roles': 'Rôles & permissions',
   '/parametres/purge': 'Purge base de données',
   '/formation': 'Formation',
