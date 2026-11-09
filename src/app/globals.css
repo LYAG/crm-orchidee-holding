@@ -180,6 +180,28 @@ button {
   opacity: 1;
 }
 
+/* Entrées à sous-menu (Formation, Référentiels…) : la zone du titre y est en plus réduite à une
+   largeur nulle (débordement masqué), ce qui coupe l'icône ; la flèche n'a pas de place non plus. */
+.ant-pro-layout
+  .ant-pro-sider
+  .ant-menu-inline-collapsed
+  > .ant-menu-submenu
+  > .ant-menu-submenu-title
+  > .ant-menu-title-content {
+  flex: 1 1 auto;
+  width: auto;
+  overflow: visible;
+}
+
+.ant-pro-layout
+  .ant-pro-sider
+  .ant-menu-inline-collapsed
+  > .ant-menu-submenu
+  > .ant-menu-submenu-title
+  > .ant-menu-submenu-arrow {
+  display: none;
+}
+
 /* Marque dans le header */
 .oh-brand {
   display: flex;
