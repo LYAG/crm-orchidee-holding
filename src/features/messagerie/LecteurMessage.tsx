@@ -49,8 +49,8 @@ export function LecteurMessage({ id, charger, onLu, onRepondre, onRetour }: Prop
           onLu(m.id, true);
         }
         if (!annule) {
-          // Message rédigé dans le CRM : sa mise en forme d'abord ; message reçu : le texte.
-          setVue(m.corpsHtml && (m.direction === 'ENVOYE' || !m.corpsTexte) ? 'html' : 'texte');
+          // Mise en forme par défaut dès qu'elle existe ; « Texte » reste disponible.
+          setVue(m.corpsHtml ? 'html' : 'texte');
           setResultat({ id, message: m, erreur: null });
         }
       })
