@@ -97,7 +97,7 @@ export class MessagerieServiceMock implements MessagerieService {
 
   private echec(): string | null {
     if (!this.motDePasse)
-      return 'Aucun mot de passe de messagerie n’est enregistré : saisissez-le dans Paramètres > Messagerie.';
+      return 'Aucun mot de passe de messagerie n’est enregistré : saisissez-le dans Paramètres > Mail.';
     if (this.motDePasse === 'faux')
       return 'Authentification refusée par le serveur : vérifiez l’identifiant et le mot de passe.';
     return null;
@@ -184,7 +184,7 @@ export class MessagerieServiceMock implements MessagerieService {
   async envoyer(r: EnvoiEmailRequest): Promise<MessageEmail> {
     await delay();
     if (!this.config.envoiActif)
-      throw new Error('L’envoi d’e-mails est désactivé : activez-le dans Paramètres > Messagerie.');
+      throw new Error('L’envoi d’e-mails est désactivé : activez-le dans Paramètres > Mail.');
     const m = message({
       direction: 'ENVOYE',
       sujet: r.sujet,
@@ -201,7 +201,7 @@ export class MessagerieServiceMock implements MessagerieService {
   async relever(): Promise<ReleveResultat> {
     await delay(600);
     if (!this.config.receptionActive)
-      throw new Error('La réception est désactivée : activez-la dans Paramètres > Messagerie.');
+      throw new Error('La réception est désactivée : activez-la dans Paramètres > Mail.');
     const erreur = this.echec();
     if (erreur) {
       this.tracer('RELEVE', false, `Relève impossible : ${erreur}`);

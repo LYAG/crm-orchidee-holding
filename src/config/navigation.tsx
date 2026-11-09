@@ -39,6 +39,10 @@ export interface MenuRoute {
   /** Code de la matrice Rôles & permissions : s'il est présent, il remplace `roles` (accès configurable). */
   permission?: string;
   hideInMenu?: boolean;
+  /** ProLayout : affiche l'entrée sans dérouler ses sous-pages dans le menu. */
+  hideChildrenInMenu?: boolean;
+  /** Sous-titre de la tuile sur une page d'accueil de section (ex. Paramètres). */
+  description?: string;
 }
 
 const allRoutes: MenuRoute[] = [
@@ -195,46 +199,55 @@ const allRoutes: MenuRoute[] = [
     name: 'Paramètres',
     icon: <SettingOutlined />,
     // Pas de restriction propre : visible dès qu'au moins une sous-page l'est (voir filtrerParRole).
+    // Les sous-pages ne sont pas listées dans le menu : /parametres les présente en tuiles.
+    hideChildrenInMenu: true,
     routes: [
       {
         path: '/parametres/presentation',
         name: 'Présentation commerciale',
+        description: 'Durée minimale attendue par slide',
         icon: <PlayCircleOutlined />,
         roles: ['ADMIN'],
       },
       {
         path: '/parametres/objectifs',
         name: 'Objectifs de conversion',
+        description: 'Cibles mensuelles de conversion T1 → ST',
         icon: <AimOutlined />,
         permission: 'OBJECTIFS_CONVERSION',
       },
       {
         path: '/parametres/objectifs-rdv',
         name: 'Objectifs de RDV',
+        description: 'Nombre de visites attendues par délégué',
         icon: <CalendarOutlined />,
         permission: 'OBJECTIFS_RDV',
       },
       {
         path: '/parametres/criteres-notation',
         name: 'Critères de notation',
+        description: 'Critères et pondérations de la note mensuelle',
         icon: <StarOutlined />,
         roles: ['ADMIN'],
       },
       {
-        path: '/parametres/messagerie',
-        name: 'Messagerie',
+        path: '/parametres/mail',
+        name: 'Mail',
+        description: 'Compte e-mail SMTP/IMAP, tests, journal',
         icon: <MailOutlined />,
         roles: ['ADMIN'],
       },
       {
         path: '/parametres/roles',
         name: 'Rôles & permissions',
+        description: 'Accès de chaque rôle aux modules',
         icon: <SafetyCertificateOutlined />,
         roles: ['ADMIN'],
       },
       {
         path: '/parametres/purge',
         name: 'Purge base de données',
+        description: 'Suppression définitive de données',
         icon: <DeleteOutlined />,
         roles: ['ADMIN'],
       },
@@ -284,7 +297,8 @@ export const PAGE_TITLES: Record<string, string> = {
   '/parametres/objectifs': 'Objectifs de conversion',
   '/parametres/objectifs-rdv': 'Objectifs de RDV',
   '/parametres/criteres-notation': 'Critères de notation',
-  '/parametres/messagerie': 'Messagerie',
+  '/parametres/mail': 'Mail',
+  '/messagerie': 'Messagerie',
   '/parametres/roles': 'Rôles & permissions',
   '/parametres/purge': 'Purge base de données',
   '/formation': 'Formation',

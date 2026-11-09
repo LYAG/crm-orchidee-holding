@@ -13,6 +13,7 @@ import { usePermissionModules } from '@/hooks/usePermission';
 import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { zoneService } from '@/services';
 import type { Zone } from '@/types';
+import { HeaderMessagerie } from './HeaderMessagerie';
 import { HeaderNotifications } from './HeaderNotifications';
 import { useZoneFilter } from './ZoneFilterContext';
 
@@ -167,6 +168,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         )}
         actionsRender={() => [
           zoneControl,
+          // La messagerie (API réservée à l'admin) n'est proposée qu'à l'administrateur.
+          ...(role === UserRole.ADMIN ? [<HeaderMessagerie key="messagerie" />] : []),
           <HeaderNotifications key="notifs" user={user} />,
         ]}
         avatarProps={{
@@ -243,6 +246,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
         )}
         breadcrumbRender={(routers = []) => (routers.length > 1 ? routers : [])}
+        // Niveaux intermédiaires cliquables (ex. « Paramètres » ramène à l'accueil en tuiles).
+        breadcrumbProps={{
+          itemRender: (route, _params, routes) =>
+            route === routes[routes.length - 1] || !route.linkPath ? (
+              <span>{route.breadcrumbName}</span>
+            ) : (
+              <Link href={route.linkPath}>{route.breadcrumbName}</Link>
+            ),
+        }}
       >
         {children}
       </ProLayout>
