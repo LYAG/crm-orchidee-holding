@@ -561,80 +561,230 @@ button {
 
 .oh-login {
   display: grid;
-  grid-template-columns: minmax(360px, 440px) 1fr;
+  grid-template-columns: minmax(420px, 46%) 1fr;
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--oh-surface);
 }
 
+/* Panneau de marque : vert profond, facettes discrètes rappelant le saphir du logo. */
 .oh-login__brand {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 48px;
-  padding: 48px 44px;
-  background: var(--oh-ink);
+  padding: 44px clamp(40px, 5vw, 72px);
+  overflow: hidden;
   color: #fff;
+  background: linear-gradient(155deg, #0f3f33 0%, #0b2f27 55%, #082620 100%);
+}
+
+.oh-login__brand::before,
+.oh-login__brand::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.oh-login__brand::before {
+  inset: 0;
+  background:
+    linear-gradient(118deg, transparent 52%, rgba(255, 255, 255, 0.045) 52.2%, transparent 74%),
+    linear-gradient(28deg, transparent 60%, rgba(255, 255, 255, 0.04) 60.2%, transparent 82%),
+    linear-gradient(200deg, transparent 38%, rgba(0, 0, 0, 0.12) 38.2%, transparent 66%);
+}
+
+.oh-login__brand::after {
+  width: 520px;
+  height: 520px;
+  right: -180px;
+  top: -160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46, 170, 120, 0.32) 0%, transparent 65%);
+}
+
+.oh-login__marque {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .oh-login__logo {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  background: #fff;
+  border-radius: 11px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+}
+
+.oh-login__marque-texte {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.oh-login__marque-texte strong {
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.oh-login__marque-texte span {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.oh-login__accroche {
+  max-width: 480px;
 }
 
 .oh-login__title.ant-typography {
+  margin: 0 0 16px;
   color: #fff;
-  margin: 0 0 6px;
-  font-size: 34px;
+  font-size: clamp(28px, 2.6vw, 38px);
   font-weight: 650;
+  line-height: 1.15;
   letter-spacing: -0.025em;
-  line-height: 1.1;
-}
-
-.oh-login__sub.ant-typography {
-  display: block;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 20px;
+  text-wrap: balance;
 }
 
 .oh-login__lead.ant-typography {
   display: block;
-  max-width: 34ch;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 14px;
+  max-width: 44ch;
+  margin-bottom: 36px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
   line-height: 1.65;
 }
 
+.oh-login__atouts {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oh-login__atouts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.oh-login__atouts li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.oh-login__atouts strong {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.oh-login__atout-icone {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #8fe0bd;
+  font-size: 16px;
+}
+
 .oh-login__legal.ant-typography {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 12px;
 }
 
+/* Formulaire */
 .oh-login__main {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 20px;
   padding: 48px 32px;
 }
 
 .oh-login__card {
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
 }
 
-.oh-login__compact-brand,
+.oh-login__card-logo {
+  display: block;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 110, 82, 0.22);
+}
+
+.oh-login__card-title.ant-typography {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--oh-ink);
+}
+
+.oh-login__card-sub.ant-typography {
+  display: block;
+  margin-bottom: 28px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.oh-login__card .ant-form-item-label > label {
+  font-weight: 500;
+  color: var(--oh-ink);
+}
+
+.oh-login__prefixe {
+  margin-right: 4px;
+  color: var(--oh-ink-3);
+}
+
+.oh-login__submit.ant-btn {
+  height: 46px;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.oh-login__aide.ant-typography {
+  display: block;
+  margin-top: 20px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.oh-login__securite.ant-typography {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
 .oh-login__legal-mobile {
   display: none !important;
+}
+
+@media (max-width: 1023px) {
+  .oh-login {
+    grid-template-columns: minmax(360px, 42%) 1fr;
+  }
+
+  .oh-login__atouts li > span:last-child > span {
+    display: none;
+  }
 }
 
 @media (max-width: 860px) {
@@ -649,26 +799,29 @@ button {
 
   .oh-login__main {
     justify-content: flex-start;
-    padding: max(48px, 10vh) 16px 32px;
+    padding: max(40px, 8vh) 16px 28px;
   }
 
   .oh-login__card {
     max-width: 420px;
-    padding: 28px 24px;
+    padding: 32px 24px 28px;
     background: var(--oh-surface);
     border: 1px solid var(--oh-line);
     border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(18, 56, 50, 0.06);
   }
 
-  .oh-login__compact-brand {
-    display: flex !important;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 28px;
-    font-size: 16px;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-    color: var(--oh-ink);
+  .oh-login__card-logo {
+    margin: 0 auto 20px;
+  }
+
+  .oh-login__card-title.ant-typography,
+  .oh-login__card-sub.ant-typography {
+    text-align: center;
+  }
+
+  .oh-login__card-title.ant-typography {
+    font-size: 22px;
   }
 
   .oh-login__legal-mobile {

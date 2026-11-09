@@ -1,14 +1,38 @@
 'use client';
 
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { ProFormText } from '@ant-design/pro-components';
-import { Alert, Button, Form, Typography } from 'antd';
+import {
+  CalendarOutlined,
+  LockOutlined,
+  ReadOutlined,
+  RiseOutlined,
+  SafetyCertificateOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Alert, Button, Form, Input, Typography } from 'antd';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
 const { Title, Text } = Typography;
+
+const ATOUTS = [
+  {
+    icone: <CalendarOutlined />,
+    titre: 'Terrain',
+    texte: 'Professionnels de santé, rendez-vous et ordres de mission.',
+  },
+  {
+    icone: <RiseOutlined />,
+    titre: 'Performance',
+    texte: 'Opportunités, objectifs et reporting de vos équipes.',
+  },
+  {
+    icone: <ReadOutlined />,
+    titre: 'Formation',
+    texte: 'Parcours, quiz et suivi de la montée en compétences.',
+  },
+];
 
 export default function LoginPage() {
   return (
@@ -26,6 +50,7 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const annee = new Date().getFullYear();
 
   async function handleSubmit(values: { email: string; password: string }) {
     setError(null);
@@ -44,33 +69,63 @@ function LoginForm() {
     <div className="oh-login">
       {/* ── Panneau de marque (masqué sur mobile) ───────────────────── */}
       <aside className="oh-login__brand">
-        <div className="oh-login__logo">
-          <Image src="/images/logo-saphir-vert.png" alt="Saphir OH" width={44} height={44} priority />
+        <div className="oh-login__marque">
+          <Image
+            src="/images/logo-saphir-vert.png"
+            alt=""
+            width={44}
+            height={44}
+            priority
+            className="oh-login__logo"
+          />
+          <span className="oh-login__marque-texte">
+            <strong>Saphir OH</strong>
+            <span>Orchidée Holding</span>
+          </span>
         </div>
-        <div>
-          <Title level={2} className="oh-login__title">
-            Saphir OH
+
+        <div className="oh-login__accroche">
+          <Title level={1} className="oh-login__title">
+            Votre activité commerciale, réunie en un seul espace.
           </Title>
-          <Text className="oh-login__sub">CRM B2B Orchidée Holding — Espace collaborateurs</Text>
           <Text className="oh-login__lead">
-            Gérez vos prospects, planifiez vos rendez-vous et suivez vos opportunités commerciales en temps réel.
+            Le CRM des équipes d’Orchidée Holding : du terrain au reporting, chaque collaborateur
+            retrouve ce dont il a besoin.
           </Text>
+          <ul className="oh-login__atouts">
+            {ATOUTS.map((a) => (
+              <li key={a.titre}>
+                <span className="oh-login__atout-icone" aria-hidden>
+                  {a.icone}
+                </span>
+                <span>
+                  <strong>{a.titre}</strong>
+                  <span>{a.texte}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <Text className="oh-login__legal">© {new Date().getFullYear()} Orchidée Holding — Usage interne</Text>
+
+        <Text className="oh-login__legal">© {annee} Orchidée Holding — Usage interne</Text>
       </aside>
 
       {/* ── Formulaire ───────────────────────────────────────────────── */}
       <main className="oh-login__main">
         <div className="oh-login__card">
-          <div className="oh-login__compact-brand">
-            <Image src="/images/logo-saphir-vert.png" alt="" width={36} height={36} />
-            <span>Saphir OH</span>
-          </div>
-          <Title level={3} style={{ margin: 0, marginBottom: 6, fontWeight: 650, letterSpacing: '-0.015em' }}>
-            Connexion
+          <Image
+            src="/images/logo-saphir-vert.png"
+            alt="Saphir OH"
+            width={56}
+            height={56}
+            priority
+            className="oh-login__card-logo"
+          />
+          <Title level={2} className="oh-login__card-title">
+            Connexion à Saphir OH
           </Title>
-          <Text type="secondary" style={{ display: 'block', marginBottom: 28 }}>
-            Entrez vos identifiants pour accéder à votre espace.
+          <Text type="secondary" className="oh-login__card-sub">
+            Saisissez vos identifiants professionnels pour accéder à votre espace.
           </Text>
 
           {!error && sessionExpiree && (
@@ -82,45 +137,33 @@ function LoginForm() {
             />
           )}
 
-          {error && (
-            <Alert
-              title={error}
-              type="error"
-              showIcon
-              style={{ marginBottom: 20 }}
-            />
-          )}
+          {error && <Alert title={error} type="error" showIcon style={{ marginBottom: 20 }} />}
 
           <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
             <Form.Item
               name="email"
-              label={<span>Adresse e-mail</span>}
+              label="Adresse e-mail"
               rules={[{ required: true, message: 'Veuillez saisir votre e-mail.' }]}
             >
-              <ProFormText
-                fieldProps={{
-                  prefix: <UserOutlined style={{ color: '#627A74' }} />,
-                  autoComplete: 'email',
-                  size: 'large',
-                  placeholder: 'nom@orchidee-holding.ci',
-                }}
-                noStyle
+              <Input
+                size="large"
+                prefix={<UserOutlined className="oh-login__prefixe" />}
+                autoComplete="email"
+                inputMode="email"
+                placeholder="nom@orchidee-holding.ci"
               />
             </Form.Item>
 
             <Form.Item
               name="password"
-              label={<span>Mot de passe</span>}
+              label="Mot de passe"
               rules={[{ required: true, message: 'Veuillez saisir votre mot de passe.' }]}
             >
-              <ProFormText.Password
-                fieldProps={{
-                  prefix: <LockOutlined style={{ color: '#627A74' }} />,
-                  autoComplete: 'current-password',
-                  size: 'large',
-                  placeholder: '••••••••',
-                }}
-                noStyle
+              <Input.Password
+                size="large"
+                prefix={<LockOutlined className="oh-login__prefixe" />}
+                autoComplete="current-password"
+                placeholder="••••••••"
               />
             </Form.Item>
 
@@ -130,14 +173,22 @@ function LoginForm() {
               size="large"
               block
               loading={loading}
-              style={{ marginTop: 4, height: 44, fontWeight: 600 }}
+              className="oh-login__submit"
             >
               Se connecter
             </Button>
           </Form>
+
+          <Text type="secondary" className="oh-login__aide">
+            Mot de passe oublié ? Contactez votre administrateur.
+          </Text>
         </div>
+
+        <Text type="secondary" className="oh-login__securite">
+          <SafetyCertificateOutlined /> Connexion sécurisée — accès réservé aux collaborateurs
+        </Text>
         <Text type="secondary" className="oh-login__legal-mobile">
-          © {new Date().getFullYear()} Orchidée Holding — Usage interne
+          © {annee} Orchidée Holding — Usage interne
         </Text>
       </main>
     </div>
