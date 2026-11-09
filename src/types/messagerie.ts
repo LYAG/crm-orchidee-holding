@@ -19,6 +19,8 @@ export interface MessagerieConfig {
   nomExpediteur: string | null;
   envoiActif: boolean;
   receptionActive: boolean;
+  /** E-mails automatiques : formation/exercice affecté, décision sur un ordre de mission. */
+  notificationsActives: boolean;
   motDePasseDefini: boolean;
   /** Faux tant que le serveur n'a pas de clé MESSAGERIE_CLE_CHIFFREMENT : aucun mot de passe enregistrable. */
   chiffrementDisponible: boolean;
@@ -42,6 +44,7 @@ export interface MessagerieConfigRequest {
   nomExpediteur?: string;
   envoiActif: boolean;
   receptionActive: boolean;
+  notificationsActives?: boolean;
 }
 
 export interface ResultatTest {
@@ -118,3 +121,21 @@ export const MESSAGERIE_VALEURS_RECOMMANDEES: Omit<
   adresseExpediteur: 'saphir@orchideeholding.com',
   nomExpediteur: 'Saphir OH',
 };
+
+/** Groupe d'un envoi groupé : l'admin écrit aux managers et/ou délégués, un manager à ses délégués. */
+export type CibleDiffusion = 'MANAGERS' | 'DELEGUES' | 'MANAGERS_ET_DELEGUES' | 'MES_DELEGUES';
+
+export interface CibleDiffusionOption {
+  cible: CibleDiffusion;
+  libelle: string;
+  nombre: number;
+  apercuNoms: string[];
+  /** Adresse de l'expéditeur : les réponses y arrivent (Reply-To). */
+  repondreA: string;
+}
+
+export interface DiffusionRequest {
+  cible: CibleDiffusion;
+  sujet: string;
+  corps: string;
+}

@@ -10,23 +10,27 @@ import { Alert, App, Badge, Button, Grid, Input, Space, Table, Tag, Typography }
 import type { ColumnsType } from 'antd/es/table';
 import { useCallback, useEffect, useState } from 'react';
 import { messagerieService } from '@/services';
-import type { DirectionMessage, MessageEmailResume } from '@/types/messagerie';
+import type { MessageEmailResume } from '@/types/messagerie';
 import { formatDateListe, messageErreur, nomCourt } from './format';
 import { MessageDrawer } from './MessageDrawer';
-import { NouveauMessageModal } from './NouveauMessageModal';
+import { NouveauMessageModal, type ModeRedaction } from './NouveauMessageModal';
 
 const { Text } = Typography;
 const TAILLE_PAGE = 20;
 
 interface Props {
-  direction: DirectionMessage;
-  onNonLusChange: () => void;
+  /** MES_ENVOIS : envois groupés de l'utilisateur connecté (manager ou admin). */
+  source: 'RECU' | 'ENVOYE' | 'MES_ENVOIS';
+  onNonLusChange?: () => void;
+  /** Modes proposés à la rédaction : adresses libres (admin) et/ou groupe d'utilisateurs. */
+  modesRedaction: ModeRedaction[];
 }
 
 /** Liste paginée des messages reçus (relevés en IMAP) ou envoyés par le CRM. */
-export function BoiteMessages({ direction, onNonLusChange }: Props) {
+export function BoiteMessages({ source, onNonLusChange, modesRedaction }: Props) {
   const { message } = App.useApp();
-  const recus = direction === 'RECU';
+  const recus = source === 'RECU';
+  const mesEnvois = source === 'MES_ENVOIS';
   const compact = Grid.useBreakpoint().md === false;
   const [page, setPage] = useState(0);
   const [recherche, setRecherche] = useState('');
@@ -40,8 +44,10 @@ export function BoiteMessages({ direction, onNonLusChange }: Props) {
 
   const charger = useCallback(() => {
     setChargement(true);
-    messagerieService
-      .getMessages(direction, page, TAILLE_PAGE, recherche || undefined)
+    (mesEnvois
+      ? messagerieService.getMesEnvois(page, TAILLE_PAGE)
+      : messagerieService.getMessages(source, page, TAILLE_PAGE, recherche || undefined)
+    )
       .then((p) => {
         setLignes(p.contenu);
         setTotal(p.total);
@@ -49,7 +55,7 @@ export function BoiteMessages({ direction, onNonLusChange }: Props) {
       })
       .catch((err) => setErreur(messageErreur(err, 'Messages indisponibles.')))
       .finally(() => setChargement(false));
-  }, [direction, page, recherche]);
+  }, [source, mesEnvois, page, recherche]);
 
   useEffect(() => {
     queueMicrotask(charger);
@@ -64,7 +70,7 @@ export function BoiteMessages({ direction, onNonLusChange }: Props) {
       );
       setPage(0);
       charger();
-      onNonLusChange();
+      onNonLusChange?.();
     } catch (err) {
       message.error(messageErreur(err, 'Relève impossible.'));
     } finally {
@@ -74,7 +80,7 @@ export function BoiteMessages({ direction, onNonLusChange }: Props) {
 
   function apresLecture(id: string, lu: boolean) {
     setLignes((ls) => ls.map((l) => (l.id === id ? { ...l, lu } : l)));
-    onNonLusChange();
+    onNonLusChange?.();
   }
 
   // Téléphone : une seule colonne (correspondant + date, objet, aperçu) plutôt qu'un tableau à défiler.
@@ -172,17 +178,24 @@ export function BoiteMessages({ direction, onNonLusChange }: Props) {
   return (
     <Space orientation="vertical" size={12} style={{ width: '100%' }}>
       <Space wrap style={{ width: '100%', justifyContent: 'space-between' }}>
-        <Input.Search
-          allowClear
-          placeholder={
-            recus ? 'Rechercher (objet, expéditeur)' : 'Rechercher (objet, destinataire)'
-          }
-          onSearch={(v) => {
-            setPage(0);
-            setRecherche(v.trim());
-          }}
-          style={{ width: 300, maxWidth: '100%' }}
-        />
+        {mesEnvois ? (
+          <Text type="secondary">
+            Vos envois groupés. Les réponses des destinataires arrivent dans votre propre boîte
+            mail.
+          </Text>
+        ) : (
+          <Input.Search
+            allowClear
+            placeholder={
+              recus ? 'Rechercher (objet, expéditeur)' : 'Rechercher (objet, destinataire)'
+            }
+            onSearch={(v) => {
+              setPage(0);
+              setRecherche(v.trim());
+            }}
+            style={{ width: 300, maxWidth: '100%' }}
+          />
+        )}
         <Space wrap>
           {recus && (
             <Button icon={<CloudDownloadOutlined />} loading={releve} onClick={relever}>
@@ -193,7 +206,7 @@ export function BoiteMessages({ direction, onNonLusChange }: Props) {
             Actualiser
           </Button>
           <Button type="primary" icon={<EditOutlined />} onClick={() => setRedaction(true)}>
-            Nouveau message
+            {modesRedaction.includes('adresses') ? 'Nouveau message' : 'Nouvel envoi groupé'}
           </Button>
         </Space>
       </Space>
@@ -221,12 +234,20 @@ export function BoiteMessages({ direction, onNonLusChange }: Props) {
         locale={{
           emptyText: recus
             ? 'Aucun message reçu. Activez la réception dans la configuration puis cliquez sur « Relever maintenant ».'
-            : 'Aucun message envoyé.',
+            : mesEnvois
+              ? 'Aucun envoi groupé pour le moment.'
+              : 'Aucun message envoyé.',
         }}
       />
 
-      <MessageDrawer id={ouvert} onClose={() => setOuvert(null)} onLu={apresLecture} />
+      <MessageDrawer
+        id={ouvert}
+        onClose={() => setOuvert(null)}
+        onLu={apresLecture}
+        charger={mesEnvois ? (id) => messagerieService.getMonEnvoi(id) : undefined}
+      />
       <NouveauMessageModal
+        modes={modesRedaction}
         open={redaction}
         onClose={() => setRedaction(false)}
         onEnvoye={() => {

@@ -1,6 +1,8 @@
 import type { MessagerieService } from '@/services/api/MessagerieService';
 import type { PageResponse } from '@/types/pagination';
 import type {
+  CibleDiffusionOption,
+  DiffusionRequest,
   DirectionMessage,
   EnvoiEmailRequest,
   JournalMessagerie,
@@ -74,5 +76,26 @@ export class MessagerieServiceReal implements MessagerieService {
 
   async getJournal(): Promise<JournalMessagerie[]> {
     return apiFetch<JournalMessagerie[]>('/messagerie/journal');
+  }
+
+  async getCiblesDiffusion(): Promise<CibleDiffusionOption[]> {
+    return apiFetch<CibleDiffusionOption[]>('/messagerie/diffusion/cibles');
+  }
+
+  async envoyerDiffusion(requete: DiffusionRequest): Promise<MessageEmail> {
+    return apiFetch<MessageEmail>('/messagerie/diffusion', {
+      method: 'POST',
+      body: JSON.stringify(requete),
+    });
+  }
+
+  async getMesEnvois(page: number, taille: number): Promise<PageResponse<MessageEmailResume>> {
+    return apiFetch<PageResponse<MessageEmailResume>>(
+      `/messagerie/diffusion/envois${qs({ page, size: taille })}`,
+    );
+  }
+
+  async getMonEnvoi(id: string): Promise<MessageEmail> {
+    return apiFetch<MessageEmail>(`/messagerie/diffusion/envois/${id}`);
   }
 }

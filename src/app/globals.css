@@ -167,6 +167,19 @@ button {
   color: var(--oh-ink-2);
 }
 
+/* Menu replié : antd 6 masque (opacité 0) le contenu du titre des entrées, mais ProLayout y place
+   aussi l'icône — sans ceci, la barre latérale repliée n'affiche plus aucune icône. Le texte reste
+   masqué par ProLayout (…-item-text en display: none). */
+.ant-pro-layout .ant-pro-sider .ant-menu-inline-collapsed > .ant-menu-item > .ant-menu-title-content,
+.ant-pro-layout
+  .ant-pro-sider
+  .ant-menu-inline-collapsed
+  > .ant-menu-submenu
+  > .ant-menu-submenu-title
+  > .ant-menu-title-content {
+  opacity: 1;
+}
+
 /* Marque dans le header */
 .oh-brand {
   display: flex;

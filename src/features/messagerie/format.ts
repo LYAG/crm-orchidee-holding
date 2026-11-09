@@ -31,6 +31,9 @@ export function formatDateListe(iso: string | null | undefined): string {
 /** « Nom <adresse> » → « Nom » pour l'affichage en liste. */
 export function nomCourt(adresses: string | null | undefined): string {
   if (!adresses) return '—';
+  // Envoi groupé : « Mes délégués (3) : a@x, b@y » → « Mes délégués (3) ».
+  const groupe = /^([^@,]+\(\d+\)) : /.exec(adresses);
+  if (groupe) return groupe[1];
   const premiere = adresses.split(',')[0].trim();
   const m = /^"?([^"<]+?)"?\s*<[^>]+>$/.exec(premiere);
   const nom = m ? m[1].trim() : premiere;
