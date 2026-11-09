@@ -60,3 +60,30 @@ export function initiales(texte: string): string {
     .filter(Boolean);
   return (mots.length > 1 ? mots[0][0] + mots[1][0] : (mots[0]?.[0] ?? '?')).toUpperCase();
 }
+
+/**
+ * Raison d'un échec d'envoi, lisible par tous. Le serveur la rédige déjà en français ; les anciens
+ * envois gardent le texte technique brut (exceptions Java, codes SMTP), traduit ici.
+ */
+export function erreurEnvoiLisible(erreur: string | null | undefined): {
+  texte: string;
+  technique: string | null;
+} {
+  const brut = (erreur ?? '').trim();
+  if (!brut) return { texte: 'L’e-mail n’a pas pu être envoyé.', technique: null };
+  if (!/Exception|^Erreur du serveur de messagerie/.test(brut))
+    return { texte: brut, technique: null };
+  const code = Number(brut.match(/\b([45]\d\d)\b/)?.[1] ?? 0);
+  let texte = 'L’e-mail n’a pas pu être envoyé par le serveur de messagerie. Réessayez plus tard.';
+  if (/Invalid Addresses|No Such User|User unknown/i.test(brut) || [550, 551, 553].includes(code)) {
+    texte =
+      'Un destinataire n’existe pas ou son adresse est mal écrite. Vérifiez l’orthographe des adresses.';
+  } else if (code === 552) {
+    texte = 'La boîte du destinataire est pleine. Réessayez plus tard.';
+  } else if (code === 554) {
+    texte = 'Le serveur de messagerie a refusé le message (il peut l’avoir jugé indésirable).';
+  } else if (code >= 400 && code < 500) {
+    texte = 'Le serveur de messagerie est momentanément indisponible. Réessayez plus tard.';
+  }
+  return { texte, technique: brut };
+}

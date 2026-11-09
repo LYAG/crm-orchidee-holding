@@ -1748,3 +1748,21 @@ button {
 .oh-mdp__regles li.is-ok {
   color: var(--ant-color-success, #1a7f37);
 }
+
+.oh-mail__detail-technique {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--oh-ink-3);
+}
+
+.oh-mail__detail-technique summary {
+  cursor: pointer;
+}
+
+.oh-mail__detail-technique code {
+  display: block;
+  margin-top: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11.5px;
+}

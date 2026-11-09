@@ -11,7 +11,13 @@ import { Alert, App, Button, Segmented, Spin, Tooltip, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { messagerieService } from '@/services';
 import type { MessageEmail } from '@/types/messagerie';
-import { decomposerAdresse, formatDateHeure, initiales, messageErreur } from './format';
+import {
+  decomposerAdresse,
+  erreurEnvoiLisible,
+  formatDateHeure,
+  initiales,
+  messageErreur,
+} from './format';
 
 const { Text } = Typography;
 
@@ -130,7 +136,7 @@ export function LecteurMessage({ id, charger, onLu, onRepondre, onRetour }: Prop
                 type="error"
                 showIcon
                 title="Envoi en échec"
-                description={m.erreur}
+                description={<ErreurEnvoi erreur={m.erreur} />}
                 style={{ marginBottom: 16 }}
               />
             )}
@@ -211,5 +217,21 @@ export function LecteurMessage({ id, charger, onLu, onRepondre, onRetour }: Prop
         )
       )}
     </article>
+  );
+}
+
+/** Raison d'échec en clair ; le détail technique reste consultable pour l'admin. */
+function ErreurEnvoi({ erreur }: { erreur: string | null }) {
+  const { texte, technique } = erreurEnvoiLisible(erreur);
+  return (
+    <>
+      <div>{texte}</div>
+      {technique && (
+        <details className="oh-mail__detail-technique">
+          <summary>Détail technique</summary>
+          <code>{technique}</code>
+        </details>
+      )}
+    </>
   );
 }
