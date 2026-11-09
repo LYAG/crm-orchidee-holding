@@ -19,6 +19,8 @@ export interface MessagerieConfig {
   nomExpediteur: string | null;
   envoiActif: boolean;
   receptionActive: boolean;
+  /** E-mails automatiques : formation/exercice affecté, ordre de mission validé. */
+  notificationsActives: boolean;
   motDePasseDefini: boolean;
   /** Faux tant que le serveur n'a pas de clé MESSAGERIE_CLE_CHIFFREMENT : aucun mot de passe enregistrable. */
   chiffrementDisponible: boolean;
@@ -42,6 +44,7 @@ export interface MessagerieConfigRequest {
   nomExpediteur?: string;
   envoiActif: boolean;
   receptionActive: boolean;
+  notificationsActives?: boolean;
 }
 
 export interface ResultatTest {

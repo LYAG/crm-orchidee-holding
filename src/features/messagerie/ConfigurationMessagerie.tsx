@@ -68,6 +68,7 @@ function versFormulaire(c: MessagerieConfig): Valeurs {
     motDePasse: '',
     envoiActif: c.envoiActif,
     receptionActive: c.receptionActive,
+    notificationsActives: c.notificationsActives,
   };
 }
 
@@ -405,6 +406,16 @@ export function ConfigurationMessagerie() {
                   valuePropName="checked"
                 >
                   <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+                </Form.Item>
+              </Col>
+              <Col xs={24}>
+                <Form.Item
+                  name="notificationsActives"
+                  label="Notifications automatiques par e-mail"
+                  valuePropName="checked"
+                  extra="Formation ou exercice affecté (chaque délégué concerné) et ordre de mission validé (le demandeur). Nécessite l’envoi actif."
+                >
+                  <Switch checkedChildren="Actives" unCheckedChildren="Inactives" />
                 </Form.Item>
               </Col>
             </Row>

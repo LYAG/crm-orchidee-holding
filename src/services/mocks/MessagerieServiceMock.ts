@@ -65,6 +65,7 @@ export class MessagerieServiceMock implements MessagerieService {
     nomExpediteur: 'Saphir OH',
     envoiActif: false,
     receptionActive: false,
+    notificationsActives: true,
     motDePasseDefini: false,
     chiffrementDisponible: true,
     dateDerniereSynchro: null,
@@ -147,6 +148,7 @@ export class MessagerieServiceMock implements MessagerieService {
       nomExpediteur: c.nomExpediteur || null,
       envoiActif: c.envoiActif,
       receptionActive: c.receptionActive,
+      notificationsActives: c.notificationsActives ?? this.config.notificationsActives,
       motDePasseDefini: this.motDePasse !== null,
       dateModification: new Date().toISOString(),
     };
