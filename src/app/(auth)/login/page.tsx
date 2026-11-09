@@ -45,7 +45,7 @@ function LoginForm() {
       {/* ── Panneau de marque (masqué sur mobile) ───────────────────── */}
       <aside className="oh-login__brand">
         <div className="oh-login__logo">
-          <Image src="/images/logo-orchidee-holding.png" alt="Orchidée Holding" width={44} height={44} priority />
+          <Image src="/images/logo-saphir-vert.png" alt="Saphir OH" width={44} height={44} priority />
         </div>
         <div>
           <Title level={2} className="oh-login__title">
@@ -63,7 +63,7 @@ function LoginForm() {
       <main className="oh-login__main">
         <div className="oh-login__card">
           <div className="oh-login__compact-brand">
-            <Image src="/images/logo-orchidee-holding.png" alt="" width={36} height={36} style={{ borderRadius: 8 }} />
+            <Image src="/images/logo-saphir-vert.png" alt="" width={36} height={36} />
             <span>Saphir OH</span>
           </div>
           <Title level={3} style={{ margin: 0, marginBottom: 6, fontWeight: 650, letterSpacing: '-0.015em' }}>

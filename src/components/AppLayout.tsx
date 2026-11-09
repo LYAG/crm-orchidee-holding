@@ -134,12 +134,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         title="Saphir OH"
         logo={
           <Image
-            src="/images/logo-orchidee-holding.png"
-            alt="Orchidée Holding"
+            src="/images/logo-saphir-vert.png"
+            alt="Saphir OH"
             width={32}
             height={32}
             priority
-            style={{ borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
+            style={{ objectFit: 'contain', flexShrink: 0 }}
           />
         }
         /*
