@@ -2,6 +2,7 @@ import type {
   UtilisateurService,
   CreateUtilisateurDto,
   CreateUtilisateurResult,
+  InvitationResultat,
   UpdateUtilisateurDto,
 } from '@/services/api/UtilisateurService';
 import type { UserRole } from '@/lib/constants';
@@ -9,6 +10,7 @@ import type { Utilisateur } from '@/types';
 import type { PageResponse } from '@/types/pagination';
 import { mockCredentials, utilisateurs } from './data';
 import { delay, generateId, genererMotDePasse, notFound, paginer } from './_utils';
+import { annulerInvitationsMock, creerInvitationMock } from './invitations';
 
 export class UtilisateurServiceMock implements UtilisateurService {
   async getAll(): Promise<Utilisateur[]> {
@@ -16,7 +18,11 @@ export class UtilisateurServiceMock implements UtilisateurService {
     return utilisateurs.map((u) => ({ ...u }));
   }
 
-  async getAllPagine(role: UserRole | undefined, page: number, pageSize: number): Promise<PageResponse<Utilisateur>> {
+  async getAllPagine(
+    role: UserRole | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<Utilisateur>> {
     await delay();
     const filtres = utilisateurs
       .filter((u) => !role || u.role === role)
@@ -38,7 +44,9 @@ export class UtilisateurServiceMock implements UtilisateurService {
   /** L'équipe d'un manager = les délégués explicitement rattachés à lui (champ managerId), pas un chevauchement de zones. */
   async getDeleguesByManager(managerId: string): Promise<Utilisateur[]> {
     await delay();
-    return utilisateurs.filter((u) => u.role === 'DELEGUE' && u.managerId === managerId).map((u) => ({ ...u }));
+    return utilisateurs
+      .filter((u) => u.role === 'DELEGUE' && u.managerId === managerId)
+      .map((u) => ({ ...u }));
   }
 
   async create(data: CreateUtilisateurDto): Promise<CreateUtilisateurResult> {
@@ -48,9 +56,12 @@ export class UtilisateurServiceMock implements UtilisateurService {
     }
     const newUser: Utilisateur = { ...data, id: generateId('user') };
     utilisateurs.push(newUser);
-    const motDePasseGenere = genererMotDePasse();
-    mockCredentials[newUser.email] = motDePasseGenere;
-    return { utilisateur: { ...newUser }, motDePasseGenere };
+    // Pas de mot de passe : le compte s'active avec le lien de création.
+    return {
+      utilisateur: { ...newUser },
+      motDePasseGenere: null,
+      invitation: creerInvitationMock(newUser.email),
+    };
   }
 
   async update(id: string, data: UpdateUtilisateurDto): Promise<Utilisateur> {
@@ -87,6 +98,14 @@ export class UtilisateurServiceMock implements UtilisateurService {
     if (!user) notFound('Utilisateur', id);
     const motDePasseGenere = genererMotDePasse();
     mockCredentials[user.email] = motDePasseGenere;
+    annulerInvitationsMock(user.email);
     return motDePasseGenere;
+  }
+
+  async envoyerInvitation(id: string): Promise<InvitationResultat> {
+    await delay();
+    const user = utilisateurs.find((u) => u.id === id);
+    if (!user) notFound('Utilisateur', id);
+    return creerInvitationMock(user.email);
   }
 }
