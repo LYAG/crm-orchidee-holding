@@ -143,12 +143,12 @@ export function ParcoursView({ parcours: p, onOuvrirLecon, onDemarrer, chargemen
                       <List.Item
                         style={{ cursor: onOuvrirLecon ? 'pointer' : 'default' }}
                         onClick={() => onOuvrirLecon?.(l)}
-                        extra={l.consultee ? <Tag color="green" style={{ borderRadius: 6 }}>Consultée</Tag> : l.obligatoire ? <Tag style={{ borderRadius: 6 }}>À consulter</Tag> : <Tag style={{ borderRadius: 6 }}>Facultative</Tag>}
+                        extra={l.consultee ? <Tag color="green" style={{ borderRadius: 6 }}>Consultée</Tag> : l.dateOuverture ? <Tag color="blue" style={{ borderRadius: 6 }}>Ouverte — à valider</Tag> : l.obligatoire ? <Tag style={{ borderRadius: 6 }}>À consulter</Tag> : <Tag style={{ borderRadius: 6 }}>Facultative</Tag>}
                       >
                         <List.Item.Meta
                           avatar={iconeLecon(l)}
                           title={onOuvrirLecon ? <a>{l.ordre}. {l.titre}</a> : `${l.ordre}. ${l.titre}`}
-                          description={`${TYPES_LECON[l.type]}${l.dureeMinutes ? ` · ${formatDuree(l.dureeMinutes)}` : ''}${l.dateConsultation ? ` · vue le ${formatDate(l.dateConsultation)}` : ''}`}
+                          description={`${TYPES_LECON[l.type]}${l.dureeMinutes ? ` · ${formatDuree(l.dureeMinutes)}` : ''}${l.tempsMinimalSecondes > 0 && !l.consultee ? ` · minimum ${formatDuree(Math.ceil(l.tempsMinimalSecondes / 60))}` : ''}${l.dateConsultation ? ` · vue le ${formatDate(l.dateConsultation)}` : ''}`}
                         />
                       </List.Item>
                     )}

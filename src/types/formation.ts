@@ -122,6 +122,8 @@ export interface Lecon {
   fichierType: string | null;
   fichierTaille: number | null;
   dureeMinutes: number | null;
+  /** Temps minimal de consultation explicite ; null = durée estimée. */
+  tempsMinimalSecondes: number | null;
   ordre: number;
   obligatoire: boolean;
 }
@@ -289,9 +291,13 @@ export interface LeconParcours {
   fichierNom: string | null;
   fichierType: string | null;
   dureeMinutes: number | null;
+  /** Temps minimal effectif avant de pouvoir valider la consultation (0 = aucun). */
+  tempsMinimalSecondes: number;
   ordre: number;
   obligatoire: boolean;
+  /** Consultation validée (temps minimal écoulé). */
   consultee: boolean;
+  dateOuverture: string | null;
   dateConsultation: string | null;
 }
 

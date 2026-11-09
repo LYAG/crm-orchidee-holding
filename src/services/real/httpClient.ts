@@ -130,6 +130,34 @@ export async function apiFetchBlob(path: string, options: RequestInit = {}): Pro
   return res.blob();
 }
 
+/**
+ * Téléchargement binaire avec suivi de progression (jauge de chargement des vidéos et documents).
+ * `total` vaut null quand le serveur n'annonce pas la taille (Content-Length absent).
+ */
+export async function apiFetchBlobProgress(
+  path: string,
+  onProgress?: (charge: number, total: number | null) => void,
+): Promise<Blob> {
+  const res = await fetch(`${baseUrl()}${path}`, { headers: withAuthHeaders({}) });
+  if (!res.ok) {
+    gererSessionExpiree(path, res.status);
+    throw new ApiError(await parseErrorMessage(res), res.status);
+  }
+  const total = Number(res.headers.get('Content-Length')) || null;
+  if (!res.body || !onProgress) return res.blob();
+  const lecteur = res.body.getReader();
+  const morceaux: Uint8Array[] = [];
+  let charge = 0;
+  for (;;) {
+    const { done, value } = await lecteur.read();
+    if (done) break;
+    morceaux.push(value);
+    charge += value.length;
+    onProgress(charge, total);
+  }
+  return new Blob(morceaux as BlobPart[], { type: res.headers.get('Content-Type') ?? undefined });
+}
+
 /** Construit une query string en omettant les valeurs undefined/null/''. */
 export function qs(params: Record<string, string | number | undefined | null>): string {
   const entries = Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '');
