@@ -1,38 +1,14 @@
 'use client';
 
-import {
-  CalendarOutlined,
-  LockOutlined,
-  ReadOutlined,
-  RiseOutlined,
-  SafetyCertificateOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { LockOutlined, SafetyCertificateOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Button, Form, Input, Typography } from 'antd';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
+import { PanneauMarque } from '@/features/auth/PanneauMarque';
 import { useAuth } from '@/hooks/useAuth';
 
 const { Title, Text } = Typography;
-
-const ATOUTS = [
-  {
-    icone: <CalendarOutlined />,
-    titre: 'Terrain',
-    texte: 'Professionnels de santé, rendez-vous et ordres de mission.',
-  },
-  {
-    icone: <RiseOutlined />,
-    titre: 'Performance',
-    texte: 'Opportunités, objectifs et reporting de vos équipes.',
-  },
-  {
-    icone: <ReadOutlined />,
-    titre: 'Formation',
-    texte: 'Parcours, quiz et suivi de la montée en compétences.',
-  },
-];
 
 export default function LoginPage() {
   return (
@@ -47,6 +23,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionExpiree = searchParams.get('session') === 'expiree';
+  const compteCree = searchParams.get('compte') === 'cree';
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -67,48 +44,7 @@ function LoginForm() {
 
   return (
     <div className="oh-login">
-      {/* ── Panneau de marque (masqué sur mobile) ───────────────────── */}
-      <aside className="oh-login__brand">
-        <div className="oh-login__marque">
-          <Image
-            src="/images/logo-saphir-vert.png"
-            alt=""
-            width={44}
-            height={44}
-            priority
-            className="oh-login__logo"
-          />
-          <span className="oh-login__marque-texte">
-            <strong>Saphir OH</strong>
-            <span>Orchidée Holding</span>
-          </span>
-        </div>
-
-        <div className="oh-login__accroche">
-          <Title level={1} className="oh-login__title">
-            Votre activité commerciale, réunie en un seul espace.
-          </Title>
-          <Text className="oh-login__lead">
-            Le CRM des équipes d’Orchidée Holding : du terrain au reporting, chaque collaborateur
-            retrouve ce dont il a besoin.
-          </Text>
-          <ul className="oh-login__atouts">
-            {ATOUTS.map((a) => (
-              <li key={a.titre}>
-                <span className="oh-login__atout-icone" aria-hidden>
-                  {a.icone}
-                </span>
-                <span>
-                  <strong>{a.titre}</strong>
-                  <span>{a.texte}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <Text className="oh-login__legal">© {annee} Orchidée Holding — Usage interne</Text>
-      </aside>
+      <PanneauMarque />
 
       {/* ── Formulaire ───────────────────────────────────────────────── */}
       <main className="oh-login__main">
@@ -127,6 +63,15 @@ function LoginForm() {
           <Text type="secondary" className="oh-login__card-sub">
             Saisissez vos identifiants professionnels pour accéder à votre espace.
           </Text>
+
+          {!error && compteCree && (
+            <Alert
+              title="Votre mot de passe est enregistré. Connectez-vous pour accéder à votre espace."
+              type="success"
+              showIcon
+              style={{ marginBottom: 20 }}
+            />
+          )}
 
           {!error && sessionExpiree && (
             <Alert

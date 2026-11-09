@@ -13,6 +13,7 @@ import {
 import { PageContainer, ProCard, ProTable } from '@ant-design/pro-components';
 import type { ActionType } from '@ant-design/pro-components';
 import {
+  Alert,
   App,
   Avatar,
   Badge,
@@ -32,6 +33,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { utilisateurService, zoneService } from '@/services';
+import type { InvitationResultat } from '@/services/api/UtilisateurService';
 import type { Utilisateur, Zone } from '@/types';
 
 const { Text, Title } = Typography;
@@ -78,7 +80,7 @@ function UtilisateurModal({
   zones: Zone[];
   onClose: () => void;
   onSaved: () => void;
-  onCreated: (email: string, motDePasse: string) => void;
+  onCreated: (invitation: InvitationResultat) => void;
 }) {
   const { message } = App.useApp();
   const [form] = Form.useForm<UtilisateurFormValues>();
@@ -116,7 +118,9 @@ function UtilisateurModal({
         email: values.email,
         role: values.role,
         zoneIds:
-          values.role === UserRole.DELEGUE || values.role === UserRole.MANAGER ? values.zoneIds : undefined,
+          values.role === UserRole.DELEGUE || values.role === UserRole.MANAGER
+            ? values.zoneIds
+            : undefined,
         managerId: values.role === UserRole.DELEGUE ? values.managerId : undefined,
       };
       if (editing) {
@@ -125,10 +129,10 @@ function UtilisateurModal({
         onSaved();
         onClose();
       } else {
-        const { motDePasseGenere } = await utilisateurService.create(data);
+        const { invitation } = await utilisateurService.create(data);
         onSaved();
         onClose();
-        onCreated(data.email, motDePasseGenere);
+        onCreated(invitation);
       }
     } catch (err) {
       message.error(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde.');
@@ -174,7 +178,11 @@ function UtilisateurModal({
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
         <Row gutter={12}>
           <Col xs={24} sm={12}>
-            <Form.Item name="prenom" label="Prénom" rules={[{ required: true, message: 'Obligatoire.' }]}>
+            <Form.Item
+              name="prenom"
+              label="Prénom"
+              rules={[{ required: true, message: 'Obligatoire.' }]}
+            >
               <Input placeholder="Marie" />
             </Form.Item>
           </Col>
@@ -247,18 +255,27 @@ function UtilisateurModal({
   );
 }
 
-/* ── Modal Identifiants générés ──────────────────────────────────────────── */
+/* ── Modal Accès (lien d'invitation ou mot de passe généré) ──────────────── */
 
-function CredentialsModal({
-  credentials,
-  onClose,
-}: {
-  credentials: { email: string; motDePasse: string } | null;
-  onClose: () => void;
-}) {
+type Acces =
+  | { type: 'invitation'; invitation: InvitationResultat }
+  | { type: 'motDePasse'; email: string; motDePasse: string };
+
+function formatExpiration(iso: string) {
+  return new Date(iso).toLocaleString('fr-FR', {
+    day: '2-digit',
+    month: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function AccesModal({ acces, onClose }: { acces: Acces | null; onClose: () => void }) {
+  const invitation = acces?.type === 'invitation' ? acces.invitation : null;
+  const envoyee = invitation?.envoyee ?? false;
   return (
     <Modal
-      open={!!credentials}
+      open={!!acces}
       title={
         <Space>
           <div
@@ -266,51 +283,84 @@ function CredentialsModal({
               width: 32,
               height: 32,
               borderRadius: 8,
-              background: '#E8F2EE',
-              color: '#0F6E52',
+              background: invitation && !envoyee ? '#FFF7E6' : '#E8F2EE',
+              color: invitation && !envoyee ? '#D46B08' : '#0F6E52',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <KeyOutlined />
+            {invitation ? <MailOutlined /> : <KeyOutlined />}
           </div>
-          <span style={{ color: '#123832' }}>Accès générés</span>
+          <span style={{ color: '#123832' }}>
+            {!invitation
+              ? 'Mot de passe généré'
+              : envoyee
+                ? 'Invitation envoyée'
+                : 'Lien à transmettre'}
+          </span>
         </Space>
       }
       onCancel={onClose}
       onOk={onClose}
       okText="Terminé"
       cancelButtonProps={{ style: { display: 'none' } }}
-      destroyOnClose
-      width={440}
+      destroyOnHidden
+      width={480}
     >
-      <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-        Communiquez ces identifiants au collaborateur. Le mot de passe ne sera plus affiché ensuite —
-        pensez à le copier maintenant.
-      </Text>
-      <Space orientation="vertical" size={12} style={{ width: '100%' }}>
-        <div>
-          <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
-            Adresse e-mail
+      {invitation && envoyee && (
+        <Text type="secondary" style={{ display: 'block' }}>
+          Un e-mail a été envoyé à <Text strong>{invitation.destinataire}</Text> avec un lien pour
+          créer son mot de passe. Le lien ne sert qu’une fois et expire le{' '}
+          {formatExpiration(invitation.dateExpiration)}.
+        </Text>
+      )}
+
+      {invitation && !envoyee && (
+        <Space orientation="vertical" size={12} style={{ width: '100%' }}>
+          <Alert type="warning" showIcon title={invitation.message} />
+          <div>
+            <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
+              Lien personnel de {invitation.destinataire} (expire le{' '}
+              {formatExpiration(invitation.dateExpiration)})
+            </Text>
+            <Text copyable={{ text: invitation.lien ?? '' }} style={{ wordBreak: 'break-all' }}>
+              {invitation.lien}
+            </Text>
+          </div>
+        </Space>
+      )}
+
+      {acces?.type === 'motDePasse' && (
+        <>
+          <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+            Communiquez ces identifiants au collaborateur. Le mot de passe ne sera plus affiché
+            ensuite — pensez à le copier maintenant.
           </Text>
-          <Text copyable strong>
-            {credentials?.email}
-          </Text>
-        </div>
-        <div>
-          <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
-            Mot de passe temporaire
-          </Text>
-          <Text
-            copyable={{ text: credentials?.motDePasse }}
-            strong
-            style={{ fontFamily: 'monospace', fontSize: 16 }}
-          >
-            {credentials?.motDePasse}
-          </Text>
-        </div>
-      </Space>
+          <Space orientation="vertical" size={12} style={{ width: '100%' }}>
+            <div>
+              <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
+                Adresse e-mail
+              </Text>
+              <Text copyable strong>
+                {acces.email}
+              </Text>
+            </div>
+            <div>
+              <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
+                Mot de passe temporaire
+              </Text>
+              <Text
+                copyable={{ text: acces.motDePasse }}
+                strong
+                style={{ fontFamily: 'monospace', fontSize: 16 }}
+              >
+                {acces.motDePasse}
+              </Text>
+            </div>
+          </Space>
+        </>
+      )}
     </Modal>
   );
 }
@@ -381,9 +431,7 @@ function ZoneModal({
           >
             <EnvironmentOutlined />
           </div>
-          <span style={{ color: '#123832' }}>
-            {editing ? 'Modifier la zone' : 'Nouvelle zone'}
-          </span>
+          <span style={{ color: '#123832' }}>{editing ? 'Modifier la zone' : 'Nouvelle zone'}</span>
         </Space>
       }
       onCancel={onClose}
@@ -395,10 +443,18 @@ function ZoneModal({
       width={420}
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-        <Form.Item name="nom" label="Nom de la zone" rules={[{ required: true, message: 'Obligatoire.' }]}>
+        <Form.Item
+          name="nom"
+          label="Nom de la zone"
+          rules={[{ required: true, message: 'Obligatoire.' }]}
+        >
           <Input placeholder="Nord" />
         </Form.Item>
-        <Form.Item name="region" label="Région" rules={[{ required: true, message: 'Obligatoire.' }]}>
+        <Form.Item
+          name="region"
+          label="Région"
+          rules={[{ required: true, message: 'Obligatoire.' }]}
+        >
           <Input placeholder="Hauts-de-France" />
         </Form.Item>
       </Form>
@@ -458,9 +514,7 @@ function ZoneCard({
               <Title level={5} style={{ color: '#fff', margin: 0, lineHeight: 1.2 }}>
                 {zone.nom}
               </Title>
-              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>
-                {zone.region}
-              </Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>{zone.region}</Text>
             </div>
           </Space>
 
@@ -617,9 +671,7 @@ function ZoneCard({
                     </div>
                     {mgr && (
                       <Tooltip title={`Manager : ${mgr.prenom} ${mgr.nom}`}>
-                        <Tag style={{ fontSize: 10, margin: 0, borderRadius: 4 }}>
-                          {mgr.prenom}
-                        </Tag>
+                        <Tag style={{ fontSize: 10, margin: 0, borderRadius: 4 }}>{mgr.prenom}</Tag>
                       </Tooltip>
                     )}
                   </div>
@@ -649,7 +701,7 @@ export function UtilisateursZonesPage() {
   const [editingUser, setEditingUser] = useState<Utilisateur | null>(null);
 
   // Modal identifiants générés (création ou réinitialisation)
-  const [credentials, setCredentials] = useState<{ email: string; motDePasse: string } | null>(null);
+  const [acces, setAcces] = useState<Acces | null>(null);
 
   // Modal zone
   const [zoneModalOpen, setZoneModalOpen] = useState(false);
@@ -670,7 +722,9 @@ export function UtilisateursZonesPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function loadUtilisateursPage(params: Record<string, unknown> & { current?: number; pageSize?: number }) {
+  async function loadUtilisateursPage(
+    params: Record<string, unknown> & { current?: number; pageSize?: number },
+  ) {
     const page = (params.current ?? 1) - 1;
     const pageSize = params.pageSize ?? 10;
     const resultat = await utilisateurService.getAllPagine(undefined, page, pageSize);
@@ -713,16 +767,33 @@ export function UtilisateursZonesPage() {
 
   function confirmResetPassword(u: Utilisateur) {
     modal.confirm({
-      title: 'Réinitialiser le mot de passe ?',
-      content: `Un nouveau mot de passe temporaire sera généré pour ${u.prenom} ${u.nom}. L'ancien cessera de fonctionner immédiatement.`,
+      title: 'Générer un mot de passe ?',
+      content: `Un mot de passe temporaire sera généré pour ${u.prenom} ${u.nom} et affiché une seule fois : vous le lui transmettrez vous-même. L'ancien mot de passe et tout lien de création en attente cesseront de fonctionner immédiatement.`,
       okText: 'Générer',
       cancelText: 'Annuler',
       onOk: async () => {
         try {
           const motDePasse = await utilisateurService.regenererMotDePasse(u.id);
-          setCredentials({ email: u.email, motDePasse });
+          setAcces({ type: 'motDePasse', email: u.email, motDePasse });
         } catch (err) {
           message.error(err instanceof Error ? err.message : 'Erreur lors de la génération.');
+        }
+      },
+    });
+  }
+
+  function confirmSendInvitation(u: Utilisateur) {
+    modal.confirm({
+      title: 'Envoyer un lien de création de mot de passe ?',
+      content: `${u.prenom} ${u.nom} recevra à ${u.email} un lien pour choisir son mot de passe. Les liens envoyés précédemment ne fonctionneront plus ; son mot de passe actuel reste valable jusqu'à ce qu'il en choisisse un nouveau.`,
+      okText: 'Envoyer le lien',
+      cancelText: 'Annuler',
+      onOk: async () => {
+        try {
+          const invitation = await utilisateurService.envoyerInvitation(u.id);
+          setAcces({ type: 'invitation', invitation });
+        } catch (err) {
+          message.error(err instanceof Error ? err.message : "Le lien n'a pas pu être envoyé.");
         }
       },
     });
@@ -859,7 +930,9 @@ export function UtilisateursZonesPage() {
         if (u.role !== UserRole.MANAGER) {
           return <Text type="secondary">—</Text>;
         }
-        const equipe = utilisateurs.filter((d) => d.role === UserRole.DELEGUE && d.managerId === u.id);
+        const equipe = utilisateurs.filter(
+          (d) => d.role === UserRole.DELEGUE && d.managerId === u.id,
+        );
         if (equipe.length === 0) {
           return <Text type="secondary">—</Text>;
         }
@@ -887,7 +960,7 @@ export function UtilisateursZonesPage() {
     {
       title: 'Actions',
       key: 'actions',
-      width: 120,
+      width: 150,
       render: (_: unknown, u: Utilisateur) => (
         <Space size={4}>
           <Tooltip title="Modifier">
@@ -899,7 +972,16 @@ export function UtilisateursZonesPage() {
               onClick={() => openEditUser(u)}
             />
           </Tooltip>
-          <Tooltip title="Réinitialiser le mot de passe">
+          <Tooltip title="Envoyer un lien de création de mot de passe">
+            <Button
+              type="text"
+              size="small"
+              icon={<MailOutlined />}
+              style={{ color: '#0F6E52' }}
+              onClick={() => confirmSendInvitation(u)}
+            />
+          </Tooltip>
+          <Tooltip title="Générer un mot de passe">
             <Button
               type="text"
               size="small"
@@ -982,7 +1064,12 @@ export function UtilisateursZonesPage() {
                         {count}
                       </div>
                       <div
-                        style={{ fontSize: 12, color: ROLE_COLOR[role], marginTop: 2, fontWeight: 500 }}
+                        style={{
+                          fontSize: 12,
+                          color: ROLE_COLOR[role],
+                          marginTop: 2,
+                          fontWeight: 500,
+                        }}
                       >
                         {label}
                       </div>
@@ -1096,7 +1183,7 @@ export function UtilisateursZonesPage() {
         zones={zones}
         onClose={() => setUserModalOpen(false)}
         onSaved={load}
-        onCreated={(email, motDePasse) => setCredentials({ email, motDePasse })}
+        onCreated={(invitation) => setAcces({ type: 'invitation', invitation })}
       />
 
       <ZoneModal
@@ -1106,7 +1193,7 @@ export function UtilisateursZonesPage() {
         onSaved={load}
       />
 
-      <CredentialsModal credentials={credentials} onClose={() => setCredentials(null)} />
+      <AccesModal acces={acces} onClose={() => setAcces(null)} />
     </PageContainer>
   );
 }

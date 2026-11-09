@@ -1,4 +1,4 @@
-import type { AuthService } from '@/services/api/AuthService';
+import type { AuthService, InvitationInfo } from '@/services/api/AuthService';
 import type { Utilisateur } from '@/types';
 import { apiFetch, clearToken, getStoredUser, setStoredUser, setToken } from './httpClient';
 
@@ -16,6 +16,17 @@ export class AuthServiceReal implements AuthService {
     setToken(token);
     setStoredUser(utilisateur);
     return utilisateur;
+  }
+
+  async getInvitation(jeton: string): Promise<InvitationInfo> {
+    return apiFetch<InvitationInfo>(`/auth/invitation/${encodeURIComponent(jeton)}`);
+  }
+
+  async definirMotDePasse(jeton: string, motDePasse: string): Promise<void> {
+    await apiFetch<void>(`/auth/invitation/${encodeURIComponent(jeton)}`, {
+      method: 'POST',
+      body: JSON.stringify({ motDePasse }),
+    });
   }
 
   async logout(): Promise<void> {

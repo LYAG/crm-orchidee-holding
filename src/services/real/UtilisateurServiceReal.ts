@@ -1,6 +1,7 @@
 import type {
   CreateUtilisateurDto,
   CreateUtilisateurResult,
+  InvitationResultat,
   UpdateUtilisateurDto,
   UtilisateurService,
 } from '@/services/api/UtilisateurService';
@@ -18,7 +19,11 @@ export class UtilisateurServiceReal implements UtilisateurService {
     return apiFetch<Utilisateur[]>('/utilisateurs');
   }
 
-  async getAllPagine(role: UserRole | undefined, page: number, pageSize: number): Promise<PageResponse<Utilisateur>> {
+  async getAllPagine(
+    role: UserRole | undefined,
+    page: number,
+    pageSize: number,
+  ): Promise<PageResponse<Utilisateur>> {
     const query = qs({ role, page, size: pageSize });
     return apiFetch<PageResponse<Utilisateur>>(`/utilisateurs/page${query}`);
   }
@@ -37,11 +42,17 @@ export class UtilisateurServiceReal implements UtilisateurService {
   }
 
   async create(data: CreateUtilisateurDto): Promise<CreateUtilisateurResult> {
-    return apiFetch<CreateUtilisateurResult>('/utilisateurs', { method: 'POST', body: JSON.stringify(data) });
+    return apiFetch<CreateUtilisateurResult>('/utilisateurs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
 
   async update(id: string, data: UpdateUtilisateurDto): Promise<Utilisateur> {
-    return apiFetch<Utilisateur>(`/utilisateurs/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+    return apiFetch<Utilisateur>(`/utilisateurs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
   }
 
   async delete(id: string): Promise<void> {
@@ -55,5 +66,8 @@ export class UtilisateurServiceReal implements UtilisateurService {
     );
     return motDePasseGenere;
   }
-}
 
+  async envoyerInvitation(id: string): Promise<InvitationResultat> {
+    return apiFetch<InvitationResultat>(`/utilisateurs/${id}/invitation`, { method: 'POST' });
+  }
+}
