@@ -5,6 +5,7 @@ import { Alert, App, Form, Input, Modal, Segmented, Select, Typography } from 'a
 import { useEffect, useState } from 'react';
 import { messagerieService } from '@/services';
 import type { CibleDiffusion, CibleDiffusionOption } from '@/types/messagerie';
+import { EditeurMessage, texteDepuisHtml } from './EditeurMessage';
 import { messageErreur } from './format';
 
 const { Text } = Typography;
@@ -18,6 +19,7 @@ interface Valeurs {
   copie?: string[];
   cible?: CibleDiffusion;
   sujet: string;
+  /** HTML produit par l'éditeur. */
   corps: string;
 }
 
@@ -26,7 +28,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onEnvoye: () => void;
-  /** Préremplissage (réponse à un message reçu) : force le mode « adresses ». */
+  /** Préremplissage (réponse à un message reçu) : force le mode « adresses ». corps : HTML. */
   initial?: { destinataires: string[]; sujet: string; corps: string } | null;
 }
 
@@ -70,13 +72,14 @@ export function NouveauMessageModal({ modes, open, onClose, onEnvoye, initial }:
 
   async function envoyer() {
     const v = await form.validateFields();
+    const corps = { corps: texteDepuisHtml(v.corps), corpsHtml: v.corps };
     setEnvoi(true);
     try {
       if (mode === 'groupe' && v.cible) {
         await messagerieService.envoyerDiffusion({
           cible: v.cible,
           sujet: v.sujet,
-          corps: v.corps,
+          ...corps,
         });
         message.success(`E-mail envoyé à ${option?.nombre ?? ''} destinataire(s).`);
       } else {
@@ -84,7 +87,7 @@ export function NouveauMessageModal({ modes, open, onClose, onEnvoye, initial }:
           destinataires: (v.destinataires ?? []).map((a) => a.trim()),
           copie: v.copie?.map((a) => a.trim()),
           sujet: v.sujet,
-          corps: v.corps,
+          ...corps,
         });
         message.success('E-mail envoyé.');
       }
@@ -113,7 +116,7 @@ export function NouveauMessageModal({ modes, open, onClose, onEnvoye, initial }:
       onCancel={onClose}
       confirmLoading={envoi}
       okButtonProps={{ disabled: mode === 'groupe' && option?.nombre === 0 }}
-      width={640}
+      width={720}
       destroyOnHidden
       forceRender
     >
@@ -204,9 +207,17 @@ export function NouveauMessageModal({ modes, open, onClose, onEnvoye, initial }:
         <Form.Item
           name="corps"
           label="Message"
-          rules={[{ required: true, whitespace: true, message: 'Le message est obligatoire.' }]}
+          required
+          rules={[
+            {
+              validator: (_, html?: string) =>
+                texteDepuisHtml(html ?? '').trim()
+                  ? Promise.resolve()
+                  : Promise.reject(new Error('Le message est obligatoire.')),
+            },
+          ]}
         >
-          <Input.TextArea autoSize={{ minRows: 8, maxRows: 18 }} />
+          <EditeurMessage placeholder="Rédigez votre message…" />
         </Form.Item>
       </Form>
     </Modal>

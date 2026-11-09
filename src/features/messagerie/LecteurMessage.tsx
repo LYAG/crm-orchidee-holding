@@ -49,7 +49,8 @@ export function LecteurMessage({ id, charger, onLu, onRepondre, onRetour }: Prop
           onLu(m.id, true);
         }
         if (!annule) {
-          setVue(m.corpsHtml && !m.corpsTexte ? 'html' : 'texte');
+          // Message rédigé dans le CRM : sa mise en forme d'abord ; message reçu : le texte.
+          setVue(m.corpsHtml && (m.direction === 'ENVOYE' || !m.corpsTexte) ? 'html' : 'texte');
           setResultat({ id, message: m, erreur: null });
         }
       })
@@ -186,7 +187,11 @@ export function LecteurMessage({ id, charger, onLu, onRepondre, onRetour }: Prop
               <iframe
                 title="Contenu du message"
                 sandbox=""
-                srcDoc={m.corpsHtml}
+                srcDoc={
+                  /<html/i.test(m.corpsHtml)
+                    ? m.corpsHtml
+                    : `<body style="margin:12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#1f2937">${m.corpsHtml}</body>`
+                }
                 className="oh-mail__html"
               />
             ) : (

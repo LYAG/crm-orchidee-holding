@@ -209,6 +209,7 @@ export class MessagerieServiceMock implements MessagerieService {
       destinataires: r.destinataires.join(', '),
       copie: r.copie?.length ? r.copie.join(', ') : null,
       corpsTexte: r.corps,
+      corpsHtml: r.corpsHtml ?? null,
       dateMessage: new Date().toISOString(),
     });
     this.messages.unshift(m);
@@ -364,6 +365,7 @@ export class MessagerieServiceMock implements MessagerieService {
       expediteur: `${moi.prenom} ${moi.nom} <${moi.email}> via ${this.config.adresseExpediteur}`,
       destinataires: `${LIBELLES_CIBLES[r.cible]} (${d.length}) : ${d.map((u) => u.email).join(', ')}`,
       corpsTexte: r.corps,
+      corpsHtml: r.corpsHtml ?? null,
       dateMessage: new Date().toISOString(),
     });
     this.messages.unshift(m);
