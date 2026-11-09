@@ -63,6 +63,8 @@ export interface EnvoiEmailRequest {
   copie?: string[];
   sujet: string;
   corps: string;
+  /** Version mise en forme (éditeur), nettoyée par le serveur. */
+  corpsHtml?: string;
 }
 
 export interface MessageEmailResume {
@@ -138,4 +140,6 @@ export interface DiffusionRequest {
   cible: CibleDiffusion;
   sujet: string;
   corps: string;
+  /** Version mise en forme (éditeur), nettoyée par le serveur. */
+  corpsHtml?: string;
 }

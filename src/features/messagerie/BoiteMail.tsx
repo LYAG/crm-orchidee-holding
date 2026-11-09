@@ -22,6 +22,7 @@ import {
   messageErreur,
   nomCourt,
 } from './format';
+import { htmlDepuisTexte } from './EditeurMessage';
 import { LecteurMessage } from './LecteurMessage';
 import { NouveauMessageModal, type ModeRedaction } from './NouveauMessageModal';
 import { signalerNonLusModifies } from './nonLus';
@@ -134,15 +135,15 @@ export function BoiteMail({ dossiers, modesRedaction }: Props) {
   function repondre(m: MessageEmail) {
     const { adresse } = decomposerAdresse(m.expediteur);
     const sujet = m.sujet ?? '';
-    const cite = (m.corpsTexte ?? '')
-      .split('\n')
-      .map((l) => `> ${l}`)
-      .join('\n');
+    const entete = `Le ${formatDateHeure(m.dateMessage)}, ${m.expediteur ?? ''} a écrit :`;
     setRedaction({
       initial: {
         destinataires: adresse ? [adresse] : [],
         sujet: /^re\s*:/i.test(sujet) ? sujet : `Re : ${sujet}`,
-        corps: `\n\nLe ${formatDateHeure(m.dateMessage)}, ${m.expediteur ?? ''} a écrit :\n${cite}`,
+        corps:
+          `<div><br></div><div><br></div><div>${htmlDepuisTexte(entete)}</div>` +
+          '<blockquote style="margin: 0 0 0 6px; padding-left: 12px; border-left: 2px solid #c8d3cf; color: #5b6b66">' +
+          `${htmlDepuisTexte(m.corpsTexte ?? '')}</blockquote>`,
       },
       cle: Date.now(),
     });

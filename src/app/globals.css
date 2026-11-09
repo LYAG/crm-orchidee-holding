@@ -1554,3 +1554,174 @@ button {
     display: none;
   }
 }
+
+/* ── Éditeur de message (mise en forme façon webmail) ───────────────────── */
+
+.oh-editeur {
+  border: 1px solid var(--oh-line);
+  border-radius: 8px;
+  background: var(--oh-surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.oh-editeur:focus-within {
+  border-color: var(--ant-color-primary, #0f6e52);
+  box-shadow: 0 0 0 2px rgba(15, 110, 82, 0.1);
+}
+
+.oh-editeur[aria-invalid='true'] {
+  border-color: var(--ant-color-error, #d32f2f);
+}
+
+.oh-editeur__barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  margin: 6px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: var(--oh-surface-sunken);
+}
+
+.oh-editeur__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--oh-ink-2);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.oh-editeur__btn:hover {
+  background: rgba(15, 110, 82, 0.08);
+  color: var(--oh-ink);
+}
+
+.oh-editeur__btn.is-actif {
+  background: rgba(15, 110, 82, 0.14);
+  color: var(--ant-color-primary, #0f6e52);
+}
+
+.oh-editeur__btn:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #0f6e52);
+  outline-offset: 1px;
+}
+
+.oh-editeur__btn--large {
+  padding: 0 8px;
+}
+
+.oh-editeur__police {
+  min-width: 78px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.oh-editeur__caret {
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+.oh-editeur__sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: var(--oh-line);
+}
+
+.oh-editeur__liste {
+  min-width: 150px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oh-editeur__liste button {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--oh-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.oh-editeur__liste button:hover {
+  background: var(--oh-surface-sunken);
+}
+
+.oh-editeur__liste button.is-actif {
+  color: var(--ant-color-primary, #0f6e52);
+  font-weight: 600;
+}
+
+.oh-editeur__couleurs {
+  display: grid;
+  grid-template-columns: repeat(6, 22px);
+  gap: 6px;
+  padding: 4px;
+}
+
+.oh-editeur__couleurs button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.oh-editeur__couleurs button:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 2px rgba(15, 110, 82, 0.25);
+}
+
+.oh-editeur__rangee {
+  display: flex;
+  gap: 2px;
+}
+
+.oh-editeur__zone {
+  position: relative;
+  min-height: 200px;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding: 8px 14px 14px;
+  outline: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--oh-ink);
+  overflow-wrap: anywhere;
+}
+
+.oh-editeur__zone.is-vide::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  color: var(--oh-ink-3);
+  pointer-events: none;
+}
+
+.oh-editeur__zone ol,
+.oh-editeur__zone ul {
+  margin: 4px 0;
+  padding-left: 28px;
+}
+
+.oh-editeur__zone blockquote {
+  margin: 0 0 0 6px;
+  padding-left: 12px;
+  border-left: 2px solid #c8d3cf;
+  color: #5b6b66;
+}
