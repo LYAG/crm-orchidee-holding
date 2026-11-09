@@ -2,6 +2,9 @@ import type { MessagerieService } from '@/services/api/MessagerieService';
 import type { PageResponse } from '@/types/pagination';
 import {
   MESSAGERIE_VALEURS_RECOMMANDEES,
+  type CibleDiffusion,
+  type CibleDiffusionOption,
+  type DiffusionRequest,
   type DirectionMessage,
   type EnvoiEmailRequest,
   type JournalMessagerie,
@@ -13,7 +16,20 @@ import {
   type ResultatTest,
   type TypeJournalMessagerie,
 } from '@/types/messagerie';
+import { UserRole } from '@/lib/constants';
+import type { Utilisateur } from '@/types';
+import { utilisateurs } from './data';
 import { delay, generateId, notFound, paginer } from './_utils';
+
+/** Même clé de session que AuthServiceMock. */
+const SESSION_KEY = 'crm_mock_user';
+
+const LIBELLES_CIBLES: Record<CibleDiffusion, string> = {
+  MANAGERS: 'Tous les managers',
+  DELEGUES: 'Tous les délégués',
+  MANAGERS_ET_DELEGUES: 'Tous les managers et délégués',
+  MES_DELEGUES: 'Mes délégués',
+};
 
 /**
  * Simulation locale : aucun serveur n'est contacté. Les tests réussissent dès qu'un mot de passe
@@ -283,5 +299,94 @@ export class MessagerieServiceMock implements MessagerieService {
   async getJournal(): Promise<JournalMessagerie[]> {
     await delay();
     return this.journal.slice(0, 100);
+  }
+
+  // ─── Envois groupés ────────────────────────────────────────────────────────
+  // Démo locale : l'activation de l'envoi n'est pas exigée ici, la configuration du mock étant
+  // perdue à chaque rechargement (changer de compte pour tester un manager la réinitialise).
+
+  /** Auteur de chaque envoi groupé, pour l'historique personnel. */
+  private auteurs = new Map<string, string>();
+
+  private utilisateurConnecte(): Utilisateur {
+    const brut = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_KEY) : null;
+    const u = brut ? (JSON.parse(brut) as Utilisateur) : null;
+    if (!u) throw new Error('Session expirée.');
+    return u;
+  }
+
+  private destinataires(cible: CibleDiffusion, moi: Utilisateur): Utilisateur[] {
+    const managers = utilisateurs.filter((u) => u.role === UserRole.MANAGER);
+    const delegues = utilisateurs.filter((u) => u.role === UserRole.DELEGUE);
+    const liste =
+      cible === 'MANAGERS'
+        ? managers
+        : cible === 'DELEGUES'
+          ? delegues
+          : cible === 'MANAGERS_ET_DELEGUES'
+            ? [...managers, ...delegues]
+            : delegues.filter((d) => d.managerId === moi.id);
+    return liste.filter((u) => u.id !== moi.id).sort((a, b) => a.nom.localeCompare(b.nom));
+  }
+
+  async getCiblesDiffusion(): Promise<CibleDiffusionOption[]> {
+    await delay();
+    const moi = this.utilisateurConnecte();
+    const cibles: CibleDiffusion[] =
+      moi.role === UserRole.ADMIN
+        ? ['MANAGERS', 'DELEGUES', 'MANAGERS_ET_DELEGUES']
+        : moi.role === UserRole.MANAGER
+          ? ['MES_DELEGUES']
+          : [];
+    return cibles.map((cible) => {
+      const d = this.destinataires(cible, moi);
+      return {
+        cible,
+        libelle: LIBELLES_CIBLES[cible],
+        nombre: d.length,
+        apercuNoms: d.slice(0, 8).map((u) => `${u.prenom} ${u.nom}`),
+        repondreA: moi.email,
+      };
+    });
+  }
+
+  async envoyerDiffusion(r: DiffusionRequest): Promise<MessageEmail> {
+    await delay(800);
+    const moi = this.utilisateurConnecte();
+    const d = this.destinataires(r.cible, moi);
+    if (d.length === 0)
+      throw new Error(`Aucun destinataire dans le groupe « ${LIBELLES_CIBLES[r.cible]} ».`);
+    const m = message({
+      direction: 'ENVOYE',
+      sujet: r.sujet,
+      expediteur: `${moi.prenom} ${moi.nom} <${moi.email}> via ${this.config.adresseExpediteur}`,
+      destinataires: `${LIBELLES_CIBLES[r.cible]} (${d.length}) : ${d.map((u) => u.email).join(', ')}`,
+      corpsTexte: r.corps,
+      dateMessage: new Date().toISOString(),
+    });
+    this.messages.unshift(m);
+    this.auteurs.set(m.id, moi.id);
+    this.tracer(
+      'ENVOI',
+      true,
+      `Envoi groupé « ${r.sujet} » de ${moi.prenom} ${moi.nom} (${d.length} destinataire(s)).`,
+    );
+    return { ...m };
+  }
+
+  async getMesEnvois(page: number, taille: number): Promise<PageResponse<MessageEmailResume>> {
+    const moi = this.utilisateurConnecte();
+    const tous = await this.getMessages('ENVOYE', 0, 10_000);
+    return paginer(
+      tous.contenu.filter((m) => this.auteurs.get(m.id) === moi.id),
+      page,
+      taille,
+    );
+  }
+
+  async getMonEnvoi(id: string): Promise<MessageEmail> {
+    const moi = this.utilisateurConnecte();
+    if (this.auteurs.get(id) !== moi.id) throw new Error('Ce message ne vous appartient pas.');
+    return this.getMessage(id);
   }
 }

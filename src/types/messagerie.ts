@@ -118,3 +118,21 @@ export const MESSAGERIE_VALEURS_RECOMMANDEES: Omit<
   adresseExpediteur: 'saphir@orchideeholding.com',
   nomExpediteur: 'Saphir OH',
 };
+
+/** Groupe d'un envoi groupé : l'admin écrit aux managers et/ou délégués, un manager à ses délégués. */
+export type CibleDiffusion = 'MANAGERS' | 'DELEGUES' | 'MANAGERS_ET_DELEGUES' | 'MES_DELEGUES';
+
+export interface CibleDiffusionOption {
+  cible: CibleDiffusion;
+  libelle: string;
+  nombre: number;
+  apercuNoms: string[];
+  /** Adresse de l'expéditeur : les réponses y arrivent (Reply-To). */
+  repondreA: string;
+}
+
+export interface DiffusionRequest {
+  cible: CibleDiffusion;
+  sujet: string;
+  corps: string;
+}

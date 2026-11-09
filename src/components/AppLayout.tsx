@@ -168,8 +168,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         )}
         actionsRender={() => [
           zoneControl,
-          // La messagerie (API réservée à l'admin) n'est proposée qu'à l'administrateur.
-          ...(role === UserRole.ADMIN ? [<HeaderMessagerie key="messagerie" />] : []),
+          // Messagerie : admin (boîte du CRM) et managers (envois groupés à leurs délégués).
+          ...(role === UserRole.ADMIN || role === UserRole.MANAGER
+            ? [<HeaderMessagerie key="messagerie" compterNonLus={role === UserRole.ADMIN} />]
+            : []),
           <HeaderNotifications key="notifs" user={user} />,
         ]}
         avatarProps={{

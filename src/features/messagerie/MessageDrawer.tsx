@@ -24,13 +24,15 @@ interface Props {
   id: string | null;
   onClose: () => void;
   onLu: (id: string, lu: boolean) => void;
+  /** Chargement du détail ; par défaut la boîte complète (admin). */
+  charger?: (id: string) => Promise<MessageEmail>;
 }
 
 /**
  * Détail d'un message. Un message reçu est marqué lu à l'ouverture (dans le CRM seulement). Le HTML
  * reçu n'est jamais injecté dans la page : il est rendu dans une iframe `sandbox` sans script.
  */
-export function MessageDrawer({ id, onClose, onLu }: Props) {
+export function MessageDrawer({ id, onClose, onLu, charger }: Props) {
   const { message } = App.useApp();
   const [resultat, setResultat] = useState<{
     id: string;
@@ -42,8 +44,7 @@ export function MessageDrawer({ id, onClose, onLu }: Props) {
   useEffect(() => {
     if (!id) return;
     let annule = false;
-    messagerieService
-      .getMessage(id)
+    (charger ? charger(id) : messagerieService.getMessage(id))
       .then(async (m) => {
         if (m.direction === 'RECU' && !m.lu) {
           m = await messagerieService.marquerLu(m.id, true);

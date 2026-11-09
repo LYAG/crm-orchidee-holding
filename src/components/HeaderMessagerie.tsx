@@ -9,12 +9,13 @@ import { messagerieService } from '@/services';
 
 const RAFRAICHISSEMENT_MS = 60_000;
 
-/** Accès à la Messagerie depuis l'en-tête (admin), avec le nombre de messages reçus non lus. */
-export function HeaderMessagerie() {
+/** Accès à la Messagerie depuis l'en-tête ; l'admin y voit le nombre de messages reçus non lus. */
+export function HeaderMessagerie({ compterNonLus }: { compterNonLus: boolean }) {
   const router = useRouter();
   const [nonLus, setNonLus] = useState(0);
 
   useEffect(() => {
+    if (!compterNonLus) return;
     let actif = true;
     const charger = () =>
       messagerieService
@@ -29,7 +30,7 @@ export function HeaderMessagerie() {
       window.clearInterval(minuteur);
       window.removeEventListener(EVENEMENT_NON_LUS, charger);
     };
-  }, []);
+  }, [compterNonLus]);
 
   return (
     <Tooltip title={nonLus > 0 ? `Messagerie — ${nonLus} non lu(s)` : 'Messagerie'}>
