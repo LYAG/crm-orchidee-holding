@@ -829,3 +829,98 @@ button {
   font-weight: 600;
   color: var(--oh-ink);
 }
+
+/* ── Accueil Paramètres (tuiles façon Paramètres Windows) ─────────────────── */
+.oh-parametres {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.oh-parametres__titre.ant-typography {
+  margin: 0 0 20px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.oh-parametres__recherche {
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 40px;
+}
+
+.oh-parametres__grille {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px 16px;
+}
+
+.oh-parametres__tuile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 20px 16px 22px;
+  border: 1px solid transparent;
+  border-radius: var(--oh-radius);
+  color: inherit;
+  transition:
+    background-color 0.15s var(--oh-ease-out),
+    border-color 0.15s var(--oh-ease-out);
+}
+
+.oh-parametres__tuile:hover {
+  background: var(--oh-brand-subtle);
+  border-color: var(--oh-line);
+}
+
+.oh-parametres__tuile:focus-visible {
+  outline: 2px solid var(--oh-brand);
+  outline-offset: 2px;
+}
+
+.oh-parametres__icone {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--oh-brand);
+  margin-bottom: 8px;
+}
+
+.oh-parametres__nom.ant-typography {
+  font-size: 15px;
+  color: var(--oh-ink);
+}
+
+.oh-parametres__description.ant-typography {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+@media (max-width: 575px) {
+  .oh-parametres {
+    padding-top: 8px;
+  }
+
+  .oh-parametres__recherche {
+    margin-bottom: 24px;
+  }
+
+  .oh-parametres__grille {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 8px;
+  }
+
+  .oh-parametres__tuile {
+    padding: 14px 8px 16px;
+  }
+
+  .oh-parametres__icone {
+    font-size: 32px;
+  }
+}

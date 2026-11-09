@@ -1,23 +1,25 @@
 'use client';
 
-import { InboxOutlined, ProfileOutlined, SendOutlined, SettingOutlined } from '@ant-design/icons';
+import { InboxOutlined, SendOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Badge, Tabs } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { messagerieService } from '@/services';
 import { BoiteMessages } from './BoiteMessages';
-import { ConfigurationMessagerie } from './ConfigurationMessagerie';
-import { JournalMessagerieTable } from './JournalMessagerieTable';
+import { signalerNonLusModifies } from './nonLus';
 
-/** Paramètres > Messagerie : compte e-mail du CRM (SMTP/IMAP), boîte de réception, envoyés, journal. */
+/** Messagerie (icône de l'en-tête) : messages reçus et envoyés avec le compte e-mail du CRM. */
 export function MessageriePage() {
-  const [onglet, setOnglet] = useState('configuration');
+  const [onglet, setOnglet] = useState('recus');
   const [nonLus, setNonLus] = useState(0);
 
   const rafraichirNonLus = useCallback(() => {
     messagerieService
       .getNonLus()
-      .then(setNonLus)
+      .then((n) => {
+        setNonLus(n);
+        signalerNonLusModifies();
+      })
       .catch(() => {});
   }, []);
 
@@ -26,21 +28,12 @@ export function MessageriePage() {
   }, [rafraichirNonLus]);
 
   return (
-    <PageContainer
-      title="Messagerie"
-      subTitle="Compte e-mail du CRM : envoi (SMTP) et réception (IMAP)"
-    >
+    <PageContainer title="Messagerie" subTitle="Boîte de réception et messages envoyés">
       <Tabs
         activeKey={onglet}
         onChange={setOnglet}
         destroyOnHidden
         items={[
-          {
-            key: 'configuration',
-            icon: <SettingOutlined />,
-            label: 'Configuration',
-            children: <ConfigurationMessagerie />,
-          },
           {
             key: 'recus',
             icon: <InboxOutlined />,
@@ -64,12 +57,6 @@ export function MessageriePage() {
             icon: <SendOutlined />,
             label: 'Envoyés',
             children: <BoiteMessages direction="ENVOYE" onNonLusChange={rafraichirNonLus} />,
-          },
-          {
-            key: 'journal',
-            icon: <ProfileOutlined />,
-            label: 'Journal',
-            children: <JournalMessagerieTable />,
           },
         ]}
       />
