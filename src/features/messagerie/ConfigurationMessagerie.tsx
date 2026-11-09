@@ -413,7 +413,7 @@ export function ConfigurationMessagerie() {
                   name="notificationsActives"
                   label="Notifications automatiques par e-mail"
                   valuePropName="checked"
-                  extra="Formation ou exercice affecté (chaque délégué concerné) et ordre de mission validé (le demandeur). Nécessite l’envoi actif."
+                  extra="Formation ou exercice affecté (chaque délégué concerné) et décision sur un ordre de mission : validé, rejeté ou à modifier (le demandeur). Nécessite l’envoi actif."
                 >
                   <Switch checkedChildren="Actives" unCheckedChildren="Inactives" />
                 </Form.Item>
