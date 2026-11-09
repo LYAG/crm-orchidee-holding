@@ -26,6 +26,8 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onEnvoye: () => void;
+  /** Préremplissage (réponse à un message reçu) : force le mode « adresses ». */
+  initial?: { destinataires: string[]; sujet: string; corps: string } | null;
 }
 
 const validerAdresses = (obligatoire: boolean) => ({
@@ -43,10 +45,11 @@ const validerAdresses = (obligatoire: boolean) => ({
  * Rédaction d'un e-mail texte envoyé avec le compte de messagerie du CRM : à des adresses libres,
  * ou à un groupe d'utilisateurs (copie cachée, réponses vers l'adresse de l'expéditeur).
  */
-export function NouveauMessageModal({ modes, open, onClose, onEnvoye }: Props) {
+export function NouveauMessageModal({ modes, open, onClose, onEnvoye, initial }: Props) {
   const { message } = App.useApp();
   const [form] = Form.useForm<Valeurs>();
-  const [mode, setMode] = useState<ModeRedaction>(modes[0]);
+  // Le parent remonte la fenêtre (key) à chaque ouverture : l'état initial suffit.
+  const [mode, setMode] = useState<ModeRedaction>(initial ? 'adresses' : modes[0]);
   const [cibles, setCibles] = useState<CibleDiffusionOption[] | null>(null);
   const [erreurCibles, setErreurCibles] = useState<string | null>(null);
   const [envoi, setEnvoi] = useState(false);
@@ -97,7 +100,13 @@ export function NouveauMessageModal({ modes, open, onClose, onEnvoye }: Props) {
   return (
     <Modal
       open={open}
-      title={modes.includes('adresses') ? 'Nouveau message' : 'Nouvel envoi groupé'}
+      title={
+        initial
+          ? 'Répondre'
+          : modes.includes('adresses')
+            ? 'Nouveau message'
+            : 'Nouvel envoi groupé'
+      }
       okText="Envoyer"
       cancelText="Annuler"
       onOk={envoyer}
@@ -108,7 +117,7 @@ export function NouveauMessageModal({ modes, open, onClose, onEnvoye }: Props) {
       destroyOnHidden
       forceRender
     >
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical" initialValues={initial ?? undefined}>
         {modes.length > 1 && (
           <Form.Item label="Destinataires">
             <Segmented

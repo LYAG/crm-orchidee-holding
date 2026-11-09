@@ -561,80 +561,230 @@ button {
 
 .oh-login {
   display: grid;
-  grid-template-columns: minmax(360px, 440px) 1fr;
+  grid-template-columns: minmax(420px, 46%) 1fr;
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--oh-surface);
 }
 
+/* Panneau de marque : vert profond, facettes discrètes rappelant le saphir du logo. */
 .oh-login__brand {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 48px;
-  padding: 48px 44px;
-  background: var(--oh-ink);
+  padding: 44px clamp(40px, 5vw, 72px);
+  overflow: hidden;
   color: #fff;
+  background: linear-gradient(155deg, #0f3f33 0%, #0b2f27 55%, #082620 100%);
+}
+
+.oh-login__brand::before,
+.oh-login__brand::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.oh-login__brand::before {
+  inset: 0;
+  background:
+    linear-gradient(118deg, transparent 52%, rgba(255, 255, 255, 0.045) 52.2%, transparent 74%),
+    linear-gradient(28deg, transparent 60%, rgba(255, 255, 255, 0.04) 60.2%, transparent 82%),
+    linear-gradient(200deg, transparent 38%, rgba(0, 0, 0, 0.12) 38.2%, transparent 66%);
+}
+
+.oh-login__brand::after {
+  width: 520px;
+  height: 520px;
+  right: -180px;
+  top: -160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46, 170, 120, 0.32) 0%, transparent 65%);
+}
+
+.oh-login__marque {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .oh-login__logo {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  background: #fff;
+  border-radius: 11px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+}
+
+.oh-login__marque-texte {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.oh-login__marque-texte strong {
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.oh-login__marque-texte span {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.oh-login__accroche {
+  max-width: 480px;
 }
 
 .oh-login__title.ant-typography {
+  margin: 0 0 16px;
   color: #fff;
-  margin: 0 0 6px;
-  font-size: 34px;
+  font-size: clamp(28px, 2.6vw, 38px);
   font-weight: 650;
+  line-height: 1.15;
   letter-spacing: -0.025em;
-  line-height: 1.1;
-}
-
-.oh-login__sub.ant-typography {
-  display: block;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 20px;
+  text-wrap: balance;
 }
 
 .oh-login__lead.ant-typography {
   display: block;
-  max-width: 34ch;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 14px;
+  max-width: 44ch;
+  margin-bottom: 36px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
   line-height: 1.65;
 }
 
+.oh-login__atouts {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oh-login__atouts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.oh-login__atouts li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.oh-login__atouts strong {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.oh-login__atout-icone {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #8fe0bd;
+  font-size: 16px;
+}
+
 .oh-login__legal.ant-typography {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 12px;
 }
 
+/* Formulaire */
 .oh-login__main {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 20px;
   padding: 48px 32px;
 }
 
 .oh-login__card {
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
 }
 
-.oh-login__compact-brand,
+.oh-login__card-logo {
+  display: block;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 110, 82, 0.22);
+}
+
+.oh-login__card-title.ant-typography {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--oh-ink);
+}
+
+.oh-login__card-sub.ant-typography {
+  display: block;
+  margin-bottom: 28px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.oh-login__card .ant-form-item-label > label {
+  font-weight: 500;
+  color: var(--oh-ink);
+}
+
+.oh-login__prefixe {
+  margin-right: 4px;
+  color: var(--oh-ink-3);
+}
+
+.oh-login__submit.ant-btn {
+  height: 46px;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.oh-login__aide.ant-typography {
+  display: block;
+  margin-top: 20px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.oh-login__securite.ant-typography {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
 .oh-login__legal-mobile {
   display: none !important;
+}
+
+@media (max-width: 1023px) {
+  .oh-login {
+    grid-template-columns: minmax(360px, 42%) 1fr;
+  }
+
+  .oh-login__atouts li > span:last-child > span {
+    display: none;
+  }
 }
 
 @media (max-width: 860px) {
@@ -649,26 +799,29 @@ button {
 
   .oh-login__main {
     justify-content: flex-start;
-    padding: max(48px, 10vh) 16px 32px;
+    padding: max(40px, 8vh) 16px 28px;
   }
 
   .oh-login__card {
     max-width: 420px;
-    padding: 28px 24px;
+    padding: 32px 24px 28px;
     background: var(--oh-surface);
     border: 1px solid var(--oh-line);
     border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(18, 56, 50, 0.06);
   }
 
-  .oh-login__compact-brand {
-    display: flex !important;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 28px;
-    font-size: 16px;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-    color: var(--oh-ink);
+  .oh-login__card-logo {
+    margin: 0 auto 20px;
+  }
+
+  .oh-login__card-title.ant-typography,
+  .oh-login__card-sub.ant-typography {
+    text-align: center;
+  }
+
+  .oh-login__card-title.ant-typography {
+    font-size: 22px;
   }
 
   .oh-login__legal-mobile {
@@ -957,5 +1110,447 @@ button {
 
   .oh-parametres__icone {
     font-size: 32px;
+  }
+}
+
+/* ── Messagerie (trois volets façon webmail : dossiers, liste, lecture) ───── */
+.oh-mail {
+  display: grid;
+  grid-template-columns: 220px minmax(300px, 380px) minmax(0, 1fr);
+  height: calc(100vh - var(--oh-header-h) - 150px);
+  min-height: 520px;
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-line);
+  border-radius: var(--oh-radius);
+  overflow: hidden;
+}
+
+.oh-mail__dossiers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 12px;
+  background: var(--oh-surface-muted);
+  border-right: 1px solid var(--oh-line);
+  min-width: 0;
+}
+
+.oh-mail__nouveau.ant-btn {
+  justify-content: flex-start;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.oh-mail__liste-dossiers {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.oh-mail__dossier {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--oh-ink-2);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s var(--oh-ease-out);
+}
+
+.oh-mail__dossier:hover {
+  background: var(--oh-line);
+}
+
+.oh-mail__dossier.is-actif {
+  background: var(--oh-brand-subtle);
+  color: var(--oh-brand-strong);
+  font-weight: 600;
+}
+
+.oh-mail__dossier:focus-visible,
+.oh-mail__ligne:focus-visible {
+  outline: 2px solid var(--oh-brand);
+  outline-offset: -2px;
+}
+
+.oh-mail__dossier-nom {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oh-mail__compteur {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.oh-mail__liste {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--oh-line);
+}
+
+.oh-mail__barre {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 12px 8px;
+  border-bottom: 1px solid var(--oh-line);
+}
+
+.oh-mail__aide.ant-typography {
+  font-size: 13px;
+  padding: 4px 4px 0;
+}
+
+.oh-mail__outils {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.oh-mail__pagination.ant-typography {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+.oh-mail__lignes {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.oh-mail__ligne {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 16px 11px 13px;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--oh-line);
+  background: var(--oh-surface-muted);
+  color: var(--oh-ink-2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s var(--oh-ease-out);
+}
+
+.oh-mail__ligne:hover {
+  background: var(--oh-surface-sunken);
+}
+
+.oh-mail__ligne.is-non-lu {
+  background: var(--oh-surface);
+  color: var(--oh-ink);
+}
+
+.oh-mail__ligne.is-non-lu .oh-mail__correspondant,
+.oh-mail__ligne.is-non-lu .oh-mail__ligne-sujet,
+.oh-mail__ligne.is-non-lu .oh-mail__date {
+  font-weight: 700;
+}
+
+.oh-mail__ligne.is-actif {
+  background: var(--oh-brand-subtle);
+  border-left-color: var(--oh-brand);
+}
+
+.oh-mail__ligne-haut {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.oh-mail__correspondant {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--oh-ink);
+}
+
+.oh-mail__trombone {
+  color: var(--oh-ink-3);
+  font-size: 12px;
+}
+
+.oh-mail__date {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--oh-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.oh-mail__ligne-sujet,
+.oh-mail__apercu {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oh-mail__ligne-sujet {
+  font-size: 13px;
+  color: var(--oh-ink);
+}
+
+.oh-mail__apercu {
+  font-size: 12.5px;
+  color: var(--oh-ink-3);
+}
+
+.oh-mail__echec {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: #fdf0ef;
+  color: #b42318;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.oh-mail__lecture {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.oh-mail__vide {
+  height: 100%;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  color: var(--oh-ink-3);
+}
+
+.oh-mail__vide > .anticon {
+  font-size: 36px;
+  color: var(--oh-line-strong);
+}
+
+.oh-mail__message {
+  max-width: 860px;
+  padding: 0 32px 32px;
+}
+
+.oh-mail__barre-lecture {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 48px;
+  margin: 0 -32px 4px;
+  padding: 0 24px;
+  background: var(--oh-surface);
+}
+
+.oh-mail__retour.ant-btn {
+  display: none;
+}
+
+.oh-mail__sujet {
+  margin: 4px 0 20px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--oh-ink);
+  overflow-wrap: anywhere;
+}
+
+.oh-mail__entete {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.oh-mail__avatar {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--oh-brand-subtle);
+  color: var(--oh-brand-strong);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.oh-mail__entete-texte {
+  flex: 1;
+  min-width: 0;
+}
+
+.oh-mail__entete-ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  color: var(--oh-ink);
+  overflow-wrap: anywhere;
+}
+
+.oh-mail__entete-date.ant-typography,
+.oh-mail__entete-a.ant-typography {
+  font-size: 12.5px;
+}
+
+.oh-mail__entete-a.ant-typography {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.oh-mail__pj {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.oh-mail__pj-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--oh-line);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--oh-ink-2);
+}
+
+.oh-mail__corps {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--oh-ink);
+}
+
+.oh-mail__html {
+  width: 100%;
+  min-height: 480px;
+  border: 1px solid var(--oh-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.oh-mail__actions {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--oh-line);
+}
+
+@media (max-width: 1199px) {
+  .oh-mail {
+    grid-template-columns: 190px minmax(260px, 320px) minmax(0, 1fr);
+  }
+
+  .oh-mail__message {
+    padding: 0 24px 24px;
+  }
+
+  .oh-mail__barre-lecture {
+    margin: 0 -24px 4px;
+    padding: 0 16px;
+  }
+}
+
+/* Tablette et téléphone : dossiers en bandeau, puis la liste OU le message. */
+@media (max-width: 991px) {
+  .oh-mail {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    height: calc(100vh - var(--oh-header-h) - 120px);
+  }
+
+  .oh-mail__dossiers {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--oh-line);
+    overflow-x: auto;
+  }
+
+  .oh-mail__nouveau.ant-btn {
+    flex-shrink: 0;
+  }
+
+  .oh-mail__liste-dossiers {
+    flex-direction: row;
+  }
+
+  .oh-mail__dossier {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .oh-mail__liste {
+    border-right: 0;
+  }
+
+  .oh-mail__lecture,
+  .oh-mail--lecture .oh-mail__liste {
+    display: none;
+  }
+
+  .oh-mail--lecture .oh-mail__lecture {
+    display: block;
+  }
+
+  .oh-mail__retour.ant-btn {
+    display: inline-flex;
+  }
+
+  .oh-mail__message {
+    padding: 0 16px 24px;
+  }
+
+  .oh-mail__barre-lecture {
+    margin: 0 -16px 4px;
+    padding: 0 8px;
+  }
+
+  .oh-mail__sujet {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 575px) {
+  .oh-mail {
+    height: calc(100vh - var(--oh-header-h) - 100px);
+    min-height: 460px;
+  }
+
+  .oh-mail__nouveau.ant-btn > span:not(.ant-btn-icon) {
+    display: none;
   }
 }
