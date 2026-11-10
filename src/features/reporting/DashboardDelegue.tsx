@@ -182,7 +182,7 @@ export function DashboardDelegue({ user }: Props) {
           <ProCard
             title={
               <Text strong style={{ color: '#123832' }}>
-                Activité commerciale — 4 dernières semaines
+                Activité — rendez-vous des 4 dernières semaines
               </Text>
             }
             bordered
@@ -192,7 +192,7 @@ export function DashboardDelegue({ user }: Props) {
               data={chartData}
               defaultColor="#0F6E52"
               barHeight={120}
-              emptyText="Aucun RDV sur la période"
+              emptyText="Aucun rendez-vous sur les 4 dernières semaines"
             />
           </ProCard>
         </Col>
