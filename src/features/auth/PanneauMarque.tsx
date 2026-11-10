@@ -1,6 +1,7 @@
 import { CalendarOutlined, ReadOutlined, RiseOutlined } from '@ant-design/icons';
 import { Typography } from 'antd';
 import Image from 'next/image';
+import { estActive } from '@/config/fonctionnalites';
 
 const { Title, Text } = Typography;
 
@@ -13,7 +14,9 @@ const ATOUTS = [
   {
     icone: <RiseOutlined />,
     titre: 'Performance',
-    texte: 'Opportunités, objectifs et reporting de vos équipes.',
+    texte: estActive('opportunites')
+      ? 'Opportunités, objectifs et reporting de vos équipes.'
+      : 'Objectifs, notation et reporting de vos équipes.',
   },
   {
     icone: <ReadOutlined />,

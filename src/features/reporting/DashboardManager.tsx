@@ -16,7 +16,12 @@ import { USER_ROLE_LABELS, UserRole } from '@/lib/constants';
 import { reportingService } from '@/services';
 import { StatCard as KpiCard } from '@/components/ui/StatCard';
 import type { KpiManager, Utilisateur } from '@/types';
+import { estActive } from '@/config/fonctionnalites';
 import { SimpleBarChart } from './SimpleBarChart';
+
+/** Le pipeline (en €) vient du module Opportunités : masqué tant qu'il est désactivé. */
+const PIPELINE = estActive('opportunites');
+const KPI_SM = PIPELINE ? 8 : 12;
 
 const { Text } = Typography;
 
@@ -136,6 +141,7 @@ function DelegueRow({
       </div>
 
       {/* Pipeline */}
+      {PIPELINE && (
       <div
         style={{
           display: 'flex',
@@ -152,6 +158,7 @@ function DelegueRow({
       >
         {d.montantPipeline.toLocaleString('fr-FR')} €
       </div>
+      )}
 
       <Link href="/reporting">
         <ArrowRightOutlined style={{ color: '#627A74', fontSize: 11 }} />
@@ -212,7 +219,7 @@ export function DashboardManager({ user }: Props) {
     >
       {/* ── KPI Cards ── */}
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
-        <Col xs={24} sm={8}>
+        <Col xs={24} sm={KPI_SM}>
           <KpiCard
             loading={loading}
             icon={<TeamOutlined />}
@@ -222,7 +229,8 @@ export function DashboardManager({ user }: Props) {
             bg="#E8F2EE"
           />
         </Col>
-        <Col xs={24} sm={8}>
+        {PIPELINE && (
+        <Col xs={24} sm={KPI_SM}>
           <KpiCard
             loading={loading}
             icon={<WalletOutlined />}
@@ -234,7 +242,8 @@ export function DashboardManager({ user }: Props) {
             bg="#FCF1E3"
           />
         </Col>
-        <Col xs={24} sm={8}>
+        )}
+        <Col xs={24} sm={KPI_SM}>
           <KpiCard
             loading={loading}
             icon={<RiseOutlined />}
@@ -249,7 +258,7 @@ export function DashboardManager({ user }: Props) {
 
       <Row gutter={[16, 16]}>
         {/* ── Classement délégués ── */}
-        <Col xs={24} lg={14}>
+        <Col xs={24} lg={PIPELINE ? 14 : 24}>
           <ProCard
             bordered
             style={{ borderRadius: 12, overflow: 'hidden' }}
@@ -293,6 +302,7 @@ export function DashboardManager({ user }: Props) {
         </Col>
 
         {/* ── Pipeline chart ── */}
+        {PIPELINE && (
         <Col xs={24} lg={10}>
           <ProCard
             title={
@@ -311,6 +321,7 @@ export function DashboardManager({ user }: Props) {
             />
           </ProCard>
         </Col>
+        )}
       </Row>
     </PageContainer>
   );

@@ -18,7 +18,11 @@ import { QualificationTransformation } from '@/types';
 import type { KpiDelegue, ProgressionConversion, QualificationRDV, RendezVous, Utilisateur } from '@/types';
 import { StatCard as KpiCard } from '@/components/ui/StatCard';
 import { NotesMensuellesTab } from '@/features/notation/NotesMensuellesTab';
+import { estActive } from '@/config/fonctionnalites';
 import { SimpleBarChart } from './SimpleBarChart';
+
+/** 4 indicateurs par ligne, 3 quand le module Opportunités (pipeline) est désactivé. */
+const KPI_LG = estActive('opportunites') ? 6 : 8;
 
 const { Text } = Typography;
 
@@ -103,7 +107,7 @@ export function DashboardDelegue({ user }: Props) {
     >
       {/* ── KPI Cards ── */}
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={KPI_LG}>
           <KpiCard
             loading={loading}
             icon={<CalendarOutlined />}
@@ -113,7 +117,7 @@ export function DashboardDelegue({ user }: Props) {
             bg="#E8F2EE"
           />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={KPI_LG}>
           <KpiCard
             loading={loading}
             icon={<RiseOutlined />}
@@ -124,7 +128,8 @@ export function DashboardDelegue({ user }: Props) {
             bg="#EAF1FA"
           />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        {estActive('opportunites') && (
+        <Col xs={24} sm={12} lg={KPI_LG}>
           <KpiCard
             loading={loading}
             icon={<WalletOutlined />}
@@ -136,7 +141,8 @@ export function DashboardDelegue({ user }: Props) {
             bg="#FCF1E3"
           />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        )}
+        <Col xs={24} sm={12} lg={KPI_LG}>
           <KpiCard
             loading={loading}
             icon={<PhoneOutlined />}
