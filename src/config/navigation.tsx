@@ -28,6 +28,7 @@ import {
 import type { UserRole } from '@/lib/constants';
 import { aLaPermission } from '@/hooks/usePermission';
 import type { PermissionModule } from '@/types';
+import { estActive, type Fonctionnalite } from '@/config/fonctionnalites';
 
 export interface MenuRoute {
   path: string;
@@ -38,6 +39,8 @@ export interface MenuRoute {
   roles?: UserRole[];
   /** Code de la matrice Rôles & permissions : s'il est présent, il remplace `roles` (accès configurable). */
   permission?: string;
+  /** Module activable (voir src/config/fonctionnalites.ts) : masqué tant qu'il est désactivé. */
+  fonctionnalite?: Fonctionnalite;
   hideInMenu?: boolean;
   /** ProLayout : affiche l'entrée sans dérouler ses sous-pages dans le menu. */
   hideChildrenInMenu?: boolean;
@@ -65,6 +68,7 @@ const allRoutes: MenuRoute[] = [
     path: '/opportunites',
     name: 'Opportunités',
     icon: <TrophyOutlined />,
+    fonctionnalite: 'opportunites',
   },
   {
     path: '/supports',
@@ -261,6 +265,7 @@ const allRoutes: MenuRoute[] = [
  * `permission` suit la matrice configurable ; un parent n'est affiché que s'il lui reste un enfant. */
 function filtrerParRole(routes: MenuRoute[], role: UserRole, modules: PermissionModule[]): MenuRoute[] {
   return routes
+    .filter((r) => !r.fonctionnalite || estActive(r.fonctionnalite))
     .filter((r) => (r.permission ? aLaPermission(modules, r.permission, role) : !r.roles || r.roles.includes(role)))
     .map((r) => (r.routes ? { ...r, routes: filtrerParRole(r.routes, role, modules) } : r))
     .filter((r) => !r.routes || r.routes.length > 0);
